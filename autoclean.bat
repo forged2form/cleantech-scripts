@@ -1,5 +1,4 @@
 rem need to add permissions check
-rem sleep does not work
 rem test del %homedir%/desktop/techtutors/ command
 rem add test for techtemp
 rem add test for non null entries
