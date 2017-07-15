@@ -1,6 +1,7 @@
 @echo off
     color 1f
     mode 90,40
+	title TechTutor's Clean Up Script
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -18,10 +19,10 @@
 	echo %horiz_line%
 	echo,
 	
-	set netletter=t:
-	echo Network drive mapped to %netletter%
-	echo,
-
+	:drivelettertest
+	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & goto :netletter)
+	
+	:netletter
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
         IF NOT "%%~f"=="" (
             set /a FormattedDate=10000 * %%f + 100 * %%d + %%a
@@ -32,15 +33,26 @@
 	echo [93mmkdir %HOMEPATH%\Desktop\TechTEMP[97m
 	echo [93mcd %HOMEPATH%\Desktop\TechTEMP[97m
 	
+	:clientname
+	echo,
+	set input=
 	set /p firstname="Client's first name: "
 	set /p lastname="Client's Last name: "
 	echo,
+	:clientnameconfirm
+	set /p input=You entered: %firstname% %lastname%. Is this correct? (y/n) %=%
+	if /i %input%==y goto :clientnamegood
+	if /i %input%==n goto :clientname
+	echo Incorrect input. & goto :clientnameconfirm
 	
-	REM Need to add drive map check at outset of script. (See ex. WinReducer.pl)
+	:clientnamegood
+	echo,
 	
+
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
     echo [93mnet use %netletter% \\BEAST\Documents /user:techtutors *[97m
+	echo Network drive mapped to %netletter%
 	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 	echo,
 	
