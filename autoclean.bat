@@ -1,3 +1,8 @@
+rem need to add permissions check
+rem sleep does not work
+rem test del %homedir%/desktop/techtutors/ command
+rem add test for techtemp
+
 @echo off
     color 1f
     mode 90,40
@@ -63,7 +68,7 @@
 	echo,
 	
 	echo Waiting for perfmon to finish...
-    echo [93msleep 70[97m
+    echo [93mstimeout 70[97m
 	echo ...Done!
 	echo,
 	
