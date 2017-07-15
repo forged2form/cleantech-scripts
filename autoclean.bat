@@ -69,7 +69,7 @@ rem add test for non null entries
 	echo,
 	
 	echo Waiting for perfmon to finish...
-    echo [93mstimeout 70[97m
+    echo [93mtimeout 70[97m
 	echo ...Done!
 	echo,
 	
