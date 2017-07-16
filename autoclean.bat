@@ -47,7 +47,6 @@
 	
 	:clientnamegood
 	echo,
-	
 
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
