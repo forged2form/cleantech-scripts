@@ -1,3 +1,9 @@
+rem need to add permissions check
+rem test del %homedir%/desktop/techtutors/ command
+rem add test for techtemp
+rem add test for non null entries
+rem check where netletter test went...
+
 @echo off
     color 1f
     mode 90,40
@@ -74,7 +80,7 @@
 	echo,
 	
 	echo Waiting for perfmon to finish...
-    echo [93msleep 70[97m
+    echo [93mtimeout 70[97m
 	echo ...Done!
 	echo,
 	
