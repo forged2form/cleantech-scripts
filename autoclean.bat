@@ -36,8 +36,12 @@ rem check where netletter test went...
         )
     )
 	
-	echo [93mmkdir %HOMEPATH%\Desktop\TechTEMP[97m
-	echo [93mcd %HOMEPATH%\Desktop\TechTEMP[97m
+	echo [93mmkdir %HOMEPATH%\Desktop\techtemp[97m
+	mkdir %HOMEPATH%\Desktop\techtemp
+	rem echo [93mcd %HOMEPATH%\Desktop\techtemp[97m
+	rem cd %HOMEPATH%\Desktop\techtemp
+	
+	set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	
 	:clientname
 	echo,
@@ -57,39 +61,50 @@ rem check where netletter test went...
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
     echo [93mnet use %netletter% \\BEAST\Documents /user:techtutors *[97m
+	net use %netletter% \\BEAST\Documents /user:techtutors *
 	echo Network drive mapped to %netletter%
 	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 	echo,
 	
 	echo [93mmkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"[97m
+	mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 	echo ...Done.
 	echo,
 	
 	echo Dumping preclean system info...
 	echo [93mmsinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"[97m
+	msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
 	echo ...Done.
 	echo,
 	
-	echo Copying automation files to %cd%
+	echo Copying automation files to %workingdir%
 	echo ...Done.
 	echo,
 	
-	echo [93mrobocopy "%netletter%\Automation\Clean Up" %cd%[97m
+	echo [93mrobocopy "%netletter%\Automation\Clean Up" %workingdir%[97m
+	robocopy "%netletter%\Automation\Clean Up" %workingdir%
 
     echo Starting Performance Monitor. Please wait... 
 	echo,
 	
 	echo Waiting for perfmon to finish...
-    echo [93mtimeout 70[97m
+    echo [93mtimeout 120[97m
+	timeout 120
 	echo ...Done!
 	echo,
 	
 	echo [93mlogman import -n TT-CleanUp -xml CleanUp-Test.xml[97m
+	logman import -n TT-CleanUp -xml CleanUp-Test.xml
 	echo [93mlogman start TT-CleanUp[97m
+	logman start TT-CleanUp
 
     echo Copying Performance Monitor logs...
 	
-	echo [93mcopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon"[97m
+	echo [93mtakeown /f c:\perfmon /r /d y[97m
+	takeown /f c:\perfmon /r /d y
+	
+	echo [93mrobocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir[97m
+	robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 	echo ...Done!
 	echo,
 	
@@ -97,10 +112,16 @@ rem check where netletter test went...
 	echo,
 	
 	pause
+	
+	echo unpacking tron
+	%workingdir%/Tron.exe
 
-    echo [93mcd %homedir%[97m
-    echo [93mdel %homedir%\desktop\techtemp[97m
-
-	echo [93mnet use %netletter% /delete[97m
+	%workingdir%/boottimer.exe
+	
+ 	echo [93mnet use %netletter% /delete[97m
+	net use %netletter% /delete
 	
 	pause
+	
+	rem   echo [93mrmdir %workingdir%[97m
+	rem mdir %workingdir% /s /q
