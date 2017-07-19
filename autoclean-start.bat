@@ -1,7 +1,8 @@
 rem test del %homedir%/desktop/techtutors/ command
 rem add test for techtemp
 rem add test for non null entries
-rem check where netletter test went...
+rem add test for Tron updated and copy back to BEAST overwriting old Tron
+rem rename file to autoclean-prep.bat (even better)
 
 @echo off
 :: BatchGotAdmin 
