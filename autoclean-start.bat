@@ -6,7 +6,7 @@ rem check where netletter test went...
 
 @echo off
     color 1f
-    mode 90,40
+    mode 90,35
 	title TechTutor's Clean Up Script
  
     SETLOCAL EnableDelayedExpansion
