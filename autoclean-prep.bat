@@ -1,7 +1,10 @@
+rem crappy to do list follows...
 rem add test for techtemp
 rem add test for null entries
-rem add test for Tron updated and copy back to BEAST overwriting old Tron
+rem add test for 
+rem add test for if Tron updated and copy back to BEAST overwriting old Tron
 rem add test for network connectivity (eth & BEAST access)
+rem ESC chars and color codes do not work in Win7 prompt
 
 @echo off
 :: BatchGotAdmin 

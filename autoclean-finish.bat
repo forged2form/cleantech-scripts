@@ -27,7 +27,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 1f
     mode 90,35
-	title TechTutor's Clean Up Script
+	title TechTutor's Clean Up Script - Finish Up
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -41,7 +41,7 @@ color 1f
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script
+	echo TechTutor's Clean Up Script - Finish Up
 	echo %horiz_line%
 	echo,
 	
