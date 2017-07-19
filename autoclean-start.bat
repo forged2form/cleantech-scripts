@@ -1,8 +1,7 @@
-rem test del %homedir%/desktop/techtutors/ command
 rem add test for techtemp
-rem add test for non null entries
+rem add test for null entries
 rem add test for Tron updated and copy back to BEAST overwriting old Tron
-rem rename file to autoclean-prep.bat (even better)
+rem add test for network connectivity (eth & BEAST access)
 
 @echo off
 :: BatchGotAdmin 
@@ -30,7 +29,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
     color 1f
     mode 90,35
-	title TechTutor's Clean Up Script
+	title TechTutor's Clean Up Script - Prep Stage
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -44,7 +43,7 @@ if '%errorlevel%' NEQ '0' (
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script
+	echo TechTutor's Clean Up Script - Prep Stage
 	echo %horiz_line%
 	echo,
 	
@@ -145,6 +144,3 @@ if '%errorlevel%' NEQ '0' (
 	net use %netletter% /delete
 	
 	pause
-	
-	rem   echo [93mrmdir %workingdir%[97m
-	rem mdir %workingdir% /s /q
