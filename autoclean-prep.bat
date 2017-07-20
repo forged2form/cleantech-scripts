@@ -105,11 +105,11 @@ if '%errorlevel%' NEQ '0' (
 	echo Incorrect input. & goto :avira
 
 	:aviraneeded
-	set ninite=Ninite Avira Chrome Teamviewer 12.exe
+	set ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe
 	goto :netmap
 
 	:noavira
-	set ninite=Ninite Chrome Teamviewer 12.exe
+	set ninite=Ninite Chrome Teamviewer 12 Installer.exe
 
 	:netmap
 	echo Mapping Beast Documents folder to drive letter %netletter%
@@ -135,7 +135,7 @@ if '%errorlevel%' NEQ '0' (
 	echo Copying automation files to %workingdir%
 	echo ...Done.
 	echo,
-	robocopy "%netletter%\Automation\Clean Up" %workingdir%
+	robocopy /s "%netletter%\Automation\Clean Up" %workingdir% /MIR
 
 	echo Importing perfmon xml...
 	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
@@ -159,8 +159,8 @@ if '%errorlevel%' NEQ '0' (
 	echo takeown /f c:\perfmon /r /d y
 	takeown /f c:\perfmon /r /d y
 	
-	echo robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+	robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 	echo ...Done!
 	echo,
 
@@ -185,6 +185,7 @@ if '%errorlevel%' NEQ '0' (
 
 	echo Adding startclean batch file to RunOnce registry key
 	echo REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+	REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
 
 	echo Starting BootTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
