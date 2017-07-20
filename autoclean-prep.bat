@@ -91,8 +91,24 @@ if '%errorlevel%' NEQ '0' (
 	echo Incorrect input. & goto :clientnameconfirm
 	
 	:clientnamegood
+	
+	:avira
 	echo,
+	set av=
+	set /p av="Does the client need Avira installed? (y/n): "
+	:aviraconfirm
+	if /i %av%==y goto :aviraneeded
+	if /i %input%==n goto :noavira
+	echo Incorrect input. & goto :avira
 
+	:aviraneeded
+	set ninite=Ninite Avira Chrome Teamviewer 12.exe
+	goto :netmap
+
+	:noavira
+	set ninite=Ninite Chrome Teamviewer 12.exe
+
+	:netmap
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
     echo [93mnet use %netletter% \\BEAST\Documents /user:techtutors *[97m
@@ -142,12 +158,18 @@ if '%errorlevel%' NEQ '0' (
 	robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 	echo ...Done!
 	echo,
+
+	echo Installing/updating common programs
+	echo "%workingdir%\%ninite%"
+	"%workingdir%\%ninite%"
 	
-	echo unpacking tron
+	echo Unpacking tron
+	echo,
 	%workingdir%/Tron-latest.exe
 
+	echo Starting BooTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
-	rem NOTE: Need to check how to automatically log the number that gets presented in the dialogue. (Does it output to STDERR?)
+	rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 	
  	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo [93mnet use %netletter% /delete[97m
 	rem net use %netletter% /delete
