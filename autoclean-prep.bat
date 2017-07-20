@@ -131,23 +131,24 @@ if '%errorlevel%' NEQ '0' (
 	echo Copying automation files to %workingdir%
 	echo ...Done.
 	echo,
-	
-	echo [93mrobocopy "%netletter%\Automation\Clean Up" %workingdir%[97m
 	robocopy "%netletter%\Automation\Clean Up" %workingdir%
+
+	echo Importing perfmon xml...
+	echo [93mlogman import -n TT-CleanUp -xml CleanUp-Test.xml[97m
+	echo,
+	logman import -n TT-CleanUp -xml CleanUp-Test.xml
 
     echo Starting Performance Monitor. Please wait... 
 	echo,
 	
+	echo [93mlogman start TT-CleanUp[97m
+	logman start TT-CleanUp
+
 	echo Waiting for perfmon to finish...
     echo [93mtimeout 120[97m
 	timeout 120
 	echo ...Done!
 	echo,
-	
-	echo [93mlogman import -n TT-CleanUp -xml CleanUp-Test.xml[97m
-	logman import -n TT-CleanUp -xml CleanUp-Test.xml
-	echo [93mlogman start TT-CleanUp[97m
-	logman start TT-CleanUp
 
     echo Copying Performance Monitor logs...
 	
@@ -162,6 +163,7 @@ if '%errorlevel%' NEQ '0' (
 	if /i %av%==y echo Installing/updating Avira, Chrome, Teamviewer 12 else echo Installing/updating Chrome & Teamviewer 12
 	echo "%workingdir%\%ninite%"
 	"%workingdir%\%ninite%"
+	echo,
 	
 	echo Unpacking tron
 	echo,

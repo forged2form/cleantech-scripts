@@ -3,6 +3,7 @@ rem AUTOCLEAN-STARTCLEAN.BAT
 rem ------------------------
 
 @echo off
+chcp 65001
 :: BatchGotAdmin 
 :-------------------------------------
 REM  --> Check for permissions
@@ -55,6 +56,8 @@ color 1f
 	pause
 
 	rem Removing autoclean-start flag file
-	echo del /y autoclean-start
-	del /y autoclean-start
+	echo del autoclean-start
+	echo,
+	del autoclean-start
+
 	pause
