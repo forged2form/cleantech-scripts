@@ -53,11 +53,15 @@ if '%errorlevel%' NEQ '0' (
 	echo TechTutor's Clean Up Script - Prep Stage
 	echo %horiz_line%
 	echo,
+	
+	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	echo cd %workigdir%
+	cd %workingdir%
 
 	echo copy /y NUL autoclean-prep >NUL
 	echo,
 
-	copy /y NUL autoclean-pre >NUL
+	copy /y NUL autoclean-prep >NUL
 	pause
 	
 	:drivelettertest
@@ -75,10 +79,6 @@ if '%errorlevel%' NEQ '0' (
 	mkdir %HOMEPATH%\Desktop\techtemp
 	rem echo cd %HOMEPATH%\Desktop\techtemp
 	rem cd %HOMEPATH%\Desktop\techtemp
-	
-	set workingdir=c:%HOMEPATH%\Desktop\techtemp
-	echo cd %workigdir%
-	cd %workingdir%
 	
 	:clientname
 	echo,
