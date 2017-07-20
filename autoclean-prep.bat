@@ -184,3 +184,4 @@ if '%errorlevel%' NEQ '0' (
 	
  	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo net use %netletter% /delete
 	rem net use %netletter% /delete
+	pause
