@@ -1,3 +1,7 @@
+rem ------------------
+rem AUTOCLEAN-PREP.BAT
+rem ------------------
+
 rem crappy to do list follows...
 rem add test for techtemp
 rem add test for null entries
@@ -49,6 +53,12 @@ if '%errorlevel%' NEQ '0' (
 	echo TechTutor's Clean Up Script - Prep Stage
 	echo %horiz_line%
 	echo,
+
+	echo copy /y NUL autoclean-prep >NUL
+	echo,
+
+	copy /y NUL autoclean-pre >NUL
+	pause
 	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & goto :netletter)
@@ -133,17 +143,11 @@ if '%errorlevel%' NEQ '0' (
 	echo ...Done!
 	echo,
 	
-	echo Ready to clean up. 
-	echo,
-	
-	pause
-	
 	echo unpacking tron
-	%workingdir%/Tron.exe
+	%workingdir%/Tron-latest.exe
 
 	%workingdir%/boottimer.exe
+	rem NOTE: Need to check how to automatically log the number that gets presented in the dialogue. (Does it output to STDERR?)
 	
- 	echo [93mnet use %netletter% /delete[97m
-	net use %netletter% /delete
-	
-	pause
+ 	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo [93mnet use %netletter% /delete[97m
+	rem net use %netletter% /delete

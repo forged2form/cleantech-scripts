@@ -1,4 +1,15 @@
+rem --------------------
+rem AUTOCLEAN-FINISH.BAT
+rem --------------------
 rem test del %homedir%/desktop/techtutors/ command
+
+set workingdir=C:\%USERPATH%\Desktop\techtemp\
+echo cd %workingdir% 
+cd %workingdir%
+
+echo copy /y NUL autoclean-finish >NUL
+echo,
+copy /y NUL autoclean-finish >NUL
 
 @echo off
 :: BatchGotAdmin 
@@ -43,6 +54,9 @@ color 1f
 	echo %horiz_line%
 	echo TechTutor's Clean Up Script - Finish Up
 	echo %horiz_line%
+	echo,
+
+	echo Removing cleanup files...
 	echo,
 	
 	echo [93mrmdir %workingdir%[97m
