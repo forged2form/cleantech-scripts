@@ -101,7 +101,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:aviraconfirm
 	if /i %av%==y goto :aviraneeded
-	if /i %input%==n goto :noavira
+	if /i %av%==n goto :noavira
 	echo Incorrect input. & goto :avira
 
 	:aviraneeded
