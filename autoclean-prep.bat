@@ -159,7 +159,7 @@ if '%errorlevel%' NEQ '0' (
 	echo ...Done!
 	echo,
 
-	echo Installing/updating common programs
+	if /i %av%==y echo Installing/updating Avira, Chrome, Teamviewer 12 else echo Installing/updating Chrome & Teamviewer 12
 	echo "%workingdir%\%ninite%"
 	"%workingdir%\%ninite%"
 	
