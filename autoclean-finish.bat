@@ -97,6 +97,8 @@ color 1f
 	
 	echo move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 	move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+	echo move C:\AdwCleaner "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+	move C:\AdwCleaner "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
 	echo Removing cleanup files...
 	echo,

@@ -149,16 +149,18 @@ if '%errorlevel%' NEQ '0' (
     echo timeout 120
 	timeout 120
 	echo ...Done!
-	echo,
-
-	echo Launching PC Decrapifier
+	echo,echo Launching PC Decrapifier
 	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	echo,
+	echo Waiting for user to finish with PC Decrapifier
+	pause
 
 	echo Launching ADWCLeaner
-	echo START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
-	START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
+	echo move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe
+	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe adwcleaner.exe
+	echo START /WAIT %workingdir%\adwcleaner.exe
+	START /WAIT %workingdir%\adwcleaner.exe
 	echo,
 
 	if /i %av%==y echo Installing/updating Avira, Chrome, Teamviewer 12 else echo Installing/updating Chrome & Teamviewer 12
