@@ -154,19 +154,9 @@ if '%errorlevel%' NEQ '0' (
 	echo ...Done!
 	echo,
 
-    echo Copying Performance Monitor logs...
-	
-	echo takeown /f c:\perfmon /r /d y
-	takeown /f c:\perfmon /r /d y
-	
-	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	echo ...Done!
-	echo,
-
 	echo Launching PC Decrapifier
 	echo START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
-	START "" /WAITc"%workingdir%\The PC Decrapifier.exe"
+	START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
 	echo,
 
 	echo Launching ADWCLeaner
@@ -178,10 +168,6 @@ if '%errorlevel%' NEQ '0' (
 	echo START "" /WAIT "%workingdir%\%ninite%"
 	START "" /WAIT "%workingdir%\%ninite%"
 	echo,
-	
-	echo Unpacking tron
-	echo,
-	%workingdir%/Tron-latest.exe
 
 	echo Adding startclean batch file to RunOnce registry key
 	echo REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
@@ -198,3 +184,4 @@ if '%errorlevel%' NEQ '0' (
 	
  	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo net use %netletter% /delete
 	rem net use %netletter% /delete
+	pause
