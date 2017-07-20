@@ -158,7 +158,7 @@ if '%errorlevel%' NEQ '0' (
 
 	echo Launching ADWCLeaner
 	echo START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
-	START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner.exe"
+	START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
 	echo,
 
 	if /i %av%==y echo Installing/updating Avira, Chrome, Teamviewer 12 else echo Installing/updating Chrome & Teamviewer 12
