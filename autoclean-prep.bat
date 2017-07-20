@@ -55,6 +55,7 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	mkdir %workingdir%
 	echo cd %workingdir%
 	cd %workingdir%
 
@@ -74,11 +75,6 @@ if '%errorlevel%' NEQ '0' (
             set FormattedDate=!FormattedDate:~-0,4!-!FormattedDate:~-4,2!-!FormattedDate:~-2,2!
         )
     )
-	
-	echo mkdir %HOMEPATH%\Desktop\techtemp
-	mkdir %HOMEPATH%\Desktop\techtemp
-	rem echo cd %HOMEPATH%\Desktop\techtemp
-	rem cd %HOMEPATH%\Desktop\techtemp
 	
 	:clientname
 	echo,
