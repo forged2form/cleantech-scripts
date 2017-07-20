@@ -64,11 +64,39 @@ color 1f
 	echo TechTutor's Clean Up Script - Finish Up
 	echo %horiz_line%
 	echo,
+
+	echo Importing perfmon xml...
+	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
+	echo,
+	logman import -n TT-CleanUp -xml CleanUp-Test.xml
+
+	echo Starting Performance Monitor. Please wait... 
+	echo,
+	
+	echo logman start TT-CleanUp
+	logman start TT-CleanUp
+
+	echo Waiting for perfmon to finish...
+    echo timeout 120
+	timeout 120
+	echo ...Done!
+	echo,
+
+    echo Copying Performance Monitor logs...
+	
+	echo takeown /f c:\perfmon /r /d y
+	takeown /f c:\perfmon /r /d y
+	
+	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+	robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+	echo ...Done!
+	echo,
 	
 	echo Moving Log files
 	echo,
 	
-	echo move C:\Logs 
+	echo move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+	move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
 	echo Removing cleanup files...
 	echo,

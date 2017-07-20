@@ -154,19 +154,9 @@ if '%errorlevel%' NEQ '0' (
 	echo ...Done!
 	echo,
 
-    echo Copying Performance Monitor logs...
-	
-	echo takeown /f c:\perfmon /r /d y
-	takeown /f c:\perfmon /r /d y
-	
-	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	echo ...Done!
-	echo,
-
 	echo Launching PC Decrapifier
 	echo START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
-	START "" /WAITc"%workingdir%\The PC Decrapifier.exe"
+	START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
 	echo,
 
 	echo Launching ADWCLeaner
