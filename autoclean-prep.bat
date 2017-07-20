@@ -151,8 +151,8 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
 	echo Launching PC Decrapifier
-	echo START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
-	START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
+	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
+	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	echo,
 
 	echo Launching ADWCLeaner

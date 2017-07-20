@@ -100,6 +100,10 @@ color 1f
 
 	echo Removing cleanup files...
 	echo,
+
+	echo delete import -n TT-CleanUp
+	logman delete -n TT-CleanUp
+	echo,
 	
 	echo [93mrmdir %workingdir%[97m
 	rmdir %workingdir% /s /q
