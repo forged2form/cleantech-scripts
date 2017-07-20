@@ -184,8 +184,8 @@ if '%errorlevel%' NEQ '0' (
 	%workingdir%/Tron-latest.exe
 
 	echo Adding startclean batch file to RunOnce registry key
-	echo REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
-	REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+	echo REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+	REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
 
 	echo Starting BootTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
