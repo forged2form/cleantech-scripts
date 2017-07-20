@@ -71,9 +71,9 @@ if '%errorlevel%' NEQ '0' (
         )
     )
 	
-	echo [93mmkdir %HOMEPATH%\Desktop\techtemp[97m
+	echo mkdir %HOMEPATH%\Desktop\techtemp
 	mkdir %HOMEPATH%\Desktop\techtemp
-	rem echo [93mcd %HOMEPATH%\Desktop\techtemp[97m
+	rem echo cd %HOMEPATH%\Desktop\techtemp
 	rem cd %HOMEPATH%\Desktop\techtemp
 	
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
@@ -115,19 +115,19 @@ if '%errorlevel%' NEQ '0' (
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
 
-    echo [93mnet use %netletter% \\BEAST\Documents /user:techtutors *[97m
+    echo net use %netletter% \\BEAST\Documents /user:techtutors *
 	net use %netletter% \\BEAST\Documents /user:techtutors *
 	echo Network drive mapped to %netletter%
 	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 	echo,
 	
-	echo [93mmkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"[97m
+	echo mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 	mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 	echo ...Done.
 	echo,
 	
 	echo Dumping preclean system info...
-	echo [93mmsinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"[97m
+	echo msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
 	msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
 	echo ...Done.
 	echo,
@@ -138,28 +138,28 @@ if '%errorlevel%' NEQ '0' (
 	robocopy "%netletter%\Automation\Clean Up" %workingdir%
 
 	echo Importing perfmon xml...
-	echo [93mlogman import -n TT-CleanUp -xml CleanUp-Test.xml[97m
+	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
 	echo,
 	logman import -n TT-CleanUp -xml CleanUp-Test.xml
 
     echo Starting Performance Monitor. Please wait... 
 	echo,
 	
-	echo [93mlogman start TT-CleanUp[97m
+	echo logman start TT-CleanUp
 	logman start TT-CleanUp
 
 	echo Waiting for perfmon to finish...
-    echo [93mtimeout 120[97m
+    echo timeout 120
 	timeout 120
 	echo ...Done!
 	echo,
 
     echo Copying Performance Monitor logs...
 	
-	echo [93mtakeown /f c:\perfmon /r /d y[97m
+	echo takeown /f c:\perfmon /r /d y
 	takeown /f c:\perfmon /r /d y
 	
-	echo [93mrobocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir[97m
+	echo robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 	robocopy C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 	echo ...Done!
 	echo,
@@ -190,5 +190,5 @@ if '%errorlevel%' NEQ '0' (
 	%workingdir%/boottimer.exe
 	rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 	
- 	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo [93mnet use %netletter% /delete[97m
+ 	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo net use %netletter% /delete
 	rem net use %netletter% /delete

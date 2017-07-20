@@ -79,7 +79,7 @@ color 1f
 
 	:starttron
 	echo Starting Tron...
-	START /WAIT %workingdir%\Tron.exe -e -str -sdb -sdc
+	START /WAIT %workingdir%\Tron\tron\Tron.exe -e -str -sdb -sdc
 	echo,
 
 	echo Ensuring next boot is in normal mode...
