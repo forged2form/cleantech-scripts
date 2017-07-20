@@ -169,9 +169,11 @@ if '%errorlevel%' NEQ '0' (
 	START "" /WAIT "%workingdir%\%ninite%"
 	echo,
 
-	echo Adding startclean batch file to RunOnce registry key
-	echo REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
-	REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+	echo Adding next stage to Startup
+	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat
+	rem echo Adding startclean batch file to RunOnce registry key
+	rem echo REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+	rem REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
 
 	echo Starting BootTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
