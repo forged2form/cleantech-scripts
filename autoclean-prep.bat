@@ -131,7 +131,8 @@ if '%errorlevel%' NEQ '0' (
 	echo Copying automation files to %workingdir%
 	echo ...Done.
 	echo,
-	robocopy /s "%netletter%\Automation\Clean Up" %workingdir% /MIR
+	robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
+	robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
 	echo Importing perfmon xml...
 	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
