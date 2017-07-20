@@ -96,6 +96,7 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	set av=
 	set /p av="Does the client need Avira installed? (y/n): "
+
 	:aviraconfirm
 	if /i %av%==y goto :aviraneeded
 	if /i %input%==n goto :noavira
@@ -111,6 +112,7 @@ if '%errorlevel%' NEQ '0' (
 	:netmap
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
+
     echo [93mnet use %netletter% \\BEAST\Documents /user:techtutors *[97m
 	net use %netletter% \\BEAST\Documents /user:techtutors *
 	echo Network drive mapped to %netletter%
@@ -160,16 +162,29 @@ if '%errorlevel%' NEQ '0' (
 	echo ...Done!
 	echo,
 
+	echo Launching PC Decrapifier
+	echo START "" /WAIT "%workingdir%\The PC Decrapifier.exe"
+	START "" /WAITc"%workingdir%\The PC Decrapifier.exe"
+	echo,
+
+	echo Launching ADWCLeaner
+	echo START "" /WAIT "%workingdir%\Tron\stage_9_manual_tools\adwcleaner.exe"
+	START "" /WAIT "%workingdir%\Tron\stage_9_manual_tools\adwcleaner.exe"
+	echo,
+
 	if /i %av%==y echo Installing/updating Avira, Chrome, Teamviewer 12 else echo Installing/updating Chrome & Teamviewer 12
-	echo "%workingdir%\%ninite%"
-	"%workingdir%\%ninite%"
+	echo START "" /WAIT "%workingdir%\%ninite%"
+	START "" /WAIT "%workingdir%\%ninite%"
 	echo,
 	
 	echo Unpacking tron
 	echo,
 	%workingdir%/Tron-latest.exe
 
-	echo Starting BooTimer. Prepare for reboot...
+	echo Adding startclean batch file to RunOnce registry key
+	echo REG ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
+
+	echo Starting BootTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
 	rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 	

@@ -47,13 +47,45 @@ color 1f
 	echo TechTutor's Clean Up Script - Start Clean
 	echo %horiz_line%
 	echo,
+
+	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+
+	if EXISTS autoclean-start goto :flagfile
 	
+	:noflagfile
+	rem creating autoclean-start 'flag' file for next scritps to test for to deduce sucessful completion of this script
 	echo copy /y NUL autoclean-start >NUL
 	echo,
-
-	rem creating autoclean-start 'flag' file for next scritps to test for to deduce sucessful completion of this script
 	copy /y NUL autoclean-start >NUL
 	pause
+
+	:flagfile
+	set /i /p "troncompelete=Flag file exists. Did we have to restart before Tron was complete? (y/n) "
+	if /i troncomplete==y goto :tronincomplete
+	if /i troncomplete==n goto :starttron
+	goto :flagfile
+
+
+	rem !!! Will not work if Tron has to reboot !!!
+	echo Setting client-info variable
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+	echo Testing strings...
+	echo Last Name: %lastname%
+	echo First name: %firstname%
+	echo Date: %FormattedDate%
+	echo,
+
+	:starttron
+	echo Starting Tron...
+	START /WAIT %workingdir%\Tron.exe -e -str -sdb -sdc
+	echo,
+
+	echo Ensuring next boot is in normal mode...
+	echo bcdedit /deletevalue {default} safeboot
+	bcdedit /deletevalue {default} safeboot
+	echo,
 
 	rem Removing autoclean-start flag file
 	echo del autoclean-start
