@@ -7,6 +7,15 @@ set workingdir=C:\%USERPATH%\Desktop\techtemp\
 echo cd %workingdir% 
 cd %workingdir%
 
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+	echo Testing strings...
+	echo Last Name: %lastname%
+	echo First name: %firstname%
+	echo Date: %FormattedDate%
+	echo,
+
 echo copy /y NUL autoclean-finish >NUL
 echo,
 copy /y NUL autoclean-finish >NUL
@@ -55,6 +64,11 @@ color 1f
 	echo TechTutor's Clean Up Script - Finish Up
 	echo %horiz_line%
 	echo,
+	
+	echo Moving Log files
+	echo,
+	
+	echo move C:\Logs 
 
 	echo Removing cleanup files...
 	echo,

@@ -77,6 +77,8 @@ if '%errorlevel%' NEQ '0' (
 	rem cd %HOMEPATH%\Desktop\techtemp
 	
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	echo cd %workigdir%
+	cd %workingdir%
 	
 	:clientname
 	echo,
