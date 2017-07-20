@@ -55,7 +55,7 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
-	echo cd %workigdir%
+	echo cd %workingdir%
 	cd %workingdir%
 
 	echo copy /y NUL autoclean-prep >NUL
