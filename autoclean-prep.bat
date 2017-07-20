@@ -189,6 +189,11 @@ if '%errorlevel%' NEQ '0' (
 
 	echo Starting BootTimer. Prepare for reboot...
 	%workingdir%/boottimer.exe
+
+	rem Removing autoclean-start flag file
+	echo del autoclean-prep
+	echo,
+	del autoclean-prep
 	rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 	
  	rem -I don't think this code is necessary as Windows will just release upon reboot anyway - echo net use %netletter% /delete

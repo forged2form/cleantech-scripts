@@ -49,14 +49,15 @@ color 1f
 	echo,
 
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	cd %workingdir%
 
 	if EXISTS autoclean-start goto :flagfile
 	
 	:noflagfile
 	rem creating autoclean-start 'flag' file for next scritps to test for to deduce sucessful completion of this script
-	echo copy /y NUL autoclean-start >NUL
+	echo copy /y NUL autoclean-startclean >NUL
 	echo,
-	copy /y NUL autoclean-start >NUL
+	copy /y NUL autoclean-startclean >NUL
 	pause
 
 	:flagfile
@@ -91,5 +92,9 @@ color 1f
 	echo del autoclean-start
 	echo,
 	del autoclean-start
+
+	echo Restarting...
+	echo,
+	shutdown /r /p
 
 	pause
