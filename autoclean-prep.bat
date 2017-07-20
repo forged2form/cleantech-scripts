@@ -168,10 +168,6 @@ if '%errorlevel%' NEQ '0' (
 	echo START "" /WAIT "%workingdir%\%ninite%"
 	START "" /WAIT "%workingdir%\%ninite%"
 	echo,
-	
-	echo Unpacking tron
-	echo,
-	%workingdir%/Tron-latest.exe
 
 	echo Adding startclean batch file to RunOnce registry key
 	echo REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v AutoClean-StartClean /t REG_EXPAND_SZ /d "%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%" 
