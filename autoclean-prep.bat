@@ -116,7 +116,7 @@ if '%errorlevel%' NEQ '0' (
     echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
 	net use %netletter% \\BEAST\Documents /user:techtutors *
 	echo,
-	
+
 	echo Network drive mapped to %netletter%
 	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 	echo,
@@ -151,8 +151,8 @@ if '%errorlevel%' NEQ '0' (
 	timeout 120
 
 	echo Adding next stage to Startup...
-	echo Command running: %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-	%workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+	echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 	rem Removing autoclean-start flag file
 	echo Command running: del autoclean-prep
