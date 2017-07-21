@@ -71,11 +71,18 @@ color 1f
 
 	pause
 
+	echo if EXIST autoclean-adw goto :PCD
+	pause
 	if EXIST autoclean-adw goto :PCD
+	echo if NOT EXIST autoclean-startclean goto :noflagfile
+	pause
 	if NOT EXIST autoclean-startclean goto :noflagfile
+	echo if EXIST autoclean-startclean goto :flagfile
+	pause
 	if EXIST autoclean-startclean goto :flagfile
 	
 	:noflagfile
+	echo at :noflagfile
 	rem creating autoclean-start 'flag' file for next scripts to test for sucessful completion of this script
 	echo copy /y NUL autoclean-startclean >NUL
 	echo,
@@ -85,12 +92,14 @@ color 1f
 
 	rem Might not need this logic... But, leave in for now.
 	:flagfile
-	set /i /p "interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n) "
+	echo at :flagfile
+	set /i /p "interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n): 
 	if /i interruptedq==y goto :starttron
 	if /i troncomplete==n goto :starttron
 	goto :flagfile
 
 	:adw
+	echo at :adw
 	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 
