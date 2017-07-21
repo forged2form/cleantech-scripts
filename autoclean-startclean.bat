@@ -56,9 +56,11 @@ color 1f
 	echo Command running: cd %workingdir%
 	cd %workingdir%
 
-	if NOT EXIST autoclean-startclean
+	pause
+
 	if EXIST autoclean-adw goto :PCD
-	if EXIST autoclean-start goto :flagfile
+	if NOT EXIST autoclean-startclean goto :noflagfile
+	if EXIST autoclean-startclean goto :flagfile
 	
 	:noflagfile
 	rem creating autoclean-start 'flag' file for next scripts to test for sucessful completion of this script
