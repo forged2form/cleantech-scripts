@@ -48,6 +48,8 @@ color 1f
 	echo %horiz_line%
 	echo,
 
+	pause
+
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	cd %workingdir%
 
@@ -60,6 +62,7 @@ color 1f
 	echo,
 	copy /y NUL autoclean-startclean >NUL
 	pause
+	:goto adw
 
 	rem Might not need this logic... But, leave in for now.
 	:flagfile
@@ -68,6 +71,7 @@ color 1f
 	if /i troncomplete==n goto :starttron
 	goto :flagfile
 
+	:adw
 	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 
