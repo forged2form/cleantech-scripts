@@ -48,6 +48,7 @@ color 1f
 	echo %horiz_line%
 	echo,
 
+	echo Wait for BootTimer to finish before continuing!
 	pause
 
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
