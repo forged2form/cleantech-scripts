@@ -61,10 +61,12 @@ color 1f
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
+	set ninite=%4
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
 	echo Date: %FormattedDate%
+	echo Ninite command: %ninite%
 	echo,
 
 	pause
