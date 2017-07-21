@@ -62,7 +62,7 @@ if '%errorlevel%' NEQ '0' (
 	pause
 	
 	:drivelettertest
-	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & goto :netletter)
+	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
 	
 	:netletter
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
@@ -115,6 +115,8 @@ if '%errorlevel%' NEQ '0' (
 
     echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
 	net use %netletter% \\BEAST\Documents /user:techtutors *
+	echo,
+	
 	echo Network drive mapped to %netletter%
 	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 	echo,
