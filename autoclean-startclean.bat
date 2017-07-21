@@ -51,24 +51,42 @@ color 1f
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	cd %workingdir%
 
+	if EXISTS autoclean-adw goto :PCD
 	if EXISTS autoclean-start goto :flagfile
 	
 	:noflagfile
-	rem creating autoclean-start 'flag' file for next scritps to test for to deduce sucessful completion of this script
+	rem creating autoclean-start 'flag' file for next scripts to test for sucessful completion of this script
 	echo copy /y NUL autoclean-startclean >NUL
 	echo,
 	copy /y NUL autoclean-startclean >NUL
 	pause
 
+	rem Might not need this logic... But, leave in for now.
 	:flagfile
-	set /i /p "troncompelete=Flag file exists. Did we have to restart before Tron was complete? (y/n) "
-	if /i troncomplete==y goto :tronincomplete
+	set /i /p "interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n) "
+	if /i interruptedq==y goto :starttron
 	if /i troncomplete==n goto :starttron
 	goto :flagfile
 
+	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
+	echo Command: START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
+	START "" /WAIT "%workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe"
+	echo,
+	copy /y NUL autoclean-adw >NUL
 
-	rem !!! Will not work if Tron has to reboot !!!
-	echo Setting client-info variable
+	:PCD
+	echo Command running: del autoclean-adw
+	del autoclean-adw
+	echo,
+
+	echo Launching PC Decrapifier
+	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
+	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
+	echo,
+	echo Waiting for user to finish with PC Decrapifier
+	pause
+
+	echo Setting client-info variables
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
@@ -93,8 +111,12 @@ color 1f
 	echo,
 	del autoclean-start
 
+	rem Swapping startup batch files
+	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+
 	echo Restarting...
 	echo,
 	shutdown /r /p
 
-	pause
+	adw

@@ -47,7 +47,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 1f
     mode 90,35
-	title TechTutor's Clean Up Script - Finish Up
+	title CleanTech - Wrap Up
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -61,14 +61,27 @@ color 1f
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script - Finish Up
+	echo CleanTech - Wrap Up
 	echo %horiz_line%
 	echo,
 
-	echo Importing perfmon xml...
-	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
+	echo Setting client-info variables
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+	set ninite=%4
+	echo Testing strings...
+	echo Last Name: %lastname%
+	echo First name: %firstname%
+	echo Date: %FormattedDate%
 	echo,
-	logman import -n TT-CleanUp -xml CleanUp-Test.xml
+
+	title CleanTech: Installing/Updating Utils
+	echo Command running: START "" /WAIT "%workingdir%\%ninite%"
+	START "" /WAIT "%workingdir%\%ninite%"
+	echo,
+
+	title CleanTech: Performance Test #2
 
 	echo Starting Performance Monitor. Please wait... 
 	echo,
@@ -84,7 +97,7 @@ color 1f
 
     echo Copying Performance Monitor logs...
 	
-	echo takeown /f c:\perfmon /r /d y
+	echo Command running: takeown /f c:\perfmon /r /d y
 	takeown /f c:\perfmon /r /d y
 	
 	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
@@ -92,20 +105,33 @@ color 1f
 	echo ...Done!
 	echo,
 	
+	title CleanTech: Moving Log Files
 	echo Moving Log files
 	echo,
 	
-	echo move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+	echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 	move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
-	echo move C:\AdwCleaner "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
-	move C:\AdwCleaner "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
+	echo Command running: move C:\ADW move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+	move C:\ADW move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+
+	title CleanTech: Removing Cleanup Files
 	echo Removing cleanup files...
 	echo,
 
-	echo delete import -n TT-CleanUp
+	echo Command running: logman delete import -n TT-CleanUp
 	logman delete -n TT-CleanUp
 	echo,
+
+	echo Dumping postclean system info...
+	echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+	msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+	echo,
+
+	echo Turning UAC back on...
+    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+    echo,
+    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 	
-	echo [93mrmdir %workingdir%[97m
+	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
