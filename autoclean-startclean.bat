@@ -102,6 +102,8 @@ color 1f
 	echo at :adw
 	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
+	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
+
 
 	echo Command: START "" /WAIT %workingdir%\adwcleaner.exe
 	START "" /WAIT %workingdir%\adwcleaner.exe
