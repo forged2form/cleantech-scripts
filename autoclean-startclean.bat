@@ -48,7 +48,7 @@ color 1f
 	echo %horiz_line%
 	echo,
 
-	echo Wait for BootTimer to finish before continuing!
+	echo Don't press any key until BootTimer is finished. Don't forget to write down the reported number!
 	pause
 
 	echo Command running: set workingdir=c:%HOMEPATH%\Desktop\techtemp
@@ -56,8 +56,9 @@ color 1f
 	echo Command running: cd %workingdir%
 	cd %workingdir%
 
-	if EXISTS autoclean-adw goto :PCD
-	if EXISTS autoclean-start goto :flagfile
+	if NOT EXIST autoclean-startclean
+	if EXIST autoclean-adw goto :PCD
+	if EXIST autoclean-start goto :flagfile
 	
 	:noflagfile
 	rem creating autoclean-start 'flag' file for next scripts to test for sucessful completion of this script
