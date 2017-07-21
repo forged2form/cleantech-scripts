@@ -55,6 +55,17 @@ color 1f
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	echo Command running: cd %workingdir%
 	cd %workingdir%
+	echo,
+
+	echo Setting client-info variables
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+	echo Testing strings...
+	echo Last Name: %lastname%
+	echo First name: %firstname%
+	echo Date: %FormattedDate%
+	echo,
 
 	pause
 
@@ -97,16 +108,6 @@ color 1f
 	echo,
 	echo Waiting for user to finish with PC Decrapifier
 	pause
-
-	echo Setting client-info variables
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
-	echo,
 
 	:starttron
 	echo Starting Tron...
