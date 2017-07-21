@@ -93,9 +93,9 @@ color 1f
 	rem Might not need this logic... But, leave in for now.
 	:flagfile
 	echo at :flagfile
-	set /i /p "interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n): 
-	if /i interruptedq==y goto :starttron
-	if /i troncomplete==n goto :starttron
+	set /i /p interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n): 
+	if /i %interruptedq%==y goto :starttron
+	if /i %troncomplete%==n goto :starttron
 	goto :flagfile
 
 	:adw
