@@ -51,7 +51,9 @@ color 1f
 	echo Wait for BootTimer to finish before continuing!
 	pause
 
+	echo Command running: set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	echo Command running: cd %workingdir%
 	cd %workingdir%
 
 	if EXISTS autoclean-adw goto :PCD
