@@ -120,6 +120,7 @@ color 1f
 	echo Waiting for user to finish with PC Decrapifier
 	pause
 
+	rem NOTE: Need new batch file for Tron. (autoclean-tron.bat) that will be placed in shell registry entry for autostartup after in Safe mode. Code following this comment should be responsible for accomplishing that.
 	:starttron
 	echo Starting Tron...
 	START /WAIT %workingdir%\Tron\tron\Tron.exe -e -str -sdb -sdc
@@ -137,10 +138,11 @@ color 1f
 
 	rem Swapping startup batch files
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	echo %workingdir%\autoclean-finish.bat %lastname% %firstname% %FormattedDate%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	pause
 
 	echo Restarting...
 	echo,
-	shutdown /r /p
+	shutdown /r /t 0
 
 	adw
