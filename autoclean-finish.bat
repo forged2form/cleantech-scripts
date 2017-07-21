@@ -76,6 +76,19 @@ color 1f
 	echo Date: %FormattedDate%
 	echo,
 
+	:drivelettertest
+	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+
+	:netmap
+	echo Mapping Beast Documents folder to drive letter %netletter%
+	echo,
+
+    echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
+	net use %netletter% \\BEAST\Documents /user:techtutors *
+	echo,
+	
+	echo Network drive mapped to %netletter%
+
 	title CleanTech: Installing/Updating Utils
 	echo Command running: START "" /WAIT "%workingdir%\%ninite%"
 	START "" /WAIT "%workingdir%\%ninite%"
