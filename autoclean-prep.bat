@@ -75,8 +75,8 @@ if '%errorlevel%' NEQ '0' (
     rem NOTE: Might want to run a command to copy current value...
     echo Turning off UAC temporarily...
     echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-    echo,
     REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+    echo,
 	
 	:clientname
 	echo,
