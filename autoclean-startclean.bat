@@ -77,9 +77,9 @@ color 1f
 	echo if NOT EXIST autoclean-startclean goto :noflagfile
 	pause
 	if NOT EXIST autoclean-startclean goto :noflagfile
-	echo if EXIST autoclean-startclean goto :flagfile
+	echo if EXIST autoclean-startclean goto :adw
 	pause
-	if EXIST autoclean-startclean goto :flagfile
+	if EXIST autoclean-startclean goto :adw
 	
 	:noflagfile
 	echo at :noflagfile
