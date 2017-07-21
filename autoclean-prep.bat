@@ -149,6 +149,7 @@ if '%errorlevel%' NEQ '0' (
 	echo Waiting for perfmon to finish...
     echo timeout 120
 	timeout 120
+	pause
 
 	echo Adding next stage to Startup...
 	echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
