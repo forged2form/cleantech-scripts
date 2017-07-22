@@ -52,6 +52,7 @@ if '%errorlevel%' NEQ '0' (
 	cd %workingdir%
 
 	:echostrings
+	color 6f
 	echo -----------------------
 	echo Client Info:
 	echo Last Name: %1
@@ -62,6 +63,7 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
 	pause
+	color 1f
 
 	rem NOTE: Need new batch file for Tron. (autoclean-tron.bat) that will be placed in shell registry entry for autostartup after in Safe mode. Code following this comment should be responsible for accomplishing that.
 	:starttron

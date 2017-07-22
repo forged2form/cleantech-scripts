@@ -45,7 +45,7 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
-color 1f
+	color 1f
     mode 100,35
 	title CleanTech - Wrap Up
  
@@ -93,6 +93,7 @@ color 1f
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
 
+	color 6f
     echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
 	net use %netletter% \\BEAST\Documents /user:techtutors *
 	echo,
@@ -100,10 +101,14 @@ color 1f
 	echo Network drive mapped to %netletter%
 
 	title CleanTech: Installing/Updating Utils
+	echo ---------------------------------------------
+	echo Launching Ninite. Please Close when finished.
+	echo ---------------------------------------------
 	echo Command running: START "" /WAIT "%workingdir%\%ninite%"
 	START "" /WAIT "%workingdir%\%ninite%"
 	echo,
 
+	color 1f
 	title CleanTech: Performance Test #2
 
 	echo Starting Performance Monitor. Please wait... 
@@ -142,7 +147,7 @@ color 1f
 	echo Removing cleanup files...
 	echo,
 
-	echo Command running: logman delete import -n TT-CleanUp
+	echo Command running: logman delete -n TT-CleanUp
 	logman delete -n TT-CleanUp
 	echo,
 
@@ -156,7 +161,27 @@ color 1f
     echo,
     REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
-    pause
+    color 6f
+    echo ----------------------------------------------
+    echo Chrome starting... Please install AdBlock Plus
+    echo ----------------------------------------------
+    start /wait C:\program/ files/ (x86)\Google\Chrome\Application\chrome.exe
+
+    echo -------------------------------------------------
+    echo msconfig starting... Please check startup entries
+    echo -------------------------------------------------
+    start /wait msconfig
 	
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
+	pause
+
+	cls
+	color 2f
+	echo ---------
+	echo All done!
+	echo ---------
+	echo,
+	echo Please take a moment to tidy up the Client's desktop
+	echo,
+	pause

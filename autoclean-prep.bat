@@ -79,6 +79,7 @@ if '%errorlevel%' NEQ '0' (
     echo,
 	
 	:clientname
+	color 6f
 	echo,
 	set input=
 	set /p firstname="Client's first name: "
@@ -103,6 +104,7 @@ if '%errorlevel%' NEQ '0' (
 	echo Incorrect input. & goto :avira
 
 	:netmap
+	color 1f
 	echo Mapping Beast Documents folder to drive letter %netletter%
 	echo,
 
@@ -142,7 +144,7 @@ if '%errorlevel%' NEQ '0' (
 	echo Waiting for perfmon to finish...
     echo timeout 120
 	timeout 120
-	pause
+	color 6f & pause & color 1f
 
 	echo Adding next stage to Startup...
 	echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
