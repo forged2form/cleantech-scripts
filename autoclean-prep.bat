@@ -107,7 +107,7 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
     echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-	net use %netletter% \\BEAST\Documents /user:techtutors *
+	net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
 	echo,
 
 	echo Network drive mapped to %netletter%
