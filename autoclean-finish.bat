@@ -46,7 +46,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
 
 color 1f
-    mode 90,35
+    mode 100,35
 	title CleanTech - Wrap Up
  
     SETLOCAL EnableDelayedExpansion
@@ -69,11 +69,19 @@ color 1f
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
-	set ninite=%4
-	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
+	set av=%4
+
+	if %4==y "set ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto :echostrings
+	if %4==n "set ninite=Ninite Chrome Teamviewer 12 Installer.exe"
+
+	:echostrings
+	echo -----------------------
+	echo Client Info:
+	echo Last Name: %1
+	echo First name: %2
+	echo Date: %3
+	echo AV needed?: %4
+	echo -----------------------
 	echo,
 
 	:drivelettertest
@@ -145,6 +153,8 @@ color 1f
     echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
     echo,
     REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
+
+    pause
 	
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q

@@ -31,7 +31,7 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
     color 1f
-    mode 90,35
+    mode 100,35
 	title TechTutor's Clean Up Script - Prep Stage
  
     SETLOCAL EnableDelayedExpansion
@@ -98,16 +98,9 @@ if '%errorlevel%' NEQ '0' (
 	set /p av="Does the client need Avira installed? (y/n): "
 
 	:aviraconfirm
-	if /i %av%==y goto :aviraneeded
-	if /i %av%==n goto :noavira
+	if /i %av%==y goto :netmap
+	if /i %av%==n goto :netmap
 	echo Incorrect input. & goto :avira
-
-	:aviraneeded
-	set ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe
-	goto :netmap
-
-	:noavira
-	set ninite=Ninite Chrome Teamviewer 12 Installer.exe
 
 	:netmap
 	echo Mapping Beast Documents folder to drive letter %netletter%
@@ -153,7 +146,7 @@ if '%errorlevel%' NEQ '0' (
 
 	echo Adding next stage to Startup...
 	echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 	rem Removing autoclean-start flag file
 	echo Command running: del autoclean-prep

@@ -29,7 +29,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
 
 color 1f
-    mode 90,35
+    mode 100,35
 	title TechTutor's Clean Up Script - Start Clean
  
     SETLOCAL EnableDelayedExpansion
@@ -57,16 +57,14 @@ color 1f
 	cd %workingdir%
 	echo,
 
-	echo Setting client-info variables
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	set ninite=%4
-	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
-	echo Ninite command: %ninite%
+	:echostrings
+	echo -----------------------
+	echo Client Info:
+	echo Last Name: %1
+	echo First name: %2
+	echo Date: %3
+	echo AV needed?: %4
+	echo -----------------------
 	echo,
 
 	pause
@@ -122,17 +120,6 @@ color 1f
 	echo Waiting for user to finish with PC Decrapifier
 	pause
 
-	rem NOTE: Need new batch file for Tron. (autoclean-tron.bat) that will be placed in shell registry entry for autostartup after in Safe mode. Code following this comment should be responsible for accomplishing that.
-	:starttron
-	echo Starting Tron...
-	START /WAIT %workingdir%\Tron\tron\Tron.exe -e -str -sdb -sdc
-	echo,
-
-	echo Ensuring next boot is in normal mode...
-	echo bcdedit /deletevalue {default} safeboot
-	bcdedit /deletevalue {default} safeboot
-	echo,
-
 	rem Removing autoclean-start flag file
 	echo del autoclean-start
 	echo,
@@ -140,7 +127,15 @@ color 1f
 
 	rem Swapping startup batch files
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-	echo %workingdir%\autoclean-finish.bat %lastname% %firstname% %FormattedDate%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+
+	echo Command running: reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell" %workingdir%\SavedShell.reg
+	reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell" %workingdir%\SavedShell.reg
+	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
+	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
+	echo Command running: reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\\" /t REG_DZ /v "explorer.exe,c:\autoclean-trontemp.bat"
+	reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\\" /t REG_DZ /v "explorer.exe,c:\autoclean-trontemp.bat"
+
 	pause
 
 	echo Restarting...
