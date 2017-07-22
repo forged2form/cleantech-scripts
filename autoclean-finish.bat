@@ -83,6 +83,8 @@ color 1f
 	echo AV needed?: %4
 	echo -----------------------
 	echo,
+	
+	pause
 
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
