@@ -133,9 +133,8 @@ color 1f
 	reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell" %workingdir%\SavedShell.reg
 	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
 	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
-	echo Command running: reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\\" /t REG_DZ /v "explorer.exe,c:\autoclean-trontemp.bat"
-	reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\\" /t REG_DZ /v "explorer.exe,c:\autoclean-trontemp.bat"
-
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat"
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat"
 	pause
 
 	echo Restarting...
