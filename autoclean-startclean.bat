@@ -1,9 +1,9 @@
+@echo off
 rem ------------------------
 rem AUTOCLEAN-STARTCLEAN.BAT
 rem ------------------------
-
-@echo off
 chcp 65001
+
 :: BatchGotAdmin 
 :-------------------------------------
 REM  --> Check for permissions
@@ -48,15 +48,36 @@ color 4f
 	echo %horiz_line%
 	echo,
 
-	echo Don't press any key until BootTimer is finished. Don't forget to write down the reported number!
-	pause
-	cls & color 1f
-
 	echo Command running: set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	set workingdir=c:%HOMEPATH%\Desktop\techtemp
 	echo Command running: cd %workingdir%
 	cd %workingdir%
 	echo,
+
+	:boottimer
+		title CleanTech: BootTimer
+		echo Press any key when BootTimer has reported its number.
+		echo DO NOT close the BootTimer dialog box yet!
+		rem timeout 15
+		rem echo Taking back the foreground...
+		rem ADD test for BootTimer.exe or w/e
+		rem tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
+		rem if "%ERRORLEVEL%"=="0" echo Program is running
+		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
+		pause
+		rem ADD nircmd win activate "CleanTech: Boottimer"
+		echo Grabbing number from dialog box...
+		echo Command running: %workingdir%\sysexp.exe /process BootTimer.exe %workingdir%\boottime.txt
+		%workingdir%\sysexp.exe /process boottimer.exe /stext %workingdir%\boottime.txt
+		echo,
+		pause
+		taskkill /im BootTimer.exe /t
+		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
+
+		cls & color 1f
+
+	rem echo Killing BootTimer.exe's chrome process
+rem	taskkill /im chrome.exe
 
 	:echostrings
 	echo -----------------------

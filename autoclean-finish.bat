@@ -171,6 +171,7 @@ if '%errorlevel%' NEQ '0' (
     echo msconfig starting... Please check startup entries
     echo -------------------------------------------------
     start /wait msconfig
+    rem REPLACE THIS WITH NIRCMD
 	
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
@@ -182,6 +183,6 @@ if '%errorlevel%' NEQ '0' (
 	echo All done!
 	echo ---------
 	echo,
-	echo Please take a moment to tidy up the Client's desktop
+	echo Please take a moment to tidy up the Client's desktop. Thanks!
 	echo,
 	pause

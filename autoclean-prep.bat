@@ -105,7 +105,7 @@ if '%errorlevel%' NEQ '0' (
 			echo You entered: %password%
 			set /p passconfirm="Is this correct? (y/n): "
 
-			if /i %passcofirm%==y goto :avira
+			if /i %passconfirm%==y goto :avira
 			if /i %passconfirm%==n goto :passwordneeded
 			echo Incorrect input. & goto :passconfirm
 	
@@ -120,14 +120,17 @@ if '%errorlevel%' NEQ '0' (
 			echo Incorrect input. & goto :avira
 
 	:netmap
-		color 1f
 		echo Mapping Beast Documents folder to drive letter %netletter%
 		echo,
 
     	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
 		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
+		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 
+		rem ADD logic to test for ERROR re: wrong password
+
+		color 1f
 		echo Network drive mapped to %netletter%
 		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
 		echo,
@@ -150,6 +153,9 @@ if '%errorlevel%' NEQ '0' (
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
 	:registryprep
+	    rem ADD: backup autologin entries
+	    rem ADD: backup shell entry
+
 	    echo Turning off UAC temporarily...
 	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
