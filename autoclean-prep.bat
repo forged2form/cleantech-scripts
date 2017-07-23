@@ -152,23 +152,29 @@ if '%errorlevel%' NEQ '0' (
 
 	:registryprep
 		echo Saving current UAC values
-		REG EXPORT HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
-		echo,
+		IF EXIST %workingdir%\Preclean-Policies_System.reg goto :uac-reg
 
-	    echo Turning off UAC temporarily...
-	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-	    echo,
+		:policies-system
+			REG EXPORT HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
+			echo,
 
-	    echo Saving current AutoLogin values
-	    REG export "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
-	    echo,
+		:uac-reg
+		    echo Turning off UAC temporarily...
+		    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+		    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+		    echo,
 
-	    echo Setting autologin for CleanTech session...
-	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
-	    echo,
+		    echo Saving current AutoLogin values
+		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :setautologin
+		    REG export "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
+		    echo,
+
+	    :setautologin
+		    echo Setting autologin for CleanTech session...
+		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+		    echo,
 
 	:systeminfo
 		echo Command running: mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"

@@ -68,7 +68,7 @@ if '%errorlevel%' NEQ '0' (
 	rem NOTE: Need new batch file for Tron. (autoclean-tron.bat) that will be placed in shell registry entry for autostartup after in Safe mode. Code following this comment should be responsible for accomplishing that.
 	:starttron
 	echo Starting Tron...
-	START /WAIT %workingdir%\Tron\tron\Tron.exe -e -str -sdb -sdc
+	START /WAIT %workingdir%\Tron\tron\Tron.bat -e -str -sdb -sdc
 	echo,
 
 	echo Ensuring next boot is in normal mode...
@@ -79,3 +79,5 @@ if '%errorlevel%' NEQ '0' (
 	echo Setting next stage batch file
 	echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 	pause
+
+	shutdown /r /t 0

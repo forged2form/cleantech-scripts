@@ -64,7 +64,7 @@ color 4f
 		rem tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
 		rem if "%ERRORLEVEL%"=="0" echo Program is running
 		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
-	rem	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq New Folder"') do @if %A==INFO echo Prog not running
+	rem	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 		pause
 		rem ADD nircmd win activate "CleanTech: Boottimer"
 		echo Grabbing number from dialog box...
@@ -74,8 +74,9 @@ color 4f
 		pause
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
+		pause
 		echo Killing BootTimer.exe's chrome process
-		taskkill /im chrome.exe
+		taskkill /im chrome.exe /f
 		pause
 		cls & color 1f
 
@@ -96,9 +97,6 @@ color 4f
 	if EXIST autoclean-adw goto :PCD
 	echo if NOT EXIST autoclean-startclean goto :noflagfile
 	pause
-	if NOT EXIST autoclean-startclean goto :noflagfile
-	echo if EXIST autoclean-startclean goto :adw
-	pause
 	if EXIST autoclean-startclean goto :adw
 	
 	:noflagfile
@@ -109,16 +107,7 @@ color 4f
 	echo,
 	copy /y NUL autoclean-startclean >NUL
 	pause
-	:goto adw
-
-	rem Might not need this logic... But, leave in for now.
-	:flagfile
-	color 6f
-	echo at :flagfile
-	set /i /p interruptedq=Flag file exists. Did we have to restart before Tron was complete? (y/n): 
-	if /i %interruptedq%==y color 1f & goto :starttron
-	if /i %troncomplete%==n color 1f & goto :starttron
-	goto :flagfile
+	goto adw
 
 	:adw
 	echo at :adw
@@ -158,8 +147,8 @@ color 4f
 
 	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
 	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
-	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat"
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat"
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
 	pause
 
 	bcdedit /set {default} safeboot network

@@ -1,20 +1,6 @@
 rem --------------------
 rem AUTOCLEAN-FINISH.BAT
 rem --------------------
-rem test del %homedir%/desktop/techtutors/ command
-
-set workingdir=C:\%USERPATH%\Desktop\techtemp\
-echo cd %workingdir% 
-cd %workingdir%
-
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
-	echo,
 
 echo copy /y NUL autoclean-finish >NUL
 echo,
@@ -65,113 +51,134 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 
-	echo Setting client-info variables
+	set workingdir=C:\%USERPATH%\Desktop\techtemp\
+	echo cd %workingdir% 
+	cd %workingdir%
+
+	echo Setting client info variables
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
 	set av=%4
+	echo Testing strings...
+	echo Last Name: %lastname%
+	echo First name: %firstname%
+	echo Date: %FormattedDate%
+	echo,
+
+	pause
 
 	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto :echostrings
 	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
 
 	:echostrings
-	echo -----------------------
-	echo Client Info:
-	echo Last Name: %1
-	echo First name: %2
-	echo Date: %3
-	echo AV needed?: %4
-	echo -----------------------
-	echo,
-	
-	pause
+		echo -----------------------
+		echo Client Info:
+		echo Last Name: %1
+		echo First name: %2
+		echo Date: %3
+		echo AV needed?: %4
+		echo Ninite Installer: %ninite%
+		echo -----------------------
+		echo,
+		
+		pause
 
 	:drivelettertest
-	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+		for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
 
 	:netmap
-	echo Mapping Beast Documents folder to drive letter %netletter%
-	echo,
+		echo Mapping Beast Documents folder to drive letter %netletter%
+		echo,
 
-	color 6f
-    echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-	net use %netletter% \\BEAST\Documents /user:techtutors *
-	echo,
+    	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
+		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
+		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
+		echo,
+
+		color 1f
+		echo Network drive mapped to %netletter%
+		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
+		echo,
+
+	:installutils
+		title CleanTech: Installing/Updating Utils
+		echo ---------------------------------------------
+		echo Launching Ninite. Please Close when finished.
+		echo ---------------------------------------------
+		echo Command running: START "" /WAIT "%workingdir%\%ninite%"
+		START "" /WAIT "%workingdir%\%ninite%"
+		echo,
+
+	:systeminfo
+		color 1f
+		title CleanTech: Performance Test #2
+
+		echo Dumping postclean system info...
+		echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+		msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+		echo,
+
+		echo Starting Performance Monitor. Please wait... 
+		echo,
+		
+		echo logman start TT-CleanUp
+		logman start TT-CleanUp
+
+		echo Waiting for perfmon to finish...
+	    echo timeout 120
+		timeout 120
+		echo ...Done!
+		echo,
+
+	    echo Copying Performance Monitor logs...
+		
+		echo Command running: takeown /f c:\perfmon /r /d y
+		takeown /f c:\perfmon /r /d y
+		
+		echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		echo ...Done!
+		echo,
 	
-	echo Network drive mapped to %netletter%
+	:files
+		title CleanTech: Moving Log Files
+		echo Moving Log files
+		echo,
+		
+		echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+		move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
-	title CleanTech: Installing/Updating Utils
-	echo ---------------------------------------------
-	echo Launching Ninite. Please Close when finished.
-	echo ---------------------------------------------
-	echo Command running: START "" /WAIT "%workingdir%\%ninite%"
-	START "" /WAIT "%workingdir%\%ninite%"
-	echo,
+		echo Command running: move C:\ADW move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		move C:\ADW move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
-	color 1f
-	title CleanTech: Performance Test #2
+		title CleanTech: Removing Cleanup Files
+		echo Removing cleanup files...
+		echo,
+		pause
 
-	echo Starting Performance Monitor. Please wait... 
-	echo,
-	
-	echo logman start TT-CleanUp
-	logman start TT-CleanUp
+		echo Command running: logman delete -n TT-CleanUp
+		logman delete -n TT-CleanUp
+		echo,
 
-	echo Waiting for perfmon to finish...
-    echo timeout 120
-	timeout 120
-	echo ...Done!
-	echo,
+	:reset
+		echo Turning UAC back on...
+	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    echo,
+	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
-    echo Copying Performance Monitor logs...
-	
-	echo Command running: takeown /f c:\perfmon /r /d y
-	takeown /f c:\perfmon /r /d y
-	
-	echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-	echo ...Done!
-	echo,
-	
-	title CleanTech: Moving Log Files
-	echo Moving Log files
-	echo,
-	
-	echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
-	move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+	:userfinish
+	    color 6f
+	    echo ----------------------------------------------
+	    echo Chrome starting... Please install AdBlock Plus
+	    echo ----------------------------------------------
+	    start /wait C:\program/ files/ (x86)\Google\Chrome\Application\chrome.exe
 
-	echo Command running: move C:\ADW move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
-	move C:\ADW move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
-
-	title CleanTech: Removing Cleanup Files
-	echo Removing cleanup files...
-	echo,
-
-	echo Command running: logman delete -n TT-CleanUp
-	logman delete -n TT-CleanUp
-	echo,
-
-	echo Dumping postclean system info...
-	echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
-	msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
-	echo,
-
-	echo Turning UAC back on...
-    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-    echo,
-    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
-
-    color 6f
-    echo ----------------------------------------------
-    echo Chrome starting... Please install AdBlock Plus
-    echo ----------------------------------------------
-    start /wait C:\program/ files/ (x86)\Google\Chrome\Application\chrome.exe
-
-    echo -------------------------------------------------
-    echo msconfig starting... Please check startup entries
-    echo -------------------------------------------------
-    start /wait msconfig
-    rem REPLACE THIS WITH NIRCMD
+	    echo -------------------------------------------------
+	    echo msconfig starting... Please check startup entries
+	    echo -------------------------------------------------
+	    start /wait msconfig
+	    rem REPLACE THIS WITH NIRCMD
 	
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
