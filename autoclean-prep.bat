@@ -30,11 +30,11 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 :--------------------------------------
+    
+    SETLOCAL EnableDelayedExpansion
     color 1f
     mode 100,35
 	title TechTutor's Clean Up Script - Prep Stage
- 
-    SETLOCAL EnableDelayedExpansion
 	
 	cls
 	
@@ -50,17 +50,6 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 	
-	set workingdir=c:%HOMEPATH%\Desktop\techtemp
-	mkdir %workingdir%
-	echo cd %workingdir%
-	cd %workingdir%
-
-	echo copy /y NUL autoclean-prep >NUL
-	echo,
-
-	copy /y NUL autoclean-prep >NUL
-	pause
-	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
 	
@@ -72,91 +61,138 @@ if '%errorlevel%' NEQ '0' (
         )
     )
 
-    rem NOTE: Might want to run a command to copy current value...
-    echo Turning off UAC temporarily...
-    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-    echo,
+    :disableav
+    	color 6f
+    	echo -----------------------------------------------------------------------
+    	echo Please check for running av and disable real-time features temporarily.
+    	echo Press any key when you've finished to continue.
+    	echo -----------------------------------------------------------------------
+    	pause
+    	color 1f
 	
-	:clientname
-	color 6f
-	echo,
-	set input=
-	set /p firstname="Client's first name: "
-	set /p lastname="Client's Last name: "
-	echo,
-	:clientnameconfirm
-	set /p input=You entered: %firstname% %lastname%. Is this correct? (y/n) %=%
-	if /i %input%==y goto :clientnamegood
-	if /i %input%==n goto :clientname
-	echo Incorrect input. & goto :clientnameconfirm
-	
-	:clientnamegood
-	
-	:avira
-	echo,
-	set av=
-	set /p av="Does the client need Avira installed? (y/n): "
+	:clientinfo
+		color 6f
+		echo ------------------------
+		echo Please enter client info
+		echo ------------------------
+		echo,
+		:clientname
+			set input=
+			set /p firstname="Client's first name: "
+			set /p lastname="Client's Last name: "
+			echo,
+		:clientnameconfirm
+			set /p input="You entered: %firstname% %lastname%. Is this correct? (y/n): "
+			rem %=%
+			if /i %input%==y goto :clientnamegood
+			if /i %input%==n goto :clientname
+		echo Incorrect input. & goto :clientnameconfirm
 
-	:aviraconfirm
-	if /i %av%==y goto :netmap
-	if /i %av%==n goto :netmap
-	echo Incorrect input. & goto :avira
+		:clientnamegood
+
+		:passquestion
+			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
+
+			if /i %passq%==y goto :passwordneeded
+			if /i %passq%==n goto :avira
+			echo Incorrect input. & goto :passquestion
+
+		:passwordneeded
+			set /p password="Please enter the password for %USERNAME%: "
+			if /i %password%=="" echo You didn't enter anything! *Sigh* Try again... & goto :passwordneeded
+
+			:passconfirm
+			echo You entered: %password%
+			set /p passconfirm="Is this correct? (y/n): "
+
+			if /i %passcofirm%==y goto :avira
+			if /i %passconfirm%==n goto :passwordneeded
+			echo Incorrect input. & goto :passconfirm
+	
+		:avira
+			echo,
+			set av=
+			set /p av="Does the client need Avira installed? (y/n): "
+
+		:aviraconfirm
+			if /i %av%==y goto :netmap
+			if /i %av%==n goto :netmap
+			echo Incorrect input. & goto :avira
 
 	:netmap
-	color 1f
-	echo Mapping Beast Documents folder to drive letter %netletter%
-	echo,
+		color 1f
+		echo Mapping Beast Documents folder to drive letter %netletter%
+		echo,
 
-    echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-	net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
-	echo,
+    	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
+		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
+		echo,
 
-	echo Network drive mapped to %netletter%
-	echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
-	echo,
-	
-	echo Command running: mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-	mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-	echo,
-	
-	echo Dumping preclean system info...
-	echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
-	msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
-	echo,
-	
-	echo Copying automation files to %workingdir%
-	echo,
-	echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
-	robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
+		echo Network drive mapped to %netletter%
+		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
+		echo,
 
-	echo Importing perfmon xml...
-	echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
-	echo,
-	logman import -n TT-CleanUp -xml CleanUp-Test.xml
+	:cleanupfilesprep
+		set workingdir=c:%HOMEPATH%\Desktop\techtemp
+		mkdir %workingdir%
+		echo cd %workingdir%
+		cd %workingdir%
 
-    echo Starting Performance Monitor. Please wait...
-	echo,
-	
-	echo Command running: logman start TT-CleanUp
-	logman start TT-CleanUp
+		echo copy /y NUL autoclean-prep >NUL
+		echo,
 
-	echo Waiting for perfmon to finish...
-    echo timeout 120
-	timeout 120
-	color 6f & pause & color 1f
+		copy /y NUL autoclean-prep >NUL
+		pause
 
-	echo Adding next stage to Startup...
-	echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-	echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo Copying automation files to %workingdir%
+		echo,
+		echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
+		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
-	rem Removing autoclean-start flag file
-	echo Command running: del autoclean-prep
-	echo,
-	del autoclean-prep
-	rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
+	:registryprep
+	    echo Turning off UAC temporarily...
+	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    echo,
 
-	echo Starting BootTimer. Prepare for reboot...
-	echo Command running: %workingdir%/boottimer.exe
-	echo,
-	%workingdir%/boottimer.exe
+	:systeminfo
+		echo Command running: mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		echo,
+		
+		echo Dumping preclean system info...
+		echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
+		msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
+		echo,
+
+		echo Importing perfmon xml...
+		echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
+		echo,
+		logman import -n TT-CleanUp -xml CleanUp-Test.xml
+
+	    echo Starting Performance Monitor. Please wait...
+		echo,
+		
+		echo Command running: logman start TT-CleanUp
+		logman start TT-CleanUp
+
+		echo Waiting for perfmon to finish...
+	    echo timeout 120
+		timeout 120
+		color 6f & pause & color 1f
+
+	:nextstageprep
+		echo Adding next stage to Startup...
+		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+
+		rem Removing autoclean-start flag file
+		echo Command running: del autoclean-prep
+		echo,
+		del autoclean-prep
+		rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
+
+		echo Starting BootTimer. Prepare for reboot...
+		echo Command running: %workingdir%/boottimer.exe
+		echo,
+		%workingdir%/boottimer.exe
