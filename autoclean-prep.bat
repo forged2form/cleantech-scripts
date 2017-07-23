@@ -161,7 +161,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo,
 
 	    echo Saving current AutoLogin values
-	    REG export HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon %workingdir%\Preclean-Winlogon.reg
+	    REG export "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 	    echo,
 
 	    echo Setting autologin for CleanTech session...

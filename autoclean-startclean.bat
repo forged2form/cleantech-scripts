@@ -64,7 +64,7 @@ color 4f
 		rem tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
 		rem if "%ERRORLEVEL%"=="0" echo Program is running
 		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
-		@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq New Folder"') do @if %A==INFO echo Prog not running
+	rem	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq New Folder"') do @if %A==INFO echo Prog not running
 		pause
 		rem ADD nircmd win activate "CleanTech: Boottimer"
 		echo Grabbing number from dialog box...
