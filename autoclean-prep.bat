@@ -128,8 +128,6 @@ if '%errorlevel%' NEQ '0' (
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 
-		rem ADD logic to test for ERROR re: wrong password
-
 		color 1f
 		echo Network drive mapped to %netletter%
 		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
@@ -153,12 +151,23 @@ if '%errorlevel%' NEQ '0' (
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
 	:registryprep
-	    rem ADD: backup autologin entries
-	    rem ADD: backup shell entry
+		echo Saving current UAC values
+		REG EXPORT HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
+		echo,
 
 	    echo Turning off UAC temporarily...
 	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    echo,
+
+	    echo Saving current AutoLogin values
+	    REG export HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon %workingdir%\Preclean-Winlogon.reg
+	    echo,
+
+	    echo Setting autologin for CleanTech session...
+	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 	    echo,
 
 	:systeminfo

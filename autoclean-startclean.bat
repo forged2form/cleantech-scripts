@@ -64,6 +64,7 @@ color 4f
 		rem tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
 		rem if "%ERRORLEVEL%"=="0" echo Program is running
 		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
+		@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq New Folder"') do @if %A==INFO echo Prog not running
 		pause
 		rem ADD nircmd win activate "CleanTech: Boottimer"
 		echo Grabbing number from dialog box...
@@ -73,11 +74,10 @@ color 4f
 		pause
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-
+		echo Killing BootTimer.exe's chrome process
+		taskkill /im chrome.exe
+		pause
 		cls & color 1f
-
-	rem echo Killing BootTimer.exe's chrome process
-rem	taskkill /im chrome.exe
 
 	:echostrings
 	echo -----------------------
@@ -156,9 +156,6 @@ rem	taskkill /im chrome.exe
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 	del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
-	rem Save current shell key first...
-	echo Command running: reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell" %workingdir%\SavedShell.reg
-	reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell" %workingdir%\SavedShell.reg
 	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
 	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat"
