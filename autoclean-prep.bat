@@ -34,7 +34,7 @@ if '%errorlevel%' NEQ '0' (
     SETLOCAL EnableDelayedExpansion
     color 1f
     mode 100,35
-	title TechTutor's Clean Up Script - Prep Stage
+	title CleanTech: Prep Stage
 	
 	cls
 	
@@ -103,6 +103,7 @@ if '%errorlevel%' NEQ '0' (
 
 			:passconfirm
 			echo You entered: %password%
+			set passconfirm=
 			set /p passconfirm="Is this correct? (y/n): "
 
 			if /i %passconfirm%==y goto :avira
@@ -134,7 +135,7 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 	:cleanupfilesprep
-		set workingdir=c:%HOMEPATH%\Desktop\techtemp
+		set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
 		mkdir %workingdir%
 		echo cd %workingdir%
 		cd %workingdir%
@@ -166,8 +167,13 @@ if '%errorlevel%' NEQ '0' (
 
 		    echo Saving current AutoLogin values
 		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :setautologin
-		    REG export "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
+		    echo reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+		    reg query "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+		    pause
+		    echo REG EXPORT "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\" %workingdir%\Preclean-Winlogon.reg
+		    REG EXPORT "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\" %workingdir%\Preclean-Winlogon.reg
 		    echo,
+		    pause
 
 	    :setautologin
 		    echo Setting autologin for CleanTech session...

@@ -33,7 +33,7 @@ if '%errorlevel%' NEQ '0' (
 
 	color 1f
     mode 100,35
-	title CleanTech - Wrap Up
+	title CleanTech: Wrap Up
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -51,7 +51,7 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 
-	set workingdir=C:\%USERPATH%\Desktop\techtemp\
+	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
 	cd %workingdir%
 
@@ -72,14 +72,14 @@ if '%errorlevel%' NEQ '0' (
 	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
 
 	:echostrings
-		echo -----------------------
+		echo --------------------------------------
 		echo Client Info:
 		echo Last Name: %1
 		echo First name: %2
 		echo Date: %3
 		echo AV needed?: %4
 		echo Ninite Installer: %ninite%
-		echo -----------------------
+		echo --------------------------------------
 		echo,
 		
 		pause
@@ -149,8 +149,8 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 		move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
-		echo Command running: move C:\ADW move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
-		move C:\ADW move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		echo Command running: move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
@@ -172,7 +172,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo ----------------------------------------------
 	    echo Chrome starting... Please install AdBlock Plus
 	    echo ----------------------------------------------
-	    start /wait C:\program/ files/ (x86)\Google\Chrome\Application\chrome.exe
+	    start /wait "C:\program files (x86)\Google\Chrome\Application\chrome.exe"
 
 	    echo -------------------------------------------------
 	    echo msconfig starting... Please check startup entries

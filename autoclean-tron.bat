@@ -28,7 +28,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
     color 1f
     mode 100,35
-	title TechTutor's Clean Up Script - Prep Stage
+	title CleanTech: Tron
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -46,7 +46,7 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 	
-	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
 	mkdir %workingdir%
 	echo cd %workingdir%
 	cd %workingdir%
@@ -76,8 +76,12 @@ if '%errorlevel%' NEQ '0' (
 	bcdedit /deletevalue {default} safeboot
 	echo,
 
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	pause
+
 	echo Setting next stage batch file
 	echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 	pause
 
-	shutdown /r /t 0
+	shutdown /r /t 5

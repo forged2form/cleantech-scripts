@@ -30,7 +30,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 4f
     mode 100,35
-	title TechTutor's Clean Up Script - Start Clean
+	title CleanTech: Start Clean
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -48,8 +48,8 @@ color 4f
 	echo %horiz_line%
 	echo,
 
-	echo Command running: set workingdir=c:%HOMEPATH%\Desktop\techtemp
-	set workingdir=c:%HOMEPATH%\Desktop\techtemp
+	echo Command running: set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
+	set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
 	echo Command running: cd %workingdir%
 	cd %workingdir%
 	echo,
@@ -80,6 +80,7 @@ color 4f
 		pause
 		cls & color 1f
 
+	title CleanTech: Start Clean
 	:echostrings
 	echo -----------------------
 	echo Client Info:
@@ -92,17 +93,16 @@ color 4f
 
 	pause & color 6f
 
-	echo if EXIST autoclean-adw goto :PCD
+	echo if EXIST autoclean-adw goto :pcd
 	pause
-	if EXIST autoclean-adw goto :PCD
-	echo if NOT EXIST autoclean-startclean goto :noflagfile
+	if EXIST autoclean-adw goto :pcd
+	echo if EXIST autoclean-startclean goto :adw
 	pause
 	if EXIST autoclean-startclean goto :adw
 	
 	:noflagfile
 	color 1f
 	echo at :noflagfile
-	rem creating autoclean-start 'flag' file for next scripts to test for sucessful completion of this script
 	echo copy /y NUL autoclean-startclean >NUL
 	echo,
 	copy /y NUL autoclean-startclean >NUL
@@ -110,7 +110,7 @@ color 4f
 	goto adw
 
 	:adw
-	echo at :adw
+	echo At :adw
 	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
@@ -121,7 +121,7 @@ color 4f
 	echo,
 	copy /y NUL autoclean-adw >NUL
 
-	:PCD
+	:pcd
 	echo Command running: del autoclean-adw
 	del autoclean-adw
 	echo,
@@ -160,7 +160,7 @@ color 4f
 	echo,
 	echo If tron does not start after reboot,
 	echo please launch Tron using autoclean-tron.bat
-	echo from the techtemp directory on the Desktop
+	echo from the CleanTechTemp directory on the Desktop
 	echo,
 	pause
 
