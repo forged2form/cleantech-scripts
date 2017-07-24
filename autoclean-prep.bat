@@ -92,7 +92,7 @@ if '%errorlevel%' NEQ '0' (
 
 		:checkautologin
 			set autoadminloonenabled=0
-			reg query "HKEY_LOCAL_MACHINE\SOFTWAR\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
+			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
 			if errorlevel 0 set autoadminloonenabled=1
 			goto :avira
 
@@ -185,7 +185,7 @@ if '%errorlevel%' NEQ '0' (
 
 			:autologoncheck
 		    	if autoadminloonenabled==1 goto :systeminfo
-		    	
+
 		    :setautologin
 			    echo Setting autologin for CleanTech session...
 			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
