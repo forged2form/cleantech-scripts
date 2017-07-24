@@ -146,10 +146,10 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 		
-		echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
+		echo Command running: move C:\Logs\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 		move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
 
-		echo Command running: move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		echo Command running: move C:\Adw\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 		move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
 		title CleanTech: Removing Cleanup Files
