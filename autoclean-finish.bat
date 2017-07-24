@@ -168,8 +168,8 @@ if '%errorlevel%' NEQ '0' (
 		logman delete -n TT-CleanUp
 		echo,
 
-		echo Command running: del C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat
-		del C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat
+		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		pause
 
 	:reset
@@ -188,13 +188,14 @@ if '%errorlevel%' NEQ '0' (
 	    echo ----------------------------------------------
 	    echo Chrome starting... Please install AdBlock Plus
 	    echo ----------------------------------------------
-	    start /wait "C:\program files (x86)\Google\Chrome\Application\chrome.exe"
+	    start /wait "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
-	    echo -------------------------------------------------
-	    echo msconfig starting... Please check startup entries
-	    echo -------------------------------------------------
-	    start /wait msconfig
-	    rem REPLACE THIS WITH NIRCMD
+	    echo ------------------------------------------------------
+	    echo WhatInStartup starting... Please check startup entries
+	    echo ------------------------------------------------------
+	    start /wait %/workingdir%/whatinstartup/WhatInStartup.exe
+		
+		pause
 	
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
