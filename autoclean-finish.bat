@@ -147,11 +147,17 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 		
+		echo Command running: move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		
+		echo Command running: move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		
 		echo Command running: takeown /f c:\Logs /r /d y
 		takeown /f c:\Logs /r /d y
 		echo Command running: robocopy /s C:\Logs\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		pause
-		robocopy /s /r C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 		
 	rem	echo Command running: takeown /f c:\ADW /r /d y
@@ -174,14 +180,13 @@ if '%errorlevel%' NEQ '0' (
 
 	:reset
 		echo Turning UAC back on...
-	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 	    echo,
-	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
+	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
 	    echo Removing AutoLogon
-	    REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-		REG DELETE "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 0 /f
+		REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
+	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 
 	:userfinish
 	    color 6f
@@ -193,10 +198,10 @@ if '%errorlevel%' NEQ '0' (
 	    echo ------------------------------------------------------
 	    echo WhatInStartup starting... Please check startup entries
 	    echo ------------------------------------------------------
-	    start /wait %/workingdir%/whatinstartup/WhatInStartup.exe
+	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
 		
 		pause
-	
+	cd %homepath%
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
 	pause
