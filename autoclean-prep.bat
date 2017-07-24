@@ -156,30 +156,30 @@ if '%errorlevel%' NEQ '0' (
 		IF EXIST %workingdir%\Preclean-Policies_System.reg goto :uac-reg
 
 		:policies-system
-			REG EXPORT HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
+			REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
 			echo,
 
 		:uac-reg
 		    echo Turning off UAC temporarily...
-		    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-		    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+		    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+		    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 		    echo,
 
 		    echo Saving current AutoLogin values
 		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :setautologin
-		    echo reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    reg query "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\"
 		    pause
-		    echo REG EXPORT "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\" %workingdir%\Preclean-Winlogon.reg
-		    REG EXPORT "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\" %workingdir%\Preclean-Winlogon.reg
+		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
+		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 		    echo,
 		    pause
 
 	    :setautologin
 		    echo Setting autologin for CleanTech session...
-		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-		   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 		    echo,
 
 	:systeminfo
