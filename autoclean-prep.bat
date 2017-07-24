@@ -93,8 +93,7 @@ if '%errorlevel%' NEQ '0' (
 		:checkautologin
 			set autoadminloonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if errorlevel 0 set autoadminloonenabled=1
-			goto :avira
+			if errorlevel 0 set autoadminloonenabled=1 & goto :avira
 
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
