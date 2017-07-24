@@ -90,6 +90,12 @@ if '%errorlevel%' NEQ '0' (
 
 		:clientnamegood
 
+		:checkautologin
+			set autoadminloonenabled=0
+			reg query "HKEY_LOCAL_MACHINE\SOFTWAR\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
+			if errorlevel 0 set autoadminloonenabled=1
+			goto :avira
+
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 
@@ -165,22 +171,27 @@ if '%errorlevel%' NEQ '0' (
 		    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 		    echo,
 
-		    echo Saving current AutoLogin values
-		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :setautologin
+		    
+		:autologon
+		    echo Saving current AutoLogon values
+		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :autologoncheck
 		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-		    reg query "HLKM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+		    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    pause
 		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 		    echo,
 		    pause
 
-	    :setautologin
-		    echo Setting autologin for CleanTech session...
-		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
-		    echo,
+			:autologoncheck
+		    	if autoadminloonenabled==1 goto :systeminfo
+		    	
+		    :setautologin
+			    echo Setting autologin for CleanTech session...
+			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+			    echo,
 
 	:systeminfo
 		echo Command running: mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
