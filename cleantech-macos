@@ -1,0 +1,30 @@
+#!/bin/bash
+clear
+echo -------------------------
+echo CleanTech - macOS Edition
+echo -------------------------
+
+DATE=`date +%Y-%m-%d`
+
+echo Client Details...
+read -p "First Name: " firstname
+read -p "Last Name: " lastname
+
+echo Mounting BEAST Network Share...
+NetDir="${HOME}/Desktop/BeastMap"
+echo $NetDir
+cd ${HOME}/Desktop/
+if [ ! -d $NetDir ] ; then
+	mkdir $NetDir
+	mount -t smbfs //techtutors@BEAST/Documents $NetDir
+	echo Mapped BEAST Network Share to $NetDir
+else
+	echo $NetDir exists!
+	mount -t smbfs //techtutors@BEAST/Documents $NetDir
+	echo Mapped BEAST Network Share to $NetDir
+fi
+
+echo
+echo Dumping Pre-clean System Info... This might take a little while.
+system_profiler -detaillevel full -xml > "$NetDir/Sysinfo Dumps/$lastname-$firstname-preclean-$DATE.spx"
+echo

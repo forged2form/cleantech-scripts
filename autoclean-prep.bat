@@ -5,6 +5,8 @@ rem ------------------
 rem crappy to do list follows...
 rem add test for null entries
 rem add test for network connectivity (eth & BEAST access)
+rem look into ability to drag and drop text file or csv with client data,
+rem (e.g. name, av needed, password)
 
 @echo off
 :: BatchGotAdmin 
