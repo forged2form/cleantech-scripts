@@ -2,10 +2,6 @@ rem --------------------
 rem AUTOCLEAN-FINISH.BAT
 rem --------------------
 
-echo copy /y NUL autoclean-finish >NUL
-echo,
-copy /y NUL autoclean-finish >NUL
-
 @echo off
 :: BatchGotAdmin 
 :-------------------------------------
@@ -54,6 +50,10 @@ if '%errorlevel%' NEQ '0' (
 	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
 	cd %workingdir%
+	
+	echo copy /y NUL autoclean-finish >NUL
+	echo,
+	copy /y NUL autoclean-finish >NUL
 
 	echo Setting client info variables
 	set lastname=%1
@@ -147,11 +147,23 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 		
-		echo Command running: move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
-		move C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\"
-
-		echo Command running: move C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
-		move C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		echo Command running: move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		
+		echo Command running: move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		
+		echo Command running: takeown /f c:\Logs /r /d y
+		takeown /f c:\Logs /r /d y
+		echo Command running: robocopy /s C:\Logs\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		pause
+		robocopy /s C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		echo,
+		
+	rem	echo Command running: takeown /f c:\ADW /r /d y
+	rem	takeown /f c:\ADW /r /d y
+	rem	echo Command running: robocopy /s C:\Adw\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs"
+	rem	robocopy /s C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs"
 
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
@@ -162,34 +174,34 @@ if '%errorlevel%' NEQ '0' (
 		logman delete -n TT-CleanUp
 		echo,
 
-		echo Command running: del C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat
-		del C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat
+		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		pause
 
 	:reset
 		echo Turning UAC back on...
-	    echo Command running: REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+	    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
 	    echo,
-	    REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
+	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
 	    echo Removing AutoLogon
-	    REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-		REG DELETE "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-	   	REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 0 /f
+		REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
+	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 
 	:userfinish
 	    color 6f
 	    echo ----------------------------------------------
 	    echo Chrome starting... Please install AdBlock Plus
 	    echo ----------------------------------------------
-	    start /wait "C:\program files (x86)\Google\Chrome\Application\chrome.exe"
+	    start /wait "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
-	    echo -------------------------------------------------
-	    echo msconfig starting... Please check startup entries
-	    echo -------------------------------------------------
-	    start /wait msconfig
-	    rem REPLACE THIS WITH NIRCMD
-	
+	    echo ------------------------------------------------------
+	    echo WhatInStartup starting... Please check startup entries
+	    echo ------------------------------------------------------
+	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
+		
+		pause
+	cd %homepath%
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
 	pause

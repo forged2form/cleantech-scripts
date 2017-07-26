@@ -93,9 +93,9 @@ if '%errorlevel%' NEQ '0' (
 		:clientnamegood
 
 		:checkautologin
-			set autoadminloonenabled=0
+			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if errorlevel 0 set autoadminloonenabled=1 & goto :avira
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & pause & goto :avira) || goto :passquestion
 
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
@@ -185,7 +185,7 @@ if '%errorlevel%' NEQ '0' (
 		    pause
 
 			:autologoncheck
-		    	if autoadminloonenabled==1 goto :systeminfo
+		    	if /i %autoadminlogonenabled%==1 goto :systeminfo
 
 		    :setautologin
 			    echo Setting autologin for CleanTech session...
