@@ -68,8 +68,8 @@ color 4f
 		pause
 		%workingdir%/nircmd/nircmd win settopmost title "CleanTech: Boottimer" 1
 		echo Grabbing number from dialog box...
-		echo Command running: %workingdir%\sysexp.exe /process BootTimer.exe %workingdir%\%1-%2-%3-BootTimer.txt
-		%workingdir%\sysexp.exe /process boottimer.exe /stext %workingdir%\%1-%2-%3-BootTimer.txt
+		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILTY" %workingdir%\%1-%2-%3-BootTimer.txt
+		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /stext %workingdir%\%1-%2-%3-BootTimer.txt
 		echo,
 		pause
 		taskkill /im BootTimer.exe /t
