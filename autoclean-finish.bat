@@ -123,8 +123,16 @@ if '%errorlevel%' NEQ '0' (
 		echo Starting Performance Monitor. Please wait... 
 		echo,
 		
-		echo logman start TT-CleanUp
-		logman start TT-CleanUp
+		echo Importing perfmon xml...
+		echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+		echo,
+		logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+
+	    echo Starting Performance Monitor. Please wait...
+		echo,
+		
+		echo Command running: logman start CleanTech-PreCleanTest
+		logman start CleanTech-PostCleanTest
 
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
@@ -135,10 +143,10 @@ if '%errorlevel%' NEQ '0' (
 	    echo Copying Performance Monitor logs...
 		
 		echo Command running: takeown /f c:\perfmon /r /d y
-		takeown /f c:\perfmon /r /d y
+		takeown /f C:\CleanTech\ /r /d y
 		
-		echo robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-		robocopy /s C:\perfmon "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		echo robocopy /s C:\CleanTech\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		robocopy /s C:\CleanTech\"%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 		echo ...Done!
 		echo,
 	
@@ -170,9 +178,14 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 		pause
 
-		echo Command running: logman delete -n TT-CleanUp
-		logman delete -n TT-CleanUp
+		echo Command running: logman delete -n CleanTech-PostCleanTest
+		logman delete -n CleanTech-PostCleanTest
 		echo,
+
+		echo Command running: logman delete -n CleanTech-PreCleanTest
+		logman delete -n CleanTech-PreCleanTest
+		echo,
+
 
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"

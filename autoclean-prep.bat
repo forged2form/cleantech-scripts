@@ -212,15 +212,15 @@ set av=
 		echo,
 
 		echo Importing perfmon xml...
-		echo logman import -n TT-CleanUp -xml CleanUp-Test.xml
+		echo logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
 		echo,
-		logman import -n TT-CleanUp -xml CleanUp-Test.xml
+		logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
 
 	    echo Starting Performance Monitor. Please wait...
 		echo,
 		
-		echo Command running: logman start TT-CleanUp
-		logman start TT-CleanUp
+		echo Command running: logman start CleanTech-PreCleanTest
+		logman start CleanTech-PreCleanTest
 
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
