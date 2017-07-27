@@ -190,10 +190,10 @@ if '%errorlevel%' NEQ '0' (
 
 	:userfinish
 	    color 6f
-	    echo ----------------------------------------------
-	    echo Chrome starting... Please install AdBlock Plus
-	    echo ----------------------------------------------
-	    start /wait "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+	    echo -------------------------------------------------------
+	    echo Default browser starting... Please install AdBlock Plus
+	    echo -------------------------------------------------------
+	    start /wait http://adblockplus.org
 
 	    echo ------------------------------------------------------
 	    echo WhatInStartup starting... Please check startup entries
