@@ -78,6 +78,8 @@ color 4f
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
 		pause
+		echo Killing BootTimer.exe's command window
+		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
 		cls & color 1f
 
 	title CleanTech: Start Clean

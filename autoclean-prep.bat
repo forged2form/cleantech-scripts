@@ -20,6 +20,13 @@ if '%errorlevel%' NEQ '0' (
     goto UACPrompt
 ) else ( goto gotAdmin )
 
+:initializeVars
+set netletter=
+set lastname=
+set firstname=
+set input=
+set av=
+
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
@@ -64,13 +71,13 @@ if '%errorlevel%' NEQ '0' (
     )
 
     :disableav
-    	color 6f
+    	color 4f
+    	echo IMPORTANT
     	echo -----------------------------------------------------------------------
     	echo Please check for running av and disable real-time features temporarily.
     	echo Press any key when you've finished to continue.
     	echo -----------------------------------------------------------------------
     	pause
-    	color 1f
 	
 	:clientinfo
 		color 6f
