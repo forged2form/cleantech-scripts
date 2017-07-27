@@ -168,7 +168,7 @@ set av=
 	:registryprep
 
 		:restorepoint
-			Creating Pre-Clean restore point...
+			echo Creating Pre-Clean restore point...
 			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" %workingdir%\PreClean-SystemRestore.reg
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
