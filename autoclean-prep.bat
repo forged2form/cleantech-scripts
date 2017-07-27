@@ -166,18 +166,29 @@ set av=
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
 	:registryprep
-		echo Saving current UAC values
-		IF EXIST %workingdir%\Preclean-Policies_System.reg goto :uac-reg
 
-		:policies-system
-			REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
-			echo,
+		:restorepoint
+			Creating Pre-Clean restore point...
+			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" %workingdir%\PreClean-SystemRestore.reg
+			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
+			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
+			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
+			pause
+			
+		:uac
+			echo Saving current UAC values
 
-		:uac-reg
-		    echo Turning off UAC temporarily...
-		    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-		    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-		    echo,
+			IF EXIST %workingdir%\Preclean-Policies_System.reg goto :uac-reg
+
+			:policies-system
+				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
+				echo,
+
+			:uac-reg
+			    echo Turning off UAC temporarily...
+			    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+			    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+			    echo,
 
 		    
 		:autologon

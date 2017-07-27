@@ -191,6 +191,11 @@ if '%errorlevel%' NEQ '0' (
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		pause
 
+	:restorepoint
+		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
+		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
+		pause
+		
 	:reset
 		echo Turning UAC back on...
 	    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
