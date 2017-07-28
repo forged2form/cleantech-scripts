@@ -73,6 +73,9 @@ if '%errorlevel%' NEQ '0' (
 
 	color 1f
 
+	:nir
+		%workingdir%\nircmd\nircmd.exe win min process explorer.exe
+
 	:starttron
 		echo Starting Tron...
 		START /WAIT %workingdir%\Tron\tron\Tron.bat -e -str -sdb -sdc
