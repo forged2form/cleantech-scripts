@@ -52,7 +52,7 @@ if '%errorlevel%' NEQ '0' (
 	cd %workingdir%
 
 	chillout=rem nothing to see here
-	if defined %5 set chillout=%5 else goto:drivelettertest
+	if defined %5 set chillout=%5 else goto:echostrings
 
 	:echostrings
 		color E0

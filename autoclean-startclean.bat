@@ -55,7 +55,7 @@ color 4f
 	echo,
 
 	chillout=rem nothing to see here
-	if defined %5 set chillout=%5 else goto:drivelettertest
+	if defined %5 set chillout=%5 else goto:setwindow
 
 	:setwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"
@@ -105,7 +105,8 @@ color 4f
 	echo -----------------------
 	echo,
 
-	%chillout% & color E0
+	%chillout%
+	color E0
 
 	if EXIST autoclean-adw goto :pcd
 	if EXIST autoclean-startclean goto :adw
