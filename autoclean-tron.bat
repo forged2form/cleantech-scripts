@@ -51,6 +51,23 @@ if '%errorlevel%' NEQ '0' (
 	echo cd %workingdir%
 	cd %workingdir%
 
+	:: For now, this should live here until I find a more elegant solution to dealing with Tron glitches
+	:reboot-prep
+		echo Ensuring next boot is in normal mode...
+		echo bcdedit /deletevalue {default} safeboot
+		bcdedit /deletevalue {default} safeboot
+		echo,
+
+		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		%chillout%
+
+
+		:nextstage
+			echo Setting next stage batch file
+			echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+			%chillout%
+
 	chillout=rem nothing to see here
 	if defined %5 set chillout=%5 else goto:echostrings
 
@@ -80,19 +97,5 @@ if '%errorlevel%' NEQ '0' (
 		echo Starting Tron...
 		START /WAIT %workingdir%\Tron\tron\Tron.bat -a -str -sdb -sdc
 		echo,
-
-	:reboot-prep
-		echo Ensuring next boot is in normal mode...
-		echo bcdedit /deletevalue {default} safeboot
-		bcdedit /deletevalue {default} safeboot
-		echo,
-
-		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		%chillout%
-
-		echo Setting next stage batch file
-		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%chillout%
 
 	shutdown /r /t 0
