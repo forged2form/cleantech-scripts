@@ -65,6 +65,12 @@ if '%errorlevel%' NEQ '0' (
 		echo -----------------------
 		echo,
 
+		set lastname=%1
+		set firstname=%2
+		set FormattedDate=%3
+
+		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+
 	color 1f
 
 	:starttron
@@ -86,4 +92,4 @@ if '%errorlevel%' NEQ '0' (
 		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%chillout%
 
-	shutdown /r /t 5
+	shutdown /r /t 0

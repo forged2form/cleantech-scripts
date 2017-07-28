@@ -51,6 +51,12 @@ if '%errorlevel%' NEQ '0' (
 	echo cd %workingdir% 
 	cd %workingdir%
 
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+
+	set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+
 	%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Wrap Up"
 	
 	echo copy /y NUL autoclean-finish >NUL
@@ -111,6 +117,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:installutils
 		title CleanTech: Installing/Updating Utils
+		color E0
 		echo ---------------------------------------------
 		echo Launching Ninite. Please Close when finished.
 		echo ---------------------------------------------
@@ -123,8 +130,8 @@ if '%errorlevel%' NEQ '0' (
 		title CleanTech: Performance Test #2
 
 		echo Dumping postclean system info...
-		echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
-		msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+		echo Command running: msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
 		echo,
 
 		echo Starting Performance Monitor. Please wait... 
@@ -152,33 +159,27 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\perfmon /r /d y
 		takeown /f C:\CleanTech\ /r /d y
 		
-		echo robocopy /s C:\CleanTech\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-		robocopy /s C:\CleanTech\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		echo robocopy /s C:\CleanTech\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		robocopy /s C:\CleanTech\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 		echo ...Done!
 		echo,
 	
 	:files
-		title CleanTech: Moving Log Files
+		title CleanTech: Consolidating Log Files
 		echo Moving Log files
 		echo,
-		
-		echo Command running: move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		move %workingdir%\%1-%2-%3-BootTimer.txt "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		
-		echo Command running: move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		move %workingdir%\*.reg "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		
+
 		echo Command running: takeown /f c:\Logs /r /d y
 		takeown /f c:\Logs /r /d y
-		echo Command running: robocopy /s C:\Logs\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		echo Command running: robocopy /s C:\Logs\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%"
 		%chillout%
-		robocopy /s C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s C:\Logs "%clientdir%\%lastname%-%firstname%-%FormattedDate%"
 		echo,
-		
+
 		cho Command running: takeown /f c:\ADW /r /d y
 		takeown /f c:\ADW /r /d y
-		echo Command running: robocopy /s C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
-		robocopy /s C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		echo Command running: robocopy /s C:\Adw "%clientdir%\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		robocopy /s C:\ADW "%clientdir%\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
 		title CleanTech: ::oving Cleanup Files
 		echo ::oving cleanup files...
@@ -193,25 +194,9 @@ if '%errorlevel%' NEQ '0' (
 		logman delete -n CleanTech-PreCleanTest
 		echo,
 
-
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%chillout%
-
-	:restorepoint
-		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		%chillout%
-		
-	:reset
-		echo Turning UAC back on...
-	    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-	    echo,
-	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
-
-	    echo ::oving AutoLogon
-		REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
-	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 
 	:userfinish
 	    color E0
@@ -224,18 +209,13 @@ if '%errorlevel%' NEQ '0' (
 	    echo WhatInStartup starting... Please check startup entries
 	    echo ------------------------------------------------------
 	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
-		
-	cd %homepath%
-	echo Command running: rmdir %workingdir%
-	rmdir %workingdir% /s /q
-	%chillout%
 
-	cls
-	color 2f
-	echo ---------
-	echo All done!
-	echo ---------
-	echo,
-	echo Please take a moment to tidy up the Client's desktop. Thanks!
-	echo,
-	%chillout%
+	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		%chillout%
+
+		echo Setting next stage batch file
+		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		%chillout%
+
+	shutdown /r /t 0

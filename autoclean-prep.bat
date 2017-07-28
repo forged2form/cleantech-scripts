@@ -112,7 +112,6 @@ if '%errorlevel%' NEQ '0' (
 
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
-
 			if /i %passq%==y goto :passwordneeded
 			if /i %passq%==n goto :avira
 			echo Incorrect input. & goto :passquestion
@@ -155,10 +154,11 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 	:cleanupfilesprep
-		set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
+		set "workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp"
 		mkdir %workingdir%
 		echo cd %workingdir%
 		cd %workingdir%
+		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
 		echo copy /y NUL autoclean-prep >NUL
 		echo,
@@ -171,6 +171,10 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
+		echo Command running: mkdir clientdir
+		mkdir clientdir
+		echo,
+
 	:maxwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Prep Stage"
 
@@ -178,7 +182,7 @@ if '%errorlevel%' NEQ '0' (
 
 		:restorepoint
 			echo Creating Pre-Clean restore point...
-			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" %workingdir%\PreClean-SystemRestore.reg
+			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" clientdir\PreClean-SystemRestore.reg
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
 			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
@@ -187,10 +191,10 @@ if '%errorlevel%' NEQ '0' (
 		:uac
 			echo Saving current UAC values
 
-			IF EXIST %workingdir%\Preclean-Policies_System.reg goto :uac-reg
+			IF EXIST "%clientdir%\Preclean-Policies_System.reg" goto :uac-reg
 
 			:policies-system
-				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %workingdir%\Preclean-Policies_System.reg
+				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %clientdir%\Preclean-Policies_System.reg
 				echo,
 
 			:uac-reg
@@ -202,12 +206,12 @@ if '%errorlevel%' NEQ '0' (
 		    
 		:autologon
 		    echo Saving current AutoLogon values
-		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :autologoncheck
+		    IF EXIST "%clientdir%\Preclean-Winlogon.reg" goto :autologoncheck
 		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    %chillout%
-		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
-		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
+		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg"
+		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg"
 		    echo,
 		    %chillout%
 
@@ -222,13 +226,9 @@ if '%errorlevel%' NEQ '0' (
 			    echo,
 
 	:systeminfo
-		echo Command running: mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		echo,
-		
 		echo Dumping preclean system info...
-		echo Command running: msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
-		msinfo32 /nfo "%netletter%\Sysinfo Dumps\%lastname%-%firstname%-preclean-%FormattedDate%.nfo"
+		echo Command running: msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-preclean-systeminfo-%FormattedDate%.nfo"
+		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-preclean-systeminfo-%FormattedDate%.nfo"
 		echo,
 
 		echo Importing perfmon xml...

@@ -54,11 +54,28 @@ color 4f
 	cd %workingdir%
 	echo,
 
+	:echostrings
+		echo -----------------------
+		echo Client Info:
+		echo Last Name: %1
+		echo First name: %2
+		echo Date: %3
+		echo AV needed?: %4
+		echo -----------------------
+		echo,
+
+		set lastname=%1
+		set firstname=%2
+		set FormattedDate=%3
+
+		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+
+
 	chillout=rem nothing to see here
 	if defined %5 set chillout=%5 else goto:setwindow
 
 	:setwindow
-		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"
+		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Start Clean"
 		%workingdir%\nircmd\nircmd.exe win settopmost title "CleanTech - Start Clean" 1
 
 	:boottimer
@@ -80,8 +97,8 @@ color 4f
 		:grabnumber
 		%chillout%
 		echo Grabbing number from dialog box...
-		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
-		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
+		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
+		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer-Preclean.txt"
 		echo,
 		%chillout%
 		taskkill /im BootTimer.exe /t
@@ -95,15 +112,6 @@ color 4f
 		cls & color 1f
 
 	title CleanTech - Start Clean
-	:echostrings
-	echo -----------------------
-	echo Client Info:
-	echo Last Name: %1
-	echo First name: %2
-	echo Date: %3
-	echo AV needed?: %4
-	echo -----------------------
-	echo,
 
 	%chillout%
 	color E0
@@ -144,7 +152,8 @@ color 4f
 	echo ---------------------------------------------------------
 	echo Please use PC Decrapifier to analyze and Remove bloatware
 	echo ---------------------------------------------------------
-	%chillout%
+	echo,
+	pause
 	color 1f
 
 	:: Removing autoclean-start flag file
