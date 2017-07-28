@@ -190,14 +190,24 @@ if '%errorlevel%' NEQ '0' (
 	    echo ------------------------------------------------------
 	    echo WhatInStartup starting... Please check startup entries
 	    echo ------------------------------------------------------
-	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
+	    start /wait %workingdir%\whatinstartup\WhatInStartup.exe
 
 	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		%chillout%
 
+		echo Command running: del %workingdir%\autoclean-finish
+		del %workingdir%\autoclean-finish
+
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo %workingdir%\autoclean-reallyfinish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		%chillout%
+
+		echo Starting BootTimer. Prepare for reboot...
+		echo Command running: %workingdir%\boottimer.exe
+		echo,
+		%workingdir%\boottimer.exe
+		timeout 5
+		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
 
 	shutdown /r /t 0

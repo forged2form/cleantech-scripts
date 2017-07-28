@@ -162,9 +162,9 @@ color 4f
 	color 1f
 
 	:: Removing autoclean-start flag file
-	echo del autoclean-startclean
+	echo del %workingdir%\autoclean-startclean
 	echo,
-	del autoclean-startclean
+	del %workingdir%\autoclean-startclean
 
 	:: Swapping startup batch files
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"

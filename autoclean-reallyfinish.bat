@@ -53,9 +53,9 @@ if '%errorlevel%' NEQ '0' (
 
 	%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Really Finish"
 	
-	echo copy /y NUL autoclean-finish >NUL
+	echo copy /y NUL autoclean-reallyfinish >NUL
 	echo,
-	copy /y NUL autoclean-finish >NUL
+	copy /y NUL autoclean-reallyfinish >NUL
 
 	echo Setting client info variables
 	set lastname=%1
