@@ -134,6 +134,7 @@ color 4f
 	goto adw
 
 	:adw
+	color E0
 	echo At :adw
 	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
@@ -149,11 +150,10 @@ color 4f
 	echo Command running: del autoclean-adw
 	del autoclean-adw
 	echo,
-
+	color E0
 	echo Launching PC Decrapifier.....
 	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
-	color E0
 	echo ---------------------------------------------------------
 	echo Please use PC Decrapifier to analyze and Remove bloatware
 	echo ---------------------------------------------------------
