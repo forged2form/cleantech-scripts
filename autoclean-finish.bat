@@ -131,7 +131,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo Starting Performance Monitor. Please wait...
 		echo,
 		
-		echo Command running: logman start CleanTech-PreCleanTest
+		echo Command running: logman start CleanTech-PostCleanTest
 		logman start CleanTech-PostCleanTest
 
 		echo Waiting for perfmon to finish...
