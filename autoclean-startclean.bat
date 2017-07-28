@@ -91,14 +91,19 @@ color 4f
 		::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 		
 		:waitfortext
-		tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY" |find ":" > nul
-		if %ERRORLEVEL%==0 goto :grabnumber else goto :waitfortext
+		echo testing...
+		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
+		if !ERRORLEVEL! EQU 1 (
+			timeout 2
+			echo !errorlevel!
+			goto :waitfortext
+		) else ( goto :grabnumber )
 
 		:grabnumber
 		%chillout%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
-		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer-Preclean.txt"
+		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
 		echo,
 		%chillout%
 		taskkill /im BootTimer.exe /t
