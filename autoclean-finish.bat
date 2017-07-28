@@ -1,14 +1,14 @@
-rem --------------------
-rem AUTOCLEAN-FINISH.BAT
-rem --------------------
+:: --------------------
+:: AUTOCLEAN-FINISH.BAT
+:: --------------------
 
-@echo off
+:: @echo off
 :: BatchGotAdmin 
 :-------------------------------------
-REM  --> Check for permissions
+::  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 
-REM --> If error flag set, we do not have admin.
+:: --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -27,9 +27,12 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
+	set chillout=
+	if %5==pause set chillout=pause
+
 	color 1f
     mode 100,35
-	title CleanTech: Wrap Up
+	title CleanTech - Wrap Up
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -50,6 +53,8 @@ if '%errorlevel%' NEQ '0' (
 	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
 	cd %workingdir%
+
+	%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Wrap Up"
 	
 	echo copy /y NUL autoclean-finish >NUL
 	echo,
@@ -66,7 +71,7 @@ if '%errorlevel%' NEQ '0' (
 	echo Date: %FormattedDate%
 	echo,
 
-	pause
+	%chillout%
 
 	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto :echostrings
 	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
@@ -82,7 +87,7 @@ if '%errorlevel%' NEQ '0' (
 		echo --------------------------------------
 		echo,
 		
-		pause
+		%chillout%
 
 	:drivelettertest
 		for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
@@ -164,7 +169,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\Logs /r /d y
 		takeown /f c:\Logs /r /d y
 		echo Command running: robocopy /s C:\Logs\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		pause
+		%chillout%
 		robocopy /s C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 		
@@ -173,10 +178,10 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: robocopy /s C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 		robocopy /s C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
-		title CleanTech: Removing Cleanup Files
-		echo Removing cleanup files...
+		title CleanTech: ::oving Cleanup Files
+		echo ::oving cleanup files...
 		echo,
-		pause
+		%chillout%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -189,12 +194,12 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		pause
+		%chillout%
 
 	:restorepoint
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		pause
+		%chillout%
 		
 	:reset
 		echo Turning UAC back on...
@@ -202,7 +207,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo,
 	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
-	    echo Removing AutoLogon
+	    echo ::oving AutoLogon
 		REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
 	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 
@@ -218,11 +223,10 @@ if '%errorlevel%' NEQ '0' (
 	    echo ------------------------------------------------------
 	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
 		
-		pause
 	cd %homepath%
 	echo Command running: rmdir %workingdir%
 	rmdir %workingdir% /s /q
-	pause
+	%chillout%
 
 	cls
 	color 2f
@@ -232,4 +236,4 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	echo Please take a moment to tidy up the Client's desktop. Thanks!
 	echo,
-	pause
+	%chillout%

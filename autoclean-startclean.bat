@@ -1,15 +1,15 @@
-@echo off
-rem ------------------------
-rem AUTOCLEAN-STARTCLEAN.BAT
-rem ------------------------
+:: @echo off
+:: ------------------------
+:: AUTOCLEAN-STARTCLEAN.BAT
+:: ------------------------
 chcp 65001
 
 :: BatchGotAdmin 
 :-------------------------------------
-REM  --> Check for permissions
+::  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 
-REM --> If error flag set, we do not have admin.
+:: --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -30,9 +30,12 @@ if '%errorlevel%' NEQ '0' (
 
 color 4f
     mode 100,35
-	title CleanTech: Start Clean
+	title CleanTech - Start Clean
  
     SETLOCAL EnableDelayedExpansion
+
+    chillout=
+    if %5==pause set chillout=pause
 	
 	cls
 	
@@ -44,7 +47,7 @@ color 4f
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script - Start Clean
+	echo CleanTech - Start Clean
 	echo %horiz_line%
 	echo,
 
@@ -54,35 +57,43 @@ color 4f
 	cd %workingdir%
 	echo,
 
+	:setwindow
+		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"
+		%workingdir%\nircmd\nircmd.exe win settopmost title "CleanTech - Start Clean" 1
+
 	:boottimer
-		title CleanTech: BootTimer
+		title CleanTech - BootTimer
 		echo Press any key when BootTimer has reported its number.
 		echo DO NOT close the BootTimer dialog box yet!
-		%workingdir%\nircmd\nircmd.exe win settopmost title "CleanTech: BootTimer" 1
-		rem timeout 15
-		rem echo Taking back the foreground...
-		rem ADD test for BootTimer.exe or w/e
-		rem tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
-		rem if "%ERRORLEVEL%"=="0" echo Program is running
-		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
-		rem	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
-		pause
+		:: timeout 15
+		:: echo Taking back the foreground...
+		:: ADD test for BootTimer.exe or w/e
+		:: tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
+		:: if "%ERRORLEVEL%"=="0" echo Program is running
+		:: MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
+		::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
+		
+		:waitfortext
+		tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"
+		if %ERRORLEVEL%==0 goto :grabnumber else goto :waitfortext
+		:grabnumber
+		%chillout%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
 		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
 		echo,
-		pause
+		%chillout%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		pause
-		echo Killing BootTimer.exe's chrome process
-		taskkill /im chrome.exe /f
-		pause
+		%chillout%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
+		echo Killing BootTimer.exe's chrome process
+		taskkill /im chrome.exe /f
+		%chillout%
 		cls & color 1f
 
-	title CleanTech: Start Clean
+	title CleanTech - Start Clean
 	:echostrings
 	echo -----------------------
 	echo Client Info:
@@ -93,13 +104,9 @@ color 4f
 	echo -----------------------
 	echo,
 
-	pause & color 6f
+	%chillout% & color 6f
 
-	echo if EXIST autoclean-adw goto :pcd
-	pause
 	if EXIST autoclean-adw goto :pcd
-	echo if EXIST autoclean-startclean goto :adw
-	pause
 	if EXIST autoclean-startclean goto :adw
 	
 	:noflagfile
@@ -108,7 +115,7 @@ color 4f
 	echo copy /y NUL autoclean-startclean >NUL
 	echo,
 	copy /y NUL autoclean-startclean >NUL
-	pause
+	%chillout%
 	goto adw
 
 	:adw
@@ -133,17 +140,17 @@ color 4f
 	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	color 6f
 	echo ---------------------------------------------------------
-	echo Please use PC Decrapifier to analyze and remove bloatware
+	echo Please use PC Decrapifier to analyze and Remove bloatware
 	echo ---------------------------------------------------------
-	pause
+	%chillout%
 	color 1f
 
-	rem Removing autoclean-start flag file
+	:: Removing autoclean-start flag file
 	echo del autoclean-startclean
 	echo,
 	del autoclean-startclean
 
-	rem Swapping startup batch files
+	:: Swapping startup batch files
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 	del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
@@ -151,7 +158,7 @@ color 4f
 	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
-	pause
+	%chillout%
 
 	bcdedit /set {default} safeboot network
 
@@ -164,6 +171,6 @@ color 4f
 	echo please launch Tron using autoclean-tron.bat
 	echo from the CleanTechTemp directory on the Desktop
 	echo,
-	pause
+	%chillout%
 
 	shutdown /r /t 0

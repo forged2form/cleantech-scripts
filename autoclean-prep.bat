@@ -1,20 +1,20 @@
-rem ------------------
-rem AUTOCLEAN-PREP.BAT
-rem ------------------
+:: ------------------
+:: AUTOCLEAN-PREP.BAT
+:: ------------------
 
-rem crappy to do list follows...
-rem add test for null entries
-rem add test for network connectivity (eth & BEAST access)
-rem look into ability to drag and drop text file or csv with client data,
-rem (e.g. name, av needed, password)
+:: crappy to do list follows...
+:: add test for null entries
+:: add test for network connectivity (eth & BEAST access)
+:: look into ability to drag and drop text file or csv with client data,
+:: (e.g. name, av needed, password)
 
-@echo off
+:: @echo off
 :: BatchGotAdmin 
 :-------------------------------------
-REM  --> Check for permissions
+::  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 
-REM --> If error flag set, we do not have admin.
+:: --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -26,6 +26,9 @@ set lastname=
 set firstname=
 set input=
 set av=
+set chillout=
+
+if %1==pause set chillout=pause
 
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
@@ -43,7 +46,7 @@ set av=
     SETLOCAL EnableDelayedExpansion
     color 1f
     mode 100,35
-	title CleanTech: Prep Stage
+	title CleanTech - Prep Stage
 	
 	cls
 	
@@ -55,7 +58,7 @@ set av=
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script - Prep Stage
+	echo CleanTech - Prep Stage
 	echo %horiz_line%
 	echo,
 	
@@ -77,7 +80,7 @@ set av=
     	echo Please check for running av and disable real-time features temporarily.
     	echo Press any key when you've finished to continue.
     	echo -----------------------------------------------------------------------
-    	pause
+    	%chillout%
 	
 	:clientinfo
 		color 6f
@@ -92,7 +95,7 @@ set av=
 			echo,
 		:clientnameconfirm
 			set /p input="You entered: %firstname% %lastname%. Is this correct? (y/n): "
-			rem %=%
+			:: %=%
 			if /i %input%==y goto :clientnamegood
 			if /i %input%==n goto :clientname
 		echo Incorrect input. & goto :clientnameconfirm
@@ -102,7 +105,7 @@ set av=
 		:checkautologin
 			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & pause & goto :avira) || goto :passquestion
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & %chillout% & goto :avira) || goto :passquestion
 
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
@@ -158,12 +161,15 @@ set av=
 		echo,
 
 		copy /y NUL autoclean-prep >NUL
-		pause
+		%chillout%
 
 		echo Copying automation files to %workingdir%
 		echo,
 		echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
+
+	:maxwindow
+		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Prep Stage"
 
 	:registryprep
 
@@ -173,7 +179,7 @@ set av=
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
 			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
-			pause
+			%chillout%
 			
 		:uac
 			echo Saving current UAC values
@@ -196,11 +202,11 @@ set av=
 		    IF EXIST %workingdir%\Preclean-Winlogon.reg goto :autologoncheck
 		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-		    pause
+		    %chillout%
 		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" %workingdir%\Preclean-Winlogon.reg
 		    echo,
-		    pause
+		    %chillout%
 
 			:autologoncheck
 		    	if /i %autoadminlogonenabled%==1 goto :systeminfo
@@ -236,18 +242,18 @@ set av=
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
 		timeout 120
-		color 6f & pause & color 1f
+		color 6f & %chillout% & color 1f
 
 	:nextstageprep
 		echo Adding next stage to Startup...
 		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
-		rem Removing autoclean-start flag file
+		:: Removing autoclean-start flag file
 		echo Command running: del autoclean-prep
 		echo,
 		del autoclean-prep
-		rem NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
+		:: NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: %workingdir%/boottimer.exe

@@ -1,14 +1,14 @@
-rem ------------------
-rem Autoclean-Tron.bat
-rem ------------------
+:: ------------------
+:: Autoclean-Tron.bat
+:: ------------------
 
-@echo off
+:: @echo off
 :: BatchGotAdmin 
 :-------------------------------------
-REM  --> Check for permissions
+::  --> Check for permissions
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 
-REM --> If error flag set, we do not have admin.
+:: --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -28,7 +28,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
     color 1f
     mode 100,35
-	title CleanTech: Tron
+	title CleanTech - Tron
  
     SETLOCAL EnableDelayedExpansion
 	
@@ -42,7 +42,7 @@ if '%errorlevel%' NEQ '0' (
 	)
 	
 	echo %horiz_line%
-	echo TechTutor's Clean Up Script - Prep Stage
+	echo CleanTech - Tron Stage
 	echo %horiz_line%
 	echo,
 	
@@ -51,37 +51,39 @@ if '%errorlevel%' NEQ '0' (
 	echo cd %workingdir%
 	cd %workingdir%
 
-	:echostrings
-	color 6f
-	echo -----------------------
-	echo Client Info:
-	echo Last Name: %1
-	echo First name: %2
-	echo Date: %3
-	echo AV needed?: %4
-	echo -----------------------
-	echo,
+	chillout=
+	if %5==pause set chillout=pause
 
-	pause
+	:echostrings
+		color 6f
+		echo -----------------------
+		echo Client Info:
+		echo Last Name: %1
+		echo First name: %2
+		echo Date: %3
+		echo AV needed?: %4
+		echo -----------------------
+		echo,
+
 	color 1f
 
-	rem NOTE: Need new batch file for Tron. (autoclean-tron.bat) that will be placed in shell registry entry for autostartup after in Safe mode. Code following this comment should be responsible for accomplishing that.
 	:starttron
-	echo Starting Tron...
-	START /WAIT %workingdir%\Tron\tron\Tron.bat -e -str -sdb -sdc
-	echo,
+		echo Starting Tron...
+		START /WAIT %workingdir%\Tron\tron\Tron.bat -e -str -sdb -sdc
+		echo,
 
-	echo Ensuring next boot is in normal mode...
-	echo bcdedit /deletevalue {default} safeboot
-	bcdedit /deletevalue {default} safeboot
-	echo,
+	:reboot-prep
+		echo Ensuring next boot is in normal mode...
+		echo bcdedit /deletevalue {default} safeboot
+		bcdedit /deletevalue {default} safeboot
+		echo,
 
-	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	pause
+		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+		%chillout%
 
-	echo Setting next stage batch file
-	echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-	pause
+		echo Setting next stage batch file
+		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		%chillout%
 
 	shutdown /r /t 5
