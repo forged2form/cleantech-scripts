@@ -233,6 +233,13 @@ if '%errorlevel%' NEQ '0' (
 		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-preclean-systeminfo-%FormattedDate%.nfo"
 		echo,
 
+		echo Pre-emptively rebuilding performance counters
+		echo Command running: lodctr /r
+		lodctr /r
+		echo,
+
+		pause
+
 		echo Importing perfmon xml...
 		echo logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
 		echo,
