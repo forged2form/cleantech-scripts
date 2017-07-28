@@ -263,7 +263,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: %workingdir%\boottimer.exe
 		echo,
-		%workingdir%\boottimer.exe
-		timeout 5
+		start %workingdir%\boottimer.exe
+		timeout 2
 		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
 		shutdown /r /t 0
