@@ -55,7 +55,7 @@ if '%errorlevel%' NEQ '0' (
 	if /i %5==pause set chillout=pause
 
 	:echostrings
-		color 60
+		color E0
 		echo -----------------------
 		echo Client Info:
 		echo Last Name: %1

@@ -96,7 +96,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Mapping Beast Documents folder to drive letter %netletter%
 		echo,
 
-		color 60
+		color E0
     	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
 		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
@@ -212,7 +212,7 @@ if '%errorlevel%' NEQ '0' (
 	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 
 	:userfinish
-	    color 60
+	    color E0
 	    echo -------------------------------------------------------
 	    echo Default browser starting... Please install AdBlock Plus
 	    echo -------------------------------------------------------

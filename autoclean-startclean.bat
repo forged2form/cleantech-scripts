@@ -105,7 +105,7 @@ color 4f
 	echo -----------------------
 	echo,
 
-	%chillout% & color 60
+	%chillout% & color E0
 
 	if EXIST autoclean-adw goto :pcd
 	if EXIST autoclean-startclean goto :adw
@@ -139,7 +139,7 @@ color 4f
 	echo Launching PC Decrapifier.....
 	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
 	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
-	color 60
+	color E0
 	echo ---------------------------------------------------------
 	echo Please use PC Decrapifier to analyze and Remove bloatware
 	echo ---------------------------------------------------------
@@ -163,7 +163,7 @@ color 4f
 
 	bcdedit /set {default} safeboot network
 
-	color 60
+	color E0
 	echo --------------------
 	echo Preparing to reboot.
 	echo -------------------- 

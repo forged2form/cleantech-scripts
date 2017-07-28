@@ -60,7 +60,7 @@ if '%errorlevel%' NEQ '0' (
 		set av=
 		set chillout=rem nothing to see here
 
-		if /i %1==pause set chillout=%1
+		if defined %1 set chillout=%1 else goto:drivelettertest
 	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
@@ -83,14 +83,11 @@ if '%errorlevel%' NEQ '0' (
     	%chillout%
 	
 	:clientinfo
-		color 60
+		color E0
 		echo ------------------------
 		echo Please enter client info
 		echo ------------------------
 		echo,
-
-		set chillout=12345
-		echo chillout is: !chillout!.
 
 		:clientname
 			set input=
@@ -248,7 +245,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
 		timeout 120
-		color 60 & %chillout% & color 1f
+		color E0 & %chillout% & color 1f
 
 	:nextstageprep
 		echo Adding next stage to Startup...
