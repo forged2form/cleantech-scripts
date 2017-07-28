@@ -91,7 +91,7 @@ color 4f
 		::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 		
 		:waitfortext
-		tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"
+		tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY" |find ":" > nul
 		if %ERRORLEVEL%==0 goto :grabnumber else goto :waitfortext
 
 		:grabnumber
