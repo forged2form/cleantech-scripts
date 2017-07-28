@@ -171,8 +171,8 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
 
-		echo Command running: mkdir clientdir
-		mkdir clientdir
+		echo Command running: mkdir %clientdir%
+		mkdir %clientdir%
 		echo,
 
 	:maxwindow
@@ -182,7 +182,7 @@ if '%errorlevel%' NEQ '0' (
 
 		:restorepoint
 			echo Creating Pre-Clean restore point...
-			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" clientdir\PreClean-SystemRestore.reg
+			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" %clientdir%\PreClean-SystemRestore.reg
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
 			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
