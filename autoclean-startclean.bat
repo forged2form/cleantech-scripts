@@ -58,6 +58,7 @@ color 4f
 		title CleanTech: BootTimer
 		echo Press any key when BootTimer has reported its number.
 		echo DO NOT close the BootTimer dialog box yet!
+		%workingdir%\nircmd\nircmd.exe win settopmost title "CleanTech: BootTimer" 1
 		rem timeout 15
 		rem echo Taking back the foreground...
 		rem ADD test for BootTimer.exe or w/e
@@ -66,7 +67,6 @@ color 4f
 		rem MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
 		rem	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 		pause
-		%workingdir%/nircmd/nircmd win settopmost title "CleanTech: Boottimer" 1
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
 		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer.txt"
