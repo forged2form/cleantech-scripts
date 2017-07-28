@@ -146,7 +146,7 @@ if '%errorlevel%' NEQ '0' (
 		takeown /f C:\CleanTech\ /r /d y
 		
 		echo robocopy /s C:\CleanTech\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-		robocopy /s C:\CleanTech\"%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		robocopy /s C:\CleanTech\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
 		echo ...Done!
 		echo,
 	
