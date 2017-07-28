@@ -159,8 +159,8 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Copying automation files to %workingdir%
 		echo,
-		echo Command running: robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
-		robocopy /s "%netletter%\Automation\Clean Up" %workingdir%
+		echo Command running: robocopy "%netletter%\Automation\Clean Up" %workingdir% /XD "*.sync" /s
+		robocopy "%netletter%\Automation\Clean Up" %workingdir% /XD "*.sync" /s
 
 		echo Command running: mkdir %clientdir%
 		mkdir %clientdir%

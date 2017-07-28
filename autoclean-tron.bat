@@ -33,6 +33,12 @@ if '%errorlevel%' NEQ '0' (
     SETLOCAL EnableDelayedExpansion
 	
 	cls
+
+	:putshellback
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	%chillout%
+
 	
 	set horiz_line=-
 	set dash=-
@@ -86,10 +92,6 @@ if '%errorlevel%' NEQ '0' (
 		echo bcdedit /deletevalue {default} safeboot
 		bcdedit /deletevalue {default} safeboot
 		echo,
-
-		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		%chillout%
 
 		echo Setting next stage batch file
 		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"

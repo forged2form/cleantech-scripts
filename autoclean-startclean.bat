@@ -1,4 +1,4 @@
-@echo off
+@ echo off
 :: ------------------------
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------
@@ -144,6 +144,11 @@ color 4f
 	echo Command: START "" /WAIT %workingdir%\adwcleaner.exe
 	START "" /WAIT %workingdir%\adwcleaner.exe
 	echo,
+	timeout 5
+	:: Agree (if necessary... Add code later to skip this if below Window Title does not exist BUT adw.exe does...)
+	%workingdir%\nircmd\nircmd.exe win dlgclick title "Malwarebytes AdwCleaner - Terms Of Service" 4294935321
+	timeout 5
+	:: Start ADW Scan
 	%workingdir%\nircmd\nircmd.exe win dlgclick title "Malwarebytes AdwCleaner 7" 4294935310
 
 	:pcd
