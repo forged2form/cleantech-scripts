@@ -26,7 +26,7 @@ set lastname=
 set firstname=
 set input=
 set av=
-set chillout=
+set chillout=echo,
 
 if %1==pause set chillout=pause
 
