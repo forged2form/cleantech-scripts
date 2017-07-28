@@ -51,7 +51,7 @@ if '%errorlevel%' NEQ '0' (
 	echo cd %workingdir%
 	cd %workingdir%
 
-	chillout=
+	chillout=rem nothing to see here
 	if %5==pause set chillout=pause
 
 	:echostrings

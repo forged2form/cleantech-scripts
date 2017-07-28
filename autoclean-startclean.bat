@@ -33,9 +33,6 @@ color 4f
 	title CleanTech - Start Clean
  
     SETLOCAL EnableDelayedExpansion
-
-    chillout=
-    if %5==pause set chillout=pause
 	
 	cls
 	
@@ -56,6 +53,9 @@ color 4f
 	echo Command running: cd %workingdir%
 	cd %workingdir%
 	echo,
+
+	chillout=rem nothing to see here
+    if %5==pause set chillout=pause
 
 	:setwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"

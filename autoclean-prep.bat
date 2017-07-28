@@ -59,6 +59,8 @@ if '%errorlevel%' NEQ '0' (
 		set input=
 		set av=
 		set chillout=rem nothing to see here
+
+		if %1==pause set chillout=%1
 	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)

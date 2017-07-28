@@ -27,9 +27,6 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
-	set chillout=
-	if %5==pause set chillout=pause
-
 	color 1f
     mode 100,35
 	title CleanTech - Wrap Up
@@ -65,10 +62,13 @@ if '%errorlevel%' NEQ '0' (
 	set firstname=%2
 	set FormattedDate=%3
 	set av=%4
+	set chillout=rem nothing to see here
+	if %5==pause set chillout=pause
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
 	echo Date: %FormattedDate%
+	echo Pause? %chillout%
 	echo,
 
 	%chillout%
