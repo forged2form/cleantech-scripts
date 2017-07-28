@@ -51,8 +51,9 @@ if '%errorlevel%' NEQ '0' (
 	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
 	cd %workingdir%
+	set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
-	%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Really Finish"
+	%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
 	
 	echo copy /y NUL autoclean-reallyfinish >NUL
 	echo,
