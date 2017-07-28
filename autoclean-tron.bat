@@ -38,7 +38,6 @@ if '%errorlevel%' NEQ '0' (
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	%chillout%
-
 	
 	set horiz_line=-
 	set dash=-
@@ -53,7 +52,6 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	
 	set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
-	mkdir %workingdir%
 	echo cd %workingdir%
 	cd %workingdir%
 
@@ -63,11 +61,7 @@ if '%errorlevel%' NEQ '0' (
 		echo bcdedit /deletevalue {default} safeboot
 		bcdedit /deletevalue {default} safeboot
 		echo,
-
-		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		%chillout%
-
 
 		:nextstage
 			echo Setting next stage batch file

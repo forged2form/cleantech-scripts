@@ -214,14 +214,10 @@ if '%errorlevel%' NEQ '0' (
 
 	:userfinish
 	    color E0
-	    echo -------------------------------------------------------
-	    echo Default browser starting... Please install AdBlock Plus
-	    echo -------------------------------------------------------
-	    start /wait http://adblockplus.org
 
-	    echo ------------------------------------------------------
-	    echo WhatInStartup starting... Please check startup entries
-	    echo ------------------------------------------------------
+	    echo -------------------------------------------------------------
+	    echo WhatInStartup starting... Please double-check startup entries
+	    echo -------------------------------------------------------------
 	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
 		
 		cls
