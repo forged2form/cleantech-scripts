@@ -238,8 +238,6 @@ if '%errorlevel%' NEQ '0' (
 		lodctr /r
 		echo,
 
-		pause
-
 		echo Importing perfmon xml...
 		echo logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
 		echo,

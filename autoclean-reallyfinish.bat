@@ -61,9 +61,9 @@ if '%errorlevel%' NEQ '0' (
 
 	%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
 	
-	echo copy /y NUL autoclean-reallyfinish >NUL
+	echo copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
 	echo,
-	copy /y NUL autoclean-reallyfinish >NUL
+	copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
 
 	set chillout=rem nothing to see here
 	if defined %5 set chillout=%5 else goto:stringtest	
@@ -150,6 +150,10 @@ if '%errorlevel%' NEQ '0' (
 
 		color 1f
 		echo Network drive mapped to %netletter%
+
+	:parsing
+		echo Let's put together some of the data we've collected...
+		:: checkout
 	
 	:files
 		title CleanTech: Moving Log Files
