@@ -259,7 +259,8 @@ if '%errorlevel%' NEQ '0' (
 		:: NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 
 		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: %workingdir%/boottimer.exe
+		echo Command running: %workingdir%\boottimer.exe
 		echo,
-		%workingdir%/boottimer.exe
-		%workingdir%/nircmd/nircmd.exe dlg "BootTimer.exe" "" click yes
+		%workingdir%\boottimer.exe
+		timeout 5
+		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
