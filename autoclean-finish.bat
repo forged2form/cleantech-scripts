@@ -141,8 +141,8 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\perfmon /r /d y
 		takeown /f C:\CleanTech\ /r /d y
 		
-		echo robocopy /s C:\CleanTech\ "%clientdir%\perfmon" /mir
-		robocopy /s C:\CleanTech\ "%clientdir%\perfmon" /mir
+		echo robocopy /s C:\CleanTech\ "%clientdir%\perfmon"
+		robocopy /s C:\CleanTech\ "%clientdir%\perfmon"
 		echo ...Done!
 		echo,
 	
@@ -158,7 +158,7 @@ if '%errorlevel%' NEQ '0' (
 		robocopy /s C:\Logs\ "%clientdir%\Logs"
 		echo,
 
-		cho Command running: takeown /f c:\ADW /r /d y
+		echo Command running: takeown /f c:\ADW /r /d y
 		takeown /f C:\ADW\ /r /d y
 		echo Command running: robocopy /s C:\ADW "%clientdir%\ADW"
 		robocopy /s C:\ADW\ "%clientdir%\ADW"

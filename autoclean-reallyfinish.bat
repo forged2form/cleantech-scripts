@@ -48,6 +48,12 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 
+	echo Setting client info variables
+	set lastname=%1
+	set firstname=%2
+	set FormattedDate=%3
+	set av=%4
+
 	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
 	cd %workingdir%
@@ -59,11 +65,6 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	copy /y NUL autoclean-reallyfinish >NUL
 
-	echo Setting client info variables
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	set av=%4
 	set chillout=rem nothing to see here
 	if defined %5 set chillout=%5 else goto:stringtest	
 	
@@ -153,6 +154,10 @@ if '%errorlevel%' NEQ '0' (
 	:files
 		title CleanTech: Moving Log Files
 		echo Moving Log files
+		echo,
+
+		echo Command running: move "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 
 		echo Copying %clientdir% to The BEAST...
