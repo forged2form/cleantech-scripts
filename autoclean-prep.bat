@@ -72,15 +72,6 @@ if '%errorlevel%' NEQ '0' (
             set FormattedDate=!FormattedDate:~-0,4!-!FormattedDate:~-4,2!-!FormattedDate:~-2,2!
         )
     )
-
-    :disableav
-    	color 4f
-    	echo IMPORTANT
-    	echo -----------------------------------------------------------------------
-    	echo Please check for running av and disable real-time features temporarily.
-    	echo Press any key when you've finished to continue.
-    	echo -----------------------------------------------------------------------
-    	%chillout%
 	
 	:clientinfo
 		color E0
@@ -177,6 +168,17 @@ if '%errorlevel%' NEQ '0' (
 
 	:maxwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Prep Stage"
+
+	:disableav
+		color 4f
+		echo IMPORTANT
+		echo -----------------------------------------------------------------------
+		echo Please check for running av and disable real-time features temporarily.
+		echo Press any key when you've finished to continue.
+		echo -----------------------------------------------------------------------
+		echo Command running: %workingdir%\securitysoftview\SecuritySoftView.exe
+		call %workingdir%\securitysoftview\SecuritySoftView.exe
+		%chillout%
 
 	:registryprep
 
