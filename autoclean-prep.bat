@@ -88,17 +88,19 @@ if %1==pause set chillout=pause
 		echo Please enter client info
 		echo ------------------------
 		echo,
+
 		:clientname
 			set input=
 			set /p firstname="Client's first name: "
 			set /p lastname="Client's Last name: "
 			echo,
+
 		:clientnameconfirm
 			set /p input="You entered: %firstname% %lastname%. Is this correct? (y/n): "
-			:: %=%
+			rem %=%
 			if /i %input%==y goto :clientnamegood
 			if /i %input%==n goto :clientname
-		echo Incorrect input. & goto :clientnameconfirm
+			echo Incorrect input. & goto :clientnameconfirm
 
 		:clientnamegood
 
