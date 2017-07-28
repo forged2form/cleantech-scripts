@@ -2,6 +2,11 @@
 :: AUTOCLEAN-FINISH.BAT
 :: --------------------
 
+:: ADD look for startup folder file "autoclean-trontemp.bat"
+:: if it exists, then grab vars from it and continue to finish cleanly
+:: or ask for option to restart Tron..
+::    - Will need to look into custom restart of Tron with saved Tron stage
+
 @echo off
 :: BatchGotAdmin 
 :-------------------------------------

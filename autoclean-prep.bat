@@ -7,6 +7,10 @@
 :: add test for network connectivity (eth & BEAST access)
 :: look into ability to drag and drop text file or csv with client data,
 :: (e.g. name, av needed, password)
+:: Should log start time of each script (really, of each command)
+::     - Observe logwithdate batch file to see how vocatus accomplishes this
+:: Need to swtich away from flags and read from a file instead for the client
+:: info. Will be easier to restart one of the stages if something goes sideways.
 
 @echo off
 :: BatchGotAdmin 
