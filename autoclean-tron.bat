@@ -2,7 +2,7 @@
 :: Autoclean-Tron.bat
 :: ------------------
 
-:: @echo off
+@echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions

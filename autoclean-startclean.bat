@@ -1,4 +1,4 @@
-:: @echo off
+@echo off
 :: ------------------------
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------
@@ -76,6 +76,7 @@ color 4f
 		:waitfortext
 		tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"
 		if %ERRORLEVEL%==0 goto :grabnumber else goto :waitfortext
+
 		:grabnumber
 		%chillout%
 		echo Grabbing number from dialog box...

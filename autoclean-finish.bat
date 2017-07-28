@@ -2,7 +2,7 @@
 :: AUTOCLEAN-FINISH.BAT
 :: --------------------
 
-:: @echo off
+@echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions

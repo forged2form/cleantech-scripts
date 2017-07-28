@@ -8,7 +8,7 @@
 :: look into ability to drag and drop text file or csv with client data,
 :: (e.g. name, av needed, password)
 
-:: @echo off
+@echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions
