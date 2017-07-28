@@ -262,3 +262,4 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: %workingdir%/boottimer.exe
 		echo,
 		%workingdir%/boottimer.exe
+		%workingdir%/nircmd/nircmd.exe dlg "BootTimer.exe" "" click yes
