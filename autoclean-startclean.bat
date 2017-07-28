@@ -141,8 +141,8 @@ color 4f
 	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 
 	copy /y NUL autoclean-adw >NUL
-	echo Command: START "" /WAIT %workingdir%\adwcleaner.exe
-	START "" /WAIT %workingdir%\adwcleaner.exe
+	echo Command: START %workingdir%\adwcleaner.exe
+	START %workingdir%\adwcleaner.exe
 	echo,
 	timeout 5
 	:: Agree (if necessary... Add code later to skip this if below Window Title does not exist BUT adw.exe does...)

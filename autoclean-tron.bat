@@ -104,7 +104,6 @@ if '%errorlevel%' NEQ '0' (
 		START /WAIT %workingdir%\Tron\tron\Tron.bat -a -str -sdb -sdc
 		echo,
 
-<<<<<<< HEAD
 	:reboot-prep
 		echo Ensuring next boot is in normal mode...
 		echo bcdedit /deletevalue {default} safeboot
@@ -115,6 +114,4 @@ if '%errorlevel%' NEQ '0' (
 		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%chillout%
 
-=======
->>>>>>> b8c5536cd4e14e608ff9d477ce463a68ad8f1bd3
 	shutdown /r /t 0
