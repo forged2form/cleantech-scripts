@@ -81,7 +81,7 @@ if '%errorlevel%' NEQ '0' (
     	%chillout%
 	
 	:clientinfo
-		color 6f
+		color 60
 		echo ------------------------
 		echo Please enter client info
 		echo ------------------------
@@ -246,7 +246,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
 		timeout 120
-		color 6f & %chillout% & color 1f
+		color 60 & %chillout% & color 1f
 
 	:nextstageprep
 		echo Adding next stage to Startup...
