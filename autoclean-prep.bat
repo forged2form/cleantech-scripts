@@ -107,7 +107,8 @@ if %1==pause set chillout=pause
 		:checkautologin
 			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & %chillout% & goto :avira) || goto :passquestion
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :avira) || goto :passquestion
+			pause
 
 		:passquestion
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
