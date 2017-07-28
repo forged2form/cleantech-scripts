@@ -20,16 +20,6 @@ if '%errorlevel%' NEQ '0' (
     goto UACPrompt
 ) else ( goto gotAdmin )
 
-:initializeVars
-set netletter=
-set lastname=
-set firstname=
-set input=
-set av=
-set chillout=echo,
-
-if %1==pause set chillout=pause
-
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
@@ -61,6 +51,14 @@ if %1==pause set chillout=pause
 	echo CleanTech - Prep Stage
 	echo %horiz_line%
 	echo,
+
+	:initializeVars
+		set netletter=
+		set lastname=
+		set firstname=
+		set input=
+		set av=
+		set chillout=rem nothing to see here
 	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
@@ -88,6 +86,9 @@ if %1==pause set chillout=pause
 		echo Please enter client info
 		echo ------------------------
 		echo,
+
+		set chillout=12345
+		echo chillout is: !chillout!.
 
 		:clientname
 			set input=
