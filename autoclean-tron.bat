@@ -78,7 +78,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:starttron
 		echo Starting Tron...
-		START /WAIT %workingdir%\Tron\tron\Tron.bat -e -str -sdb -sdc
+		START /WAIT %workingdir%\Tron\tron\Tron.bat -a -str -sdb -sdc
 		echo,
 
 	:reboot-prep
