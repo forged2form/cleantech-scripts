@@ -1,8 +1,9 @@
-:: ------------------
+µ:: ------------------
 :: AUTOCLEAN-PREP.BAT
 :: ------------------
 
 :: crappy to do list follows...
+:: SYSTEM BEEP AT TIMES OF INPUT
 :: add test for null entries
 :: add test for network connectivity (eth & BEAST access)
 :: look into ability to drag and drop text file or csv with client data,
@@ -273,6 +274,5 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: %workingdir%\boottimer.exe
 		echo,
 		start %workingdir%\boottimer.exe
-		timeout 2
 		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
 		shutdown /r /t 0
