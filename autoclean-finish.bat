@@ -97,24 +97,6 @@ if '%errorlevel%' NEQ '0' (
 		
 		%chillout%
 
-	:drivelettertest
-		for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
-
-	:netmap
-		echo Mapping Beast Documents folder to drive letter %netletter%
-		echo,
-
-		color E0
-    	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
-		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
-		echo,
-
-		color 1f
-		echo Network drive mapped to %netletter%
-		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
-		echo,
-
 	:installutils
 		title CleanTech: Installing/Updating Utils
 		color E0
@@ -159,8 +141,8 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\perfmon /r /d y
 		takeown /f C:\CleanTech\ /r /d y
 		
-		echo robocopy /s C:\CleanTech\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
-		robocopy /s C:\CleanTech\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%\perfmon" /mir
+		echo robocopy /s C:\CleanTech\ "%clientdir%\perfmon" /mir
+		robocopy /s C:\CleanTech\ "%clientdir%\perfmon" /mir
 		echo ...Done!
 		echo,
 	
@@ -170,18 +152,18 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		echo Command running: takeown /f c:\Logs /r /d y
-		takeown /f c:\Logs /r /d y
-		echo Command running: robocopy /s C:\Logs\ "%clientdir%\%lastname%-%firstname%-%FormattedDate%"
+		takeown /f C:\Logs /r /d y
+		echo Command running: robocopy /s C:\Logs "%clientdir%\"
 		%chillout%
-		robocopy /s C:\Logs "%clientdir%\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s C:\Logs "%clientdir%\"
 		echo,
 
 		cho Command running: takeown /f c:\ADW /r /d y
 		takeown /f c:\ADW /r /d y
-		echo Command running: robocopy /s C:\Adw "%clientdir%\%lastname%-%firstname%-%FormattedDate%\Logs\"
-		robocopy /s C:\ADW "%clientdir%\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		echo Command running: robocopy /s C:\Adw "%clientdir%\"
+		robocopy /s C:\ADW "%clientdir%\"
 
-		title CleanTech: ::oving Cleanup Files
+		title CleanTech: Removing Cleanup Files
 		echo ::oving cleanup files...
 		echo,
 		%chillout%
