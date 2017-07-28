@@ -140,11 +140,11 @@ color 4f
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 
-
+	copy /y NUL autoclean-adw >NUL
 	echo Command: START "" /WAIT %workingdir%\adwcleaner.exe
 	START "" /WAIT %workingdir%\adwcleaner.exe
 	echo,
-	copy /y NUL autoclean-adw >NUL
+	%workingdir%\nircmd\nircmd.exe win dlgclick title "Malwarebytes AdwCleaner 7" 4294935310
 
 	:pcd
 	echo Command running: del autoclean-adw
