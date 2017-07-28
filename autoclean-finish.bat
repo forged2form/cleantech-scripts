@@ -168,10 +168,10 @@ if '%errorlevel%' NEQ '0' (
 		robocopy /s C:\Logs "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 		
-	rem	echo Command running: takeown /f c:\ADW /r /d y
-	rem	takeown /f c:\ADW /r /d y
-	rem	echo Command running: robocopy /s C:\Adw\ "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs"
-	rem	robocopy /s C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs"
+		cho Command running: takeown /f c:\ADW /r /d y
+		takeown /f c:\ADW /r /d y
+		echo Command running: robocopy /s C:\Adw "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
+		robocopy /s C:\ADW "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%\Logs\"
 
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
