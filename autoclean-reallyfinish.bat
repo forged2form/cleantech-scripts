@@ -3,6 +3,7 @@
 :: --------------------------
 
 @echo off
+color 4f
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions
