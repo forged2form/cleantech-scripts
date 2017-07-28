@@ -112,8 +112,8 @@ if '%errorlevel%' NEQ '0' (
 		title CleanTech: Performance Test #2
 
 		echo Dumping postclean system info...
-		echo Command running: msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
-		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-%FormattedDate%.nfo"
+		echo Command running: msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-systeminfo-%FormattedDate%.nfo"
+		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-systeminfo-%FormattedDate%.nfo"
 		echo,
 
 		echo Starting Performance Monitor. Please wait... 
