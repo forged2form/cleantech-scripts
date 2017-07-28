@@ -52,7 +52,7 @@ if '%errorlevel%' NEQ '0' (
 	cd %workingdir%
 
 	chillout=rem nothing to see here
-	if /i %5==pause set chillout=pause
+	if defined %5 set chillout=%5 else goto:drivelettertest
 
 	:echostrings
 		color E0
@@ -83,7 +83,7 @@ if '%errorlevel%' NEQ '0' (
 		%chillout%
 
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%chillout%
 
 	shutdown /r /t 5

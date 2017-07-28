@@ -55,7 +55,7 @@ color 4f
 	echo,
 
 	chillout=rem nothing to see here
-    if /i %5==pause set chillout=pause
+	if defined %5 set chillout=%5 else goto:drivelettertest
 
 	:setwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"
@@ -155,8 +155,8 @@ color 4f
 	echo del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 	del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
-	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
-	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4>C:\autoclean-trontemp.bat
+	echo Comand running: echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4 %5>C:\autoclean-trontemp.bat
+	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4 %5>C:\autoclean-trontemp.bat
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
 	%chillout%
