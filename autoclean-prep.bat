@@ -264,3 +264,4 @@ if '%errorlevel%' NEQ '0' (
 		%workingdir%\boottimer.exe
 		timeout 5
 		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
+		shutdown /r /t 0
