@@ -55,7 +55,7 @@ color 4f
 	echo,
 
 	chillout=rem nothing to see here
-    if %5==pause set chillout=pause
+    if /i %5==pause set chillout=pause
 
 	:setwindow
 		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Start Clean"

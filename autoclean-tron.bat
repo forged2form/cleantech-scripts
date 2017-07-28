@@ -52,7 +52,7 @@ if '%errorlevel%' NEQ '0' (
 	cd %workingdir%
 
 	chillout=rem nothing to see here
-	if %5==pause set chillout=pause
+	if /i %5==pause set chillout=pause
 
 	:echostrings
 		color 60

@@ -63,7 +63,7 @@ if '%errorlevel%' NEQ '0' (
 	set FormattedDate=%3
 	set av=%4
 	set chillout=rem nothing to see here
-	if %5==pause set chillout=pause
+	if /i %5==pause set chillout=pause
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
