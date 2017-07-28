@@ -119,7 +119,7 @@ if '%errorlevel%' NEQ '0' (
 		%chillout%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
-		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%workingdir%\%1-%2-%3-BootTimer-Postclean.txt"
+		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		echo,
 		%chillout%
 		taskkill /im BootTimer.exe /t
@@ -156,8 +156,8 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		echo Copying %clientdir% to The BEAST...
-		echo robocopy /s %clientdir% "%netletter%\Clean Up Logs\"
-		robocopy /s %clientdir% "%netletter%\Clean Up Logs\"
+		echo robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
 

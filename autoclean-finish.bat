@@ -152,16 +152,16 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		echo Command running: takeown /f c:\Logs /r /d y
-		takeown /f C:\Logs /r /d y
-		echo Command running: robocopy /s C:\Logs "%clientdir%\"
+		takeown /f C:\Logs\ /r /d y
+		echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
 		%chillout%
-		robocopy /s C:\Logs "%clientdir%\"
+		robocopy /s C:\Logs\ "%clientdir%\Logs"
 		echo,
 
 		cho Command running: takeown /f c:\ADW /r /d y
-		takeown /f c:\ADW /r /d y
-		echo Command running: robocopy /s C:\Adw "%clientdir%\"
-		robocopy /s C:\ADW "%clientdir%\"
+		takeown /f C:\ADW\ /r /d y
+		echo Command running: robocopy /s C:\ADW "%clientdir%\ADW"
+		robocopy /s C:\ADW\ "%clientdir%\ADW"
 
 		title CleanTech: Removing Cleanup Files
 		echo ::oving cleanup files...
