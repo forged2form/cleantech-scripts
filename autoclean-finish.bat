@@ -169,7 +169,7 @@ if '%errorlevel%' NEQ '0' (
 		robocopy /s C:\ADW\ "%clientdir%\ADW"
 
 		title CleanTech: Removing Cleanup Files
-		echo ::oving cleanup files...
+		echo Removing cleanup files...
 		echo,
 		%chillout%
 
