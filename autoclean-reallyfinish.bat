@@ -1,3 +1,4 @@
+
 :: --------------------------
 :: AUTOCLEAN-REALLYFINISH.BAT
 :: --------------------------
@@ -110,7 +111,7 @@ if '%errorlevel%' NEQ '0' (
 	:waitfortext
 		echo testing...
 		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
-		if !ERRORLEVEL! EQU 1 (
+		if !ERRORLEVEL! NEQ 0 (
 			timeout 2
 			echo !errorlevel!
 			goto :waitfortext

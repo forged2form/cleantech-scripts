@@ -70,8 +70,7 @@ color 4f
 
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
-
-	chillout=rem nothing to see here
+	:: set chillout=rem nothing to see here
 	if defined %5 set chillout=%5 else goto:setwindow
 
 	:setwindow
@@ -93,7 +92,7 @@ color 4f
 		:waitfortext
 		echo testing...
 		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
-		if !ERRORLEVEL! EQU 1 (
+		if !ERRORLEVEL! NEQ 0 (
 			timeout 2
 			echo !errorlevel!
 			goto :waitfortext
