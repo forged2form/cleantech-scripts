@@ -72,8 +72,7 @@ color 4f
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
 	:: set debug=rem nothing to see here
-	::if /i [%5]==[yes] (set debug=pause)
-	::else (set "debug=rem nothing to see here" & goto:setwindow)
+	if /i [%5]==[yes] (set debug=pause) else (set "debug=rem nothing to see here" & goto:setwindow)
 
 	:setwindow
 		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Start Clean"
@@ -94,9 +93,9 @@ color 4f
 		:waitfortext
 		echo testing...
 		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
-		if defined !ERRORLEVEL! (
+		if %ERRORLEVEL% NEQ 0 (
 			timeout 2
-			echo !errorlevel!
+			echo %errorlevel%
 			goto :waitfortext
 		) else ( goto :grabnumber )
 
