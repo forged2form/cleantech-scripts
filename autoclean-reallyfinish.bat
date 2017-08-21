@@ -234,6 +234,6 @@ if '%errorlevel%' NEQ '0' (
 
 		cd %homepath%
 		echo Command running: rmdir %workingdir%
-		if exist c:\%HOMEPATH%\Desktop\autoclean-prep.bat "del c:\%HOMEPATH%\Desktop\autoclean-prep.bat /q"
+		if exist c:\%HOMEPATH%\Desktop\autoclean-prep.bat del c:\%HOMEPATH%\Desktop\autoclean-prep.bat /q
 		rmdir %workingdir% /s /q
 		%debug%
