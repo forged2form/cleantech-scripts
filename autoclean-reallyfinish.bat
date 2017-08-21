@@ -66,18 +66,18 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
 
-	set chillout=rem nothing to see here
-	if defined %5 set chillout=%5 else goto:stringtest	
+	set debug=rem nothing to see here
+	if defined %5 set debug=%5 else goto:stringtest	
 	
 	:stringtest
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
 	echo Date: %FormattedDate%
-	echo Pause? %chillout%
+	echo Pause? %debug%
 	echo,
 
-	%chillout%
+	%debug%
 
 	:echostrings
 		echo --------------------------------------
@@ -90,7 +90,7 @@ if '%errorlevel%' NEQ '0' (
 		echo --------------------------------------
 		echo,
 		
-		%chillout%
+		%debug%
 
 	:setwindow
 		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
@@ -118,20 +118,20 @@ if '%errorlevel%' NEQ '0' (
 		) else ( goto :grabnumber )
 
 		:grabnumber
-		%chillout%
+		%debug%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		echo,
-		%chillout%
+		%debug%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		%chillout%
+		%debug%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
-		%chillout%
+		%debug%
 		cls & color 1f
 
 	title CleanTech - Really Finish
@@ -175,7 +175,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Removing cleanup files...
 		echo,
 
-		%chillout%
+		%debug%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -196,12 +196,12 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		echo,
-		%chillout%
+		%debug%
 
 	:restorepoint
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		%chillout%
+		%debug%
 		
 	:reset
 		echo Turning UAC back on...
@@ -236,4 +236,4 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: rmdir %workingdir%
 		if exist c:\%HOMEPATH%\Desktop\autoclean-prep.bat "del c:\%HOMEPATH%\Desktop\autoclean-prep.bat /q"
 		rmdir %workingdir% /s /q
-		%chillout%
+		%debug%

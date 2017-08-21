@@ -61,6 +61,8 @@ color 4f
 		echo First name: %2
 		echo Date: %3
 		echo AV needed?: %4
+		echo Debug?: %5
+		if defined %6 (echo Early exit?: Yes) else (echo Early exit?: No)
 		echo -----------------------
 		echo,
 
@@ -70,8 +72,9 @@ color 4f
 
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
-	:: set chillout=rem nothing to see here
-	if defined %5 set chillout=%5 else goto:setwindow
+	:: set debug=rem nothing to see here
+	if /i [%5] EQU [yes] (set debug=pause)
+	else (set "debug=rem nothing to see here" & goto:setwindow)
 
 	:setwindow
 		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Start Clean"
@@ -99,25 +102,25 @@ color 4f
 		) else ( goto :grabnumber )
 
 		:grabnumber
-		%chillout%
+		%debug%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
 		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
 		echo,
-		%chillout%
+		%debug%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		%chillout%
+		%debug%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
-		%chillout%
+		%debug%
 		cls & color 1f
 
 	title CleanTech - Start Clean
 
-	%chillout%
+	%debug%
 	color E0
 
 	if EXIST autoclean-mbam goto :uninstallview
@@ -129,7 +132,7 @@ color 4f
 	echo copy /y NUL autoclean-startclean >NUL
 	echo,
 	copy /y NUL autoclean-startclean >NUL
-	%chillout%
+	%debug%
 	goto mbam
 
 	:mbam
@@ -185,7 +188,7 @@ pause
 	echo %workingdir%\autoclean-tron.bat %1 %2 %3 %4 %5>C:\autoclean-trontemp.bat
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
-	%chillout%
+	%debug%
 
 	bcdedit /set {default} safeboot network
 
@@ -198,6 +201,6 @@ pause
 	echo please launch Tron using autoclean-tron.bat
 	echo from the CleanTechTemp directory on the Desktop
 	echo,
-	%chillout%
+	%debug%
 
 	shutdown /r /t 0

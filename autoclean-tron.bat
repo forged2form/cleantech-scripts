@@ -37,7 +37,7 @@ if '%errorlevel%' NEQ '0' (
 	:putshellback
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	%chillout%
+	%debug%
 	
 	set horiz_line=-
 	set dash=-
@@ -61,15 +61,15 @@ if '%errorlevel%' NEQ '0' (
 		echo bcdedit /deletevalue {default} safeboot
 		bcdedit /deletevalue {default} safeboot
 		echo,
-		%chillout%
+		%debug%
 
 		:nextstage
 			echo Setting next stage batch file
 			echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-			%chillout%
+			%debug%
 
-	chillout=rem nothing to see here
-	if defined %5 set chillout=%5 else goto:echostrings
+	debug=rem nothing to see here
+	if defined %5 set debug=%5 else goto:echostrings
 
 	:echostrings
 		color E0
@@ -106,6 +106,6 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Setting next stage batch file
 		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%chillout%
+		%debug%
 
 	shutdown /r /t 0
