@@ -91,11 +91,11 @@ color 4f
 		:: if "%ERRORLEVEL%"=="0" echo Program is running
 		:: MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
 		::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
-		
+
 		:waitfortext
 		echo testing...
 		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
-		if !ERRORLEVEL! NEQ 0 (
+		if defined !ERRORLEVEL! (
 			timeout 2
 			echo !errorlevel!
 			goto :waitfortext
