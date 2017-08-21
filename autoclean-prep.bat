@@ -188,6 +188,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: %workingdir%\securitysoftview\SecuritySoftView.exe
 		call %workingdir%\securitysoftview\SecuritySoftView.exe
 		%chillout%
+		color 1f
 
 	:registryprep
 
