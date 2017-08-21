@@ -120,8 +120,8 @@ color 4f
 	%chillout%
 	color E0
 
-	if EXIST autoclean-mbam goto :pcd
-	if EXIST autoclean-startclean goto :adw
+	if EXIST autoclean-mbam goto :uninstallview
+	if EXIST autoclean-startclean goto :mbam
 	
 	:noflagfile
 	color 1f
@@ -130,14 +130,12 @@ color 4f
 	echo,
 	copy /y NUL autoclean-startclean >NUL
 	%chillout%
-	goto adw
+	goto mbam
 
-	:adw
+	:mbam
 	color E0
-	echo At :adw
-	echo Launching ADWCLeaner... NOTE: Will request reboot after a clean.
-	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
-	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
+	echo At :mbam
+	echo Launching MBAM...
 
 	copy /y NUL autoclean-mbam >NUL
 :: JOB: MBAM (Malwarebytes Anti-Malware)
@@ -167,7 +165,8 @@ if /i %EXISTING_MBAM%==yes (
 :skip_mbam
 pause
 
-	:pcd
+	:uninstallview
+	call %workingdir%/NirSoft/uninstallview.exe
 	echo Command running: del autoclean-mbam
 	del autoclean-mbam
 	echo,
