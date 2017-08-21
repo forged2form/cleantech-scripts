@@ -62,7 +62,7 @@ color 4f
 		echo Date: %3
 		echo AV needed?: %4
 		echo Debug?: %5
-		if defined %6 (echo Early exit?: Yes) else (echo Early exit?: No)
+		rem if defined %6 (echo Early exit?: Yes) else (echo Early exit?: No)
 		echo -----------------------
 		echo,
 
