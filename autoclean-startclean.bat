@@ -151,7 +151,7 @@ if /i %EXISTING_MBAM%==yes (
 	goto skip_mbam
 )
 		REM "stage_3_disinfect\mbam\Malwarebytes Anti-Malware v3.0.4.1269.exe" /verysilent
-		FOR /f "tokens=*" %%G IN ('dir /b %workingdir%\Tron\tron\resources\stage_3_disinfect\mbam\*.exe') DO "%%G" /SP- /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL
+		FOR /f "tokens=*" %%G IN ('dir /b %workingdir%\Tron\tron\resources\stage_3_disinfect\mbam\Malwarebytes*.exe') DO "%%G" /SP- /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL
 		if exist "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk" del "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk"
 		if exist "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk" del "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk"
 		if exist "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk" del "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk"
