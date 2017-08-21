@@ -120,7 +120,7 @@ color 4f
 	%chillout%
 	color E0
 
-	if EXIST autoclean-adw goto :pcd
+	if EXIST autoclean-mbam goto :pcd
 	if EXIST autoclean-startclean goto :adw
 	
 	:noflagfile
@@ -139,30 +139,38 @@ color 4f
 	echo Command: move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 	move %workingdir%\Tron\tron\resources\stage_9_manual_tools\adwcleaner*.exe %workingdir%\adwcleaner.exe
 
-	copy /y NUL autoclean-adw >NUL
-	echo Command: START %workingdir%\adwcleaner.exe
-	START %workingdir%\adwcleaner.exe
-	echo,
-	timeout 5
-	:: Agree (if necessary... Add code later to skip this if below Window Title does not exist BUT adw.exe does...)
-	%workingdir%\nircmd\nircmd.exe win dlgclick title "Malwarebytes AdwCleaner - Terms Of Service" 4294935321
-	timeout 5
-	:: Start ADW Scan
-	%workingdir%\nircmd\nircmd.exe win dlgclick title "Malwarebytes AdwCleaner 7" 4294935310
+	copy /y NUL autoclean-mbam >NUL
+:: JOB: MBAM (Malwarebytes Anti-Malware)
+if exist "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
+if exist "%ProgramFiles%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
+if exist "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
+if exist "%ProgramFiles(x86)%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
+if /i %EXISTING_MBAM%==yes (
+	call functions\log_with_date.bat "   Existing MBAM installation detected. Skipping installation."
+	goto skip_mbam
+)
+		REM "stage_3_disinfect\mbam\Malwarebytes Anti-Malware v3.0.4.1269.exe" /verysilent
+		FOR /f "tokens=*" %%G IN ('dir /b %workingdir%\Tron\tron\resources\stage_3_disinfect\mbam\*.exe') DO "%%G" /SP- /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL
+		if exist "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk" del "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk"
+		if exist "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk" del "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk"
+		if exist "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk" del "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk"
+		copy /y stage_3_disinfect\mbam\settings.conf "%ProgramData%\Malwarebytes\Malwarebytes Anti-Malware\Configuration\settings.conf" >> "%LOGPATH%\%LOGFILE%" 2>NUL
+
+		:: Install the bundled definitions file and integrate the log into Tron's log
+		stage_3_disinfect\mbam\mbam2-rules.exe /sp- /verysilent /suppressmsgboxes /log="%clientdir%\mbam_rules_install.log" /norestart
+
+		:: Scan for and launch appropriate architecture version
+		if exist "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe" start "" "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe"
+		if exist "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe" start "" "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe"
+	)
+)
+:skip_mbam
+pause
 
 	:pcd
-	echo Command running: del autoclean-adw
-	del autoclean-adw
+	echo Command running: del autoclean-mbam
+	del autoclean-mbam
 	echo,
-	color E0
-	echo Launching PC Decrapifier.....
-	echo START "" /WAIT "%workingdir%\pc-decrapifier.exe"
-	START "" /WAIT "%workingdir%\pc-decrapifier.exe"
-	echo ---------------------------------------------------------
-	echo Please use PC Decrapifier to analyze and Remove bloatware
-	echo ---------------------------------------------------------
-	echo,
-	pause
 	color 1f
 
 	:: Removing autoclean-start flag file

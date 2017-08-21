@@ -3,8 +3,9 @@
 :: ------------------
 
 :: crappy to do list follows...
-:: FIX missing memory counter in perfmon preclean test
 :: Look into Task Manager vs. StartupTool (Nirsoft)
+:: In flag file, create last command name for restarting
+:: 			(ie: if %6 then set lastcommand = %6)
 :: SYSTEM BEEP AT TIMES OF INPUT
 :: add test for null entries
 :: add test for network connectivity (eth & BEAST access)
