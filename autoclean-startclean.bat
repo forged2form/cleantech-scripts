@@ -62,7 +62,6 @@ color 4f
 		echo Date: %3
 		echo AV needed?: %4
 		echo Debug?: %5
-		rem if defined %6 (echo Early exit?: Yes) else (echo Early exit?: No)
 		echo -----------------------
 		echo,
 
@@ -73,8 +72,8 @@ color 4f
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
 	:: set debug=rem nothing to see here
-	if /i [%5] EQU [yes] (set debug=pause)
-	else (set "debug=rem nothing to see here" & goto:setwindow)
+	::if /i [%5]==[yes] (set debug=pause)
+	::else (set "debug=rem nothing to see here" & goto:setwindow)
 
 	:setwindow
 		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Start Clean"
@@ -147,7 +146,6 @@ if exist "%ProgramFiles%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=y
 if exist "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
 if exist "%ProgramFiles(x86)%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
 if /i %EXISTING_MBAM%==yes (
-	call functions\log_with_date.bat "   Existing MBAM installation detected. Skipping installation."
 	goto skip_mbam
 )
 		REM "stage_3_disinfect\mbam\Malwarebytes Anti-Malware v3.0.4.1269.exe" /verysilent
@@ -155,7 +153,7 @@ if /i %EXISTING_MBAM%==yes (
 		if exist "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk" del "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk"
 		if exist "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk" del "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk"
 		if exist "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk" del "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk"
-		copy /y stage_3_disinfect\mbam\settings.conf "%ProgramData%\Malwarebytes\Malwarebytes Anti-Malware\Configuration\settings.conf" >> "%LOGPATH%\%LOGFILE%" 2>NUL
+		copy /y %workingdir%\Tron\tron\resources\stage_3_disinfect\mbam\settings.conf "%ProgramData%\Malwarebytes\Malwarebytes Anti-Malware\Configuration\settings.conf" >> "%LOGPATH%\%LOGFILE%" 2>NUL
 
 		:: Install the bundled definitions file and integrate the log into Tron's log
 		stage_3_disinfect\mbam\mbam2-rules.exe /sp- /verysilent /suppressmsgboxes /log="%clientdir%\mbam_rules_install.log" /norestart
@@ -174,6 +172,8 @@ pause
 	del autoclean-mbam
 	echo,
 	color 1f
+
+	pause
 
 	:: Removing autoclean-start flag file
 	echo del %workingdir%\autoclean-startclean

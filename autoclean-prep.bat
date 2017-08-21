@@ -267,8 +267,8 @@ if '%errorlevel%' NEQ '0' (
 
 	:nextstageprep
 		echo Adding next stage to Startup...
-		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite% %debug%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debug%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite% %debugq%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugq%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 		:: Removing autoclean-start flag file
 		echo Command running: del autoclean-prep
