@@ -59,6 +59,7 @@ if '%errorlevel%' NEQ '0' (
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
+	set offline=%6
 
 	set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
@@ -73,18 +74,20 @@ if '%errorlevel%' NEQ '0' (
 	set firstname=%2
 	set FormattedDate=%3
 	set av=%4
-	set debug=rem nothing to see here
-	if defined %5 set debug=%5 else goto:stringtest	
+	set debugmode=rem nothing to see here
+	if defined %5 set debugmode=%5 else goto:stringtest	
+	set offline=%6
 	
 	:stringtest
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
 	echo Date: %FormattedDate%
-	echo Pause? %debug%
+	echo Pause? %debugmode%
+	echo Offline? %offline%
 	echo,
 
-	%debug%
+	%debugmode%
 
 	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto :echostrings
 	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
@@ -100,7 +103,7 @@ if '%errorlevel%' NEQ '0' (
 		echo --------------------------------------
 		echo,
 		
-		%debug%
+		%debugmode%
 
 	:installutils
 		title CleanTech: Installing/Updating Utils
@@ -159,7 +162,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\Logs /r /d y
 		takeown /f C:\Logs\ /r /d y
 		echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
-		%debug%
+		%debugmode%
 		robocopy /s C:\Logs\ "%clientdir%\Logs"
 		echo,
 
@@ -171,7 +174,7 @@ if '%errorlevel%' NEQ '0' (
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
 		echo,
-		%debug%
+		%debugmode%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -183,7 +186,7 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%debug%
+		%debugmode%
 
 	:userfinish
 	    color E0
@@ -199,14 +202,14 @@ if '%errorlevel%' NEQ '0' (
 
 	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		%debug%
+		%debugmode%
 
 		echo Command running: del %workingdir%\autoclean-finish
 		del %workingdir%\autoclean-finish
 
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-reallyfinish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
-		%debug%
+		echo %workingdir%\autoclean-reallyfinish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		%debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: %workingdir%\boottimer.exe

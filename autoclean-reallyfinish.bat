@@ -54,6 +54,7 @@ if '%errorlevel%' NEQ '0' (
 	set firstname=%2
 	set FormattedDate=%3
 	set av=%4
+	set offline=%6
 
 	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
 	echo cd %workingdir% 
@@ -66,18 +67,18 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 	copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
 
-	set debug=rem nothing to see here
-	if defined %5 set debug=%5 else goto:stringtest	
+	set debugmode=rem nothing to see here
+	if defined %5 set debugmode=%5 else goto:stringtest	
 	
 	:stringtest
 	echo Testing strings...
 	echo Last Name: %lastname%
 	echo First name: %firstname%
 	echo Date: %FormattedDate%
-	echo Pause? %debug%
+	echo Pause? %debugmode%
 	echo,
 
-	%debug%
+	%debugmode%
 
 	:echostrings
 		echo --------------------------------------
@@ -87,10 +88,11 @@ if '%errorlevel%' NEQ '0' (
 		echo Date: %3
 		echo AV needed?: %4
 		echo Ninite Installer: %ninite%
+		echo Offline?: %6
 		echo --------------------------------------
 		echo,
 		
-		%debug%
+		%debugmode%
 
 	:setwindow
 		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
@@ -118,20 +120,20 @@ if '%errorlevel%' NEQ '0' (
 		) else ( goto :grabnumber )
 
 		:grabnumber
-		%debug%
+		%debugmode%
 		echo Grabbing number from dialog box...
 		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		echo,
-		%debug%
+		%debugmode%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		%debug%
+		%debugmode%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
-		%debug%
+		%debugmode%
 		cls & color 1f
 
 	title CleanTech - Really Finish
@@ -140,6 +142,7 @@ if '%errorlevel%' NEQ '0' (
 		for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
 
 	:netmap
+		if %offline%==y goto :parsing
 		echo Mapping Beast Documents folder to drive letter %netletter%
 		echo,
 
@@ -165,17 +168,27 @@ if '%errorlevel%' NEQ '0' (
 		mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 
+		if /i %offline%==y goto :offlinecopy
 		echo Copying %clientdir% to The BEAST...
 		echo robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
+		goto :deletefiles
 
+		:offlinecopy
+		echo Copying %clientdir% to the Desktop
+		echo robocopy /s %clientdir% "C:\%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s %clientdir% "C:\%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
+		echo ...Done!
+		echo,
+
+		:deletefiles
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
 		echo,
 
-		%debug%
+		%debugmode%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -196,12 +209,12 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		echo,
-		%debug%
+		%debugmode%
 
 	:restorepoint
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		%debug%
+		%debugmode%
 		
 	:reset
 		echo Turning UAC back on...
@@ -236,4 +249,4 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: rmdir %workingdir%
 		if exist c:\%HOMEPATH%\Desktop\autoclean-prep.bat del c:\%HOMEPATH%\Desktop\autoclean-prep.bat /q
 		rmdir %workingdir% /s /q
-		%debug%
+		%debugmode%

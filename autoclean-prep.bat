@@ -2,7 +2,7 @@
 :: AUTOCLEAN-PREP.BAT
 :: ------------------
 
-:: crappy to do list follows...
+:: Crappy to do list follows...
 :: Look into Task Manager vs. StartupTool (Nirsoft)
 :: In flag file, create last command name for restarting
 :: 			(ie: if %6 then set lastcommand = %6)
@@ -67,10 +67,17 @@ if '%errorlevel%' NEQ '0' (
 		set firstname=
 		set input=
 		set av=
-		set debugq=no
-		set debug=rem nothing to see here
+		set debugmode=no
+		set offline=no
+		set debugmode=rem nothing to see here
 
-		if defined %1 (set "debug=pause" & set "debugq=yes") else (goto:drivelettertest)
+		if defined %1 (set "debugmode=pause" & set "debugmode=yes") else (goto:drivelettertest)
+
+	:offlineset
+	set /p offline="Would you like to work offline? (y/n]) "
+		if /i %offline%==y (set "offline=yes" & goto ":clientinfo")
+		if /i %offline%==n (set "offline=no" & goto ":drivelettertest")
+		echo Incorrect input. & goto :offlineset
 	
 	:drivelettertest
 	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
@@ -141,6 +148,7 @@ if '%errorlevel%' NEQ '0' (
 			echo Incorrect input. & goto :avira
 
 	:netmap
+		if offline==y goto :cleanupfilesprep
 		echo Mapping Beast Documents folder to drive letter %netletter%
 		echo,
 
@@ -165,7 +173,7 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		copy /y NUL autoclean-prep >NUL
-		%debug%
+		%debugmode%
 
 		echo Copying automation files to %workingdir%
 		echo,
@@ -188,7 +196,7 @@ if '%errorlevel%' NEQ '0' (
 		echo -----------------------------------------------------------------------
 		echo Command running: %workingdir%\securitysoftview\SecuritySoftView.exe
 		call %workingdir%\securitysoftview\SecuritySoftView.exe
-		%debug%
+		%debugmode%
 		color 1f
 
 	:registryprep
@@ -199,7 +207,7 @@ if '%errorlevel%' NEQ '0' (
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
 			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
-			%debug%
+			%debugmode%
 			
 		:uac
 			echo Saving current UAC values
@@ -222,11 +230,11 @@ if '%errorlevel%' NEQ '0' (
 		    IF EXIST "%clientdir%\Preclean-Winlogon.reg" goto :autologoncheck
 		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-		    %debug%
+		    %debugmode%
 		    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg"
 		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg"
 		    echo,
-		    %debug%
+		    %debugmode%
 
 			:autologoncheck
 		    	if /i %autoadminlogonenabled%==1 goto :systeminfo
@@ -263,12 +271,12 @@ if '%errorlevel%' NEQ '0' (
 		echo Waiting for perfmon to finish...
 	    echo timeout 120
 		timeout 120
-		color E0 & %debug% & color 1f
+		color E0 & %debugmode% & color 1f
 
 	:nextstageprep
 		echo Adding next stage to Startup...
-		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite% %debugq%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugq%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 		:: Removing autoclean-start flag file
 		echo Command running: del autoclean-prep

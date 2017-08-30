@@ -37,7 +37,7 @@ if '%errorlevel%' NEQ '0' (
 	:putshellback
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	%debug%
+	%debugmode%
 	
 	set horiz_line=-
 	set dash=-
@@ -61,15 +61,15 @@ if '%errorlevel%' NEQ '0' (
 		echo bcdedit /deletevalue {default} safeboot
 		bcdedit /deletevalue {default} safeboot
 		echo,
-		%debug%
+		%debugmode%
 
 		:nextstage
 			echo Setting next stage batch file
-			echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-			%debug%
+			echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+			%debugmode%
 
-	debug=rem nothing to see here
-	if defined %5 set debug=%5 else goto:echostrings
+	debugmode=rem nothing to see here
+	if defined %5 set debugmode=%5 else goto:echostrings
 
 	:echostrings
 		color E0
@@ -79,12 +79,14 @@ if '%errorlevel%' NEQ '0' (
 		echo First name: %2
 		echo Date: %3
 		echo AV needed?: %4
+		echo Offline?: %6
 		echo -----------------------
 		echo,
 
 		set lastname=%1
 		set firstname=%2
 		set FormattedDate=%3
+		set offline=%6
 
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
@@ -105,7 +107,7 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%debug%
+		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		%debugmode%
 
 	shutdown /r /t 0
