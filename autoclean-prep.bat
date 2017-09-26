@@ -75,8 +75,8 @@ if '%errorlevel%' NEQ '0' (
 
 	:offlineset
 	set /p offline="Would you like to work offline? (y/n]) "
-		if /i %offline%==y (set "offline=yes" & goto ":clientinfo")
-		if /i %offline%==n (set "offline=no" & goto ":drivelettertest")
+		if /i %offline%==y (set "offline=yes" & goto :clientinfo)
+		if /i %offline%==n (set "offline=no" & goto :drivelettertest)
 		echo Incorrect input. & goto :offlineset
 	
 	:drivelettertest
