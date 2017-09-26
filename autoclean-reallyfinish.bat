@@ -139,16 +139,16 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Really Finish
 
 	:drivelettertest
-		for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+		for %%d in (d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
 
 	:netmap
 		if %offline%==y goto :parsing
-		echo Mapping Beast Documents folder to drive letter %netletter%
+		echo Mapping Beast "Clean Up Logs" folder to drive letter %netletter%
 		echo,
 
 		color E0
-    	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
+    	echo Command running: net use %netletter% "\\BEAST\Clean Up Logs" /user:techtutors *
+		net use %netletter% "\\BEAST\Clean Up Logs" /p:no /user:techtutors * 
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 
@@ -164,14 +164,14 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 
-		echo Command running: move "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		mkdir "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		echo Command running: move "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 
 		if /i %offline%==y goto :offlinecopy
 		echo Copying %clientdir% to The BEAST...
-		echo robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
-		robocopy /s %clientdir% "%netletter%\Clean Up Logs\%lastname%-%firstname%-%FormattedDate%"
+		echo robocopy /s %clientdir% "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s %clientdir% "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
 		goto :deletefiles

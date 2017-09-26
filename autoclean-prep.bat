@@ -80,7 +80,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Incorrect input. & goto :offlineset
 	
 	:drivelettertest
-	for %%d in (a b c d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast documents folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
+	for %%d in (d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
 	
 	:netletter
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
@@ -149,11 +149,11 @@ if '%errorlevel%' NEQ '0' (
 
 	:netmap
 		if offline==y goto :cleanupfilesprep
-		echo Mapping Beast Documents folder to drive letter %netletter%
+		echo Mapping Beast Utilities folder to drive letter %netletter%
 		echo,
 
-    	echo Command running: net use %netletter% \\BEAST\Documents /user:techtutors *
-		net use %netletter% \\BEAST\Documents /p:no /user:techtutors * 
+    	echo Command running: net use %netletter% \\BEAST\Utilities /user:techtutors *
+		net use %netletter% \\BEAST\Utilities /p:no /user:techtutors * 
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 
@@ -169,6 +169,8 @@ if '%errorlevel%' NEQ '0' (
 		cd %workingdir%
 		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
+:: Setting flag file
+
 		echo copy /y NUL autoclean-prep >NUL
 		echo,
 
@@ -177,8 +179,8 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Copying automation files to %workingdir%
 		echo,
-		echo Command running: robocopy "%netletter%\Automation\Clean Up" %workingdir% /XD "*.sync" /s
-		robocopy "%netletter%\Automation\Clean Up" %workingdir% /XD "*.sync" /s
+		echo Command running: robocopy "%netletter%\Clean Up" %workingdir% /XD "*.sync" /s
+		robocopy "%netletter%\Clean Up" %workingdir% /XD "*.sync" /s
 
 		echo Command running: mkdir %clientdir%
 		mkdir %clientdir%
