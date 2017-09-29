@@ -56,16 +56,16 @@ if '%errorlevel%' NEQ '0' (
 	set av=%4
 	set offline=%6
 
-	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
-	echo cd %workingdir% 
-	cd %workingdir%
-	set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+	set "workingdir=C:\CleanTechTemp"
+	echo cd "C:\CleanTechTemp"
+	cd "C:\CleanTechTemp"
+	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
-	%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
+	"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
 	
-	echo copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
+	echo copy /y NUL "C:\CleanTechTemp\autoclean-reallyfinish" >NUL
 	echo,
-	copy /y NUL %workingdir%\autoclean-reallyfinish >NUL
+	copy /y NUL "C:\CleanTechTemp\autoclean-reallyfinish" >NUL
 
 	set debugmode=rem nothing to see here
 	if defined %5 set debugmode=%5 else goto:stringtest	
@@ -95,11 +95,11 @@ if '%errorlevel%' NEQ '0' (
 		%debugmode%
 
 	:setwindow
-		%workingdir%\nircmd\nircmd.exe win max ititle "CleanTech - Really Finish"
-		%workingdir%\nircmd\nircmd.exe win settopmost title "CleanTech - Really Finish" 1
+		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
+		"C:\CleanTechTemp\nircmd\nircmd.exe" win settopmost title "CleanTech - Really Finish" 1
 
 	:boottimer
-		title CleanTech - BootTimer 2
+		title CleanTech - BootTimer
 		echo Press any key when BootTimer has reported its number.
 		echo DO NOT close the BootTimer dialog box yet!
 		:: timeout 15
@@ -109,28 +109,42 @@ if '%errorlevel%' NEQ '0' (
 		:: if "%ERRORLEVEL%"=="0" echo Program is running
 		:: MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
 		::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
-		
-:waitfortext
+
+		timeout 30
+
+		:: Certain installations of win7 don't play nice with above list tasklist method for waiting on BootTimer diag. Here's a hacky workaround...
+
+		:waitfortext
 		echo testing...
-		tasklist /v /fi "IMAGENAME eq BootTimer.exe" | find "WINDOWS BOOT TIME UTILITY"
-		if %ERRORLEVEL% NEQ 0 (
-			timeout 2
-			echo %errorlevel%
+		tasklist /v /fi "IMAGENAME eq BootTimer.exe" > boottimertest2.txt
+
+		findstr /c:"WINDOWS BOOT TIME UTILITY" boottimertest2.txt
+
+		if %errorlevel% NEQ 0 (
+			echo not ready...
+			timeout 5
 			goto :waitfortext
-		) else ( goto :grabnumber )
+		)
+
+		::if !ERRORLEVEL! NEQ 0 (
+		::	echo Error level is: %errorlevel%
+		::	timeout 2
+		::	goto :waitfortext
+		::)
 
 		:grabnumber
 		%debugmode%
 		echo Grabbing number from dialog box...
-		echo Command running: %workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
-		%workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
+		echo Command running: C:\CleanTechTemp\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
+		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
 		echo,
 		%debugmode%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
 		%debugmode%
 		echo Killing BootTimer.exe's command window
-		taskkill /FI "WINDOWTITLE eq %workingdir%\BootTimer.exe"
+		taskkill /FI "WINDOWTITLE eq C:\CleanTechTemp\BootTimer.exe"
+		timeout 30
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
 		%debugmode%
@@ -139,7 +153,7 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Really Finish
 
 	:drivelettertest
-		for %%d in (d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+		for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
 
 	:netmap
 		if %offline%==y goto :parsing
@@ -164,22 +178,22 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 
-		echo Command running: move "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		echo Command running: mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 
 		if /i %offline%==y goto :offlinecopy
-		echo Copying %clientdir% to The BEAST...
-		echo robocopy /s %clientdir% "%netletter%\%lastname%-%firstname%-%FormattedDate%"
-		robocopy /s %clientdir% "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		echo Copying "%clientdir%" to The BEAST...
+		echo robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
 		goto :deletefiles
 
 		:offlinecopy
-		echo Copying %clientdir% to the Desktop
-		echo robocopy /s %clientdir% "C:\%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
-		robocopy /s %clientdir% "C:\%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
+		echo Copying "%clientdir%" to the Desktop
+		echo robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
+		robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
 
@@ -206,8 +220,8 @@ if '%errorlevel%' NEQ '0' (
 		rd /s /q C:\ADW
 		echo,
 
-		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		echo,
 		%debugmode%
 
@@ -215,6 +229,13 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		%debugmode%
+
+	:remttadmin
+		echo Removing TechTutors admin user
+		echo net user TechTutors /delete
+		net user TechTutors /delete
+		if %errorlevel% EQU 0 echo ...done! & goto reset
+		echo "Something went wrong." & pause
 		
 	:reset
 		echo Turning UAC back on...
@@ -223,8 +244,10 @@ if '%errorlevel%' NEQ '0' (
 	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
 
 	    echo Removing AutoLogon
-		REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
-	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+		::Old commands. Should re-import reg from earlier instead, only use this if that fails for some inexplicible reason (AV?)
+		::REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
+	   	::REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /
+	   	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg" /f
 
 	:userfinish
 	    color E0
@@ -232,7 +255,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo -------------------------------------------------------------
 	    echo WhatInStartup starting... Please double-check startup entries
 	    echo -------------------------------------------------------------
-	    start /wait %workingdir%/whatinstartup/WhatInStartup.exe
+	    start /wait "C:\CleanTechTemp/whatinstartup/WhatInStartup.exe"
 		
 		cls
 		color 2f
@@ -246,7 +269,13 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		cd %homepath%
-		echo Command running: rmdir %workingdir%
-		if exist c:\%HOMEPATH%\Desktop\autoclean-prep.bat del c:\%HOMEPATH%\Desktop\autoclean-prep.bat /q
-		rmdir %workingdir% /s /q
+		echo Command running: rmdir C:\CleanTechTemp
+		if exist "C:\autoclean-prep.bat" del c:\C:\autoclean-prep.bat /q
+	rem	rmdir "C:\CleanTechTemp" /s /q
 		%debugmode%
+
+:done
+echo press any key to remove startup entry and finish!
+pause
+echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"

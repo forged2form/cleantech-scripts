@@ -17,7 +17,6 @@
 :: info. Will be easier to restart one of the stages if something goes sideways.
 :: Add test / install for .NET Framework 3.5 (Keep in mind Win 7/8/8.1/10)
 
-@echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions
@@ -69,9 +68,9 @@ if '%errorlevel%' NEQ '0' (
 		set av=
 		set debugmode=no
 		set offline=no
-		set debugmode=rem nothing to see here
+		set debugmode=rem
 
-		if defined %1 (set "debugmode=pause" & set "debugmode=yes") else (goto:drivelettertest)
+		if defined %1 (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
 
 	:offlineset
 	set /p offline="Would you like to work offline? (y/n]) "
@@ -80,7 +79,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Incorrect input. & goto :offlineset
 	
 	:drivelettertest
-	for %%d in (d e f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
+	for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
 	
 	:netletter
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
@@ -163,11 +162,26 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 	:cleanupfilesprep
-		set "workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp"
-		mkdir %workingdir%
-		echo cd %workingdir%
-		cd %workingdir%
-		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+		set "workingdir=C:\CleanTechTemp"
+		mkdir "C:\CleanTechTemp"
+		echo cd "C:\CleanTechTemp"
+		cd "C:\CleanTechTemp"
+		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
+
+		@echo off
+
+	:disableav
+		color 4f
+		echo IMPORTANT
+		echo -----------------------------------------------------------------------
+		echo Please check for running av and disable real-time features temporarily.
+		echo You'll need to ensure that it will be in passive mode throughout reboots.
+		echo Press any key when you've finished to continue.
+		echo -----------------------------------------------------------------------
+		echo Command running: "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
+		call "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
+		%debugmode%
+		color 1f
 
 :: Setting flag file
 
@@ -177,35 +191,23 @@ if '%errorlevel%' NEQ '0' (
 		copy /y NUL autoclean-prep >NUL
 		%debugmode%
 
-		echo Copying automation files to %workingdir%
+		echo Copying automation files to C:\CleanTechTemp
 		echo,
-		echo Command running: robocopy "%netletter%\Clean Up" %workingdir% /XD "*.sync" /s
-		robocopy "%netletter%\Clean Up" %workingdir% /XD "*.sync" /s
+		echo Command running: robocopy "%netletter%\Clean Up" "C:\CleanTechTemp" /XD "*.sync" /s
+		robocopy "%netletter%\Clean Up" "C:\CleanTechTemp" /XD "*.sync" /s
 
-		echo Command running: mkdir %clientdir%
-		mkdir %clientdir%
+		echo Command running: mkdir "%clientdir%"
+		mkdir "%clientdir%"
 		echo,
 
 	:maxwindow
-		%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Prep Stage"
-
-	:disableav
-		color 4f
-		echo IMPORTANT
-		echo -----------------------------------------------------------------------
-		echo Please check for running av and disable real-time features temporarily.
-		echo Press any key when you've finished to continue.
-		echo -----------------------------------------------------------------------
-		echo Command running: %workingdir%\securitysoftview\SecuritySoftView.exe
-		call %workingdir%\securitysoftview\SecuritySoftView.exe
-		%debugmode%
-		color 1f
+		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Prep Stage"
 
 	:registryprep
 
 		:restorepoint
 			echo Creating Pre-Clean restore point...
-			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" %clientdir%\PreClean-SystemRestore.reg
+			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" "%clientdir%\PreClean-SystemRestore.reg"
 			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
 			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
 			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
@@ -217,7 +219,7 @@ if '%errorlevel%' NEQ '0' (
 			IF EXIST "%clientdir%\Preclean-Policies_System.reg" goto :uac-reg
 
 			:policies-system
-				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System %clientdir%\Preclean-Policies_System.reg
+				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System "%clientdir%\Preclean-Policies_System.reg"
 				echo,
 
 			:uac-reg
@@ -277,8 +279,8 @@ if '%errorlevel%' NEQ '0' (
 
 	:nextstageprep
 		echo Adding next stage to Startup...
-		echo Command running: echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-		echo %workingdir%\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 		:: Removing autoclean-start flag file
 		echo Command running: del autoclean-prep
@@ -286,9 +288,17 @@ if '%errorlevel%' NEQ '0' (
 		del autoclean-prep
 		:: NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 
+		:createttadmin
+		:: Creating Tech Tutors admin accout to avoid PIN-based autologin issues
+		echo net user /add techtutors
+		net user /add techtutors
+		echo net localgroup administrators /add techtutors
+		net localgroup administrators /add techtutors
+
 		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: %workingdir%\boottimer.exe
+		echo Command running: "C:\CleanTechTemp\boottimer.exe"
 		echo,
-		start %workingdir%\boottimer.exe
-		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
-		shutdown /r /t 0
+		C:\CleanTechTemp\boottimer.exe
+		timeout 20
+		"C:\CleanTechTemp\nircmd\nircmd.exe" dlg "BootTimer.exe" "" click yes
+rem This could be causing boot timer to not properly init -->		shutdown /r /t 0

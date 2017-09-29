@@ -52,18 +52,18 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 
-	set workingdir=C:%HOMEPATH%\Desktop\CleanTechTemp
-	echo cd %workingdir% 
-	cd %workingdir%
+	set "workingdir=C:\CleanTechTemp"
+	echo cd "C:\CleanTechTemp"
+	cd "C:\CleanTechTemp"
 
 	set lastname=%1
 	set firstname=%2
 	set FormattedDate=%3
 	set offline=%6
 
-	set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
-	%workingdir%/nircmd/nircmd.exe win max ititle "CleanTech - Wrap Up"
+	"C:\CleanTechTemp/nircmd/nircmd.exe" win max ititle "CleanTech - Wrap Up"
 	
 	echo copy /y NUL autoclean-finish >NUL
 	echo,
@@ -74,7 +74,7 @@ if '%errorlevel%' NEQ '0' (
 	set firstname=%2
 	set FormattedDate=%3
 	set av=%4
-	set debugmode=rem nothing to see here
+	set debugmode=rem
 	if defined %5 set debugmode=%5 else goto:stringtest	
 	set offline=%6
 	
@@ -111,8 +111,8 @@ if '%errorlevel%' NEQ '0' (
 		echo ---------------------------------------------
 		echo Launching Ninite. Please Close when finished.
 		echo ---------------------------------------------
-		echo Command running: START "" /WAIT "%workingdir%\%ninite%"
-		START "" /WAIT "%workingdir%\%ninite%"
+		echo Command running: START "" /WAIT "C:\CleanTechTemp\%ninite%"
+		START "" /WAIT "C:\CleanTechTemp\%ninite%"
 		echo,
 
 	:systeminfo
@@ -184,8 +184,8 @@ if '%errorlevel%' NEQ '0' (
 		logman delete -n CleanTech-PreCleanTest
 		echo,
 
-		echo Command running: del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		del "C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%debugmode%
 
 	:userfinish
@@ -198,24 +198,22 @@ if '%errorlevel%' NEQ '0' (
 	    echo ------------------------------------------------------
 	    echo WhatInStartup starting... Please check startup entries
 	    echo ------------------------------------------------------
-	    start /wait %workingdir%\whatinstartup\WhatInStartup.exe
+	    start /wait C:\CleanTechTemp\whatinstartup\WhatInStartup.exe
 
 	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		%debugmode%
 
-		echo Command running: del %workingdir%\autoclean-finish
-		del %workingdir%\autoclean-finish
+		echo Command running: del "C:\CleanTechTemp\autoclean-finish"
+		del "C:\CleanTechTemp\autoclean-finish"
 
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-reallyfinish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo "C:\CleanTechTemp\autoclean-reallyfinish.bat" %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		%debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: %workingdir%\boottimer.exe
+		echo Command running: "C:\CleanTechTemp\boottimer.exe"
 		echo,
-		start %workingdir%\boottimer.exe
-		timeout 2
-		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
-
-	shutdown /r /t 0
+		C:\CleanTechTemp\boottimer.exe
+		timeout 20
+		"C:\CleanTechTemp\nircmd\nircmd.exe "dlg "BootTimer.exe" "" click yes

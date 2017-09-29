@@ -33,11 +33,6 @@ if '%errorlevel%' NEQ '0' (
     SETLOCAL EnableDelayedExpansion
 	
 	cls
-
-	:putshellback
-	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	%debugmode%
 	
 	set horiz_line=-
 	set dash=-
@@ -51,25 +46,12 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 	
-	set workingdir=c:%HOMEPATH%\Desktop\CleanTechTemp
-	echo cd %workingdir%
-	cd %workingdir%
-
-	:: For now, this should live here until I find a more elegant solution to dealing with Tron glitches
-	:reboot-prep
-		echo Ensuring next boot is in normal mode...
-		echo bcdedit /deletevalue {default} safeboot
-		bcdedit /deletevalue {default} safeboot
-		echo,
-		%debugmode%
-
-		:nextstage
-			echo Setting next stage batch file
-			echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-			%debugmode%
+	set "workingdir=C:\CleanTechTemp"
+	echo cd "C:\CleanTechTemp"
+	cd "C:\CleanTechTemp"
 
 	debugmode=rem nothing to see here
-	if defined %5 set debugmode=%5 else goto:echostrings
+	if defined %5 set debugmode=%5
 
 	:echostrings
 		color E0
@@ -88,17 +70,20 @@ if '%errorlevel%' NEQ '0' (
 		set FormattedDate=%3
 		set offline=%6
 
-		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
+		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
 	color 1f
 
 	:nir
-		%workingdir%\nircmd\nircmd.exe win min process explorer.exe
+		C:\CleanTechTemp\nircmd\nircmd.exe win min process explorer.exe
 
 	:starttron
 		echo Starting Tron...
-		START /WAIT %workingdir%\Tron\tron\Tron.bat -a -str -sdb -sdc -sm
+		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc -sm
+		pause
 		echo,
+
+	if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (
 
 	:reboot-prep
 		echo Ensuring next boot is in normal mode...
@@ -106,8 +91,20 @@ if '%errorlevel%' NEQ '0' (
 		bcdedit /deletevalue {default} safeboot
 		echo,
 
-		echo Setting next stage batch file
-		echo %workingdir%\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%debugmode%
+		:putshellback
+		echo Removing trontemp batch file...
+		del C:\autoclean-trontemp.bat
 
-	shutdown /r /t 0
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	%debugmode%
+
+		echo "Command running: REG IMOPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
+		REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
+		pause
+
+		echo Setting next stage batch file
+		echo "C:\CleanTechTemp\autoclean-finish.bat" %1 %2 %3 %4 %5 %6>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		%debugmode%
+		shutdown /r /t 0
+		) else shutdown /r /t 0
