@@ -2,7 +2,7 @@
 :: Autoclean-Tron.bat
 :: ------------------
 
-@echo off
+:: @echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions
@@ -79,11 +79,11 @@ if '%errorlevel%' NEQ '0' (
 
 	:starttron
 		echo Starting Tron...
-		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc -sm
+		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc
 		pause
 		echo,
 
-	if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (
+	:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (
 
 	:reboot-prep
 		echo Ensuring next boot is in normal mode...
@@ -103,8 +103,12 @@ if '%errorlevel%' NEQ '0' (
 		REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
 		pause
 
+	echo Adding flags to text file
+		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo,
+
 		echo Setting next stage batch file
 		echo "C:\CleanTechTemp\autoclean-finish.bat" %1 %2 %3 %4 %5 %6>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%debugmode%
 		shutdown /r /t 0
-		) else shutdown /r /t 0
+	::	) else shutdown /r /t 0

@@ -1,4 +1,4 @@
-@ echo off
+:: @echo off
 :: ------------------------
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------
@@ -224,6 +224,10 @@ pause
 	:: Swapping startup batch files
 	echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+
+	echo Adding flags to text file
+		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo,
 
 	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\autoclean-trontemp.bat
 	echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\autoclean-trontemp.bat

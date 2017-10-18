@@ -3,7 +3,7 @@
 :: AUTOCLEAN-REALLYFINISH.BAT
 :: --------------------------
 
-@echo off
+:: @echo off
 color 4f
 :: BatchGotAdmin 
 :-------------------------------------
@@ -273,6 +273,10 @@ if '%errorlevel%' NEQ '0' (
 		if exist "C:\autoclean-prep.bat" del c:\C:\autoclean-prep.bat /q
 	rem	rmdir "C:\CleanTechTemp" /s /q
 		%debugmode%
+
+		echo Adding flags to text file
+		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo,
 
 :done
 echo press any key to remove startup entry and finish!

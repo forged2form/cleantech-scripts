@@ -1,3 +1,5 @@
+:: @echo off
+
 :: ------------------
 :: AUTOCLEAN-PREP.BAT
 :: ------------------
@@ -114,10 +116,11 @@ if '%errorlevel%' NEQ '0' (
 		:checkautologin
 			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :avira) || goto :passquestion
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :avira) || goto :avira REM skipping autologin prompts
 			pause
 
 		:passquestion
+			set password=
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 			if /i %passq%==y goto :passwordneeded
 			if /i %passq%==n goto :avira
@@ -243,12 +246,12 @@ if '%errorlevel%' NEQ '0' (
 			:autologoncheck
 		    	if /i %autoadminlogonenabled%==1 goto :systeminfo
 
-		    :setautologin
-			    echo Setting autologin for CleanTech session...
-			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-			   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
-			    echo,
+	REM skipping due to current bugs	    :setautologin
+	rem		    echo Setting autologin for CleanTech session...
+	rem		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+	REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+	REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+	REM		    echo,
 
 	:systeminfo
 		echo Dumping preclean system info...
@@ -278,6 +281,9 @@ if '%errorlevel%' NEQ '0' (
 		color E0 & %debugmode% & color 1f
 
 	:nextstageprep
+		echo Adding flags to text file
+		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CT-flags.text
+		echo,
 		echo Adding next stage to Startup...
 		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 		echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
@@ -300,5 +306,5 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 		C:\CleanTechTemp\boottimer.exe
 		timeout 20
-		"C:\CleanTechTemp\nircmd\nircmd.exe" dlg "BootTimer.exe" "" click yes
+		C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
 rem This could be causing boot timer to not properly init -->		shutdown /r /t 0
