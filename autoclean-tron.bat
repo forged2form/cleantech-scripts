@@ -72,20 +72,17 @@ if '%errorlevel%' NEQ '0' (
 
 		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
+
+	echo Adding flags to text file
+		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo,
+
 	color 1f
 
 	:nir
 		C:\CleanTechTemp\nircmd\nircmd.exe win min process explorer.exe
 
-	:starttron
-		echo Starting Tron...
-		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc
-		pause
-		echo,
-
-	:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (
-
-	:reboot-prep
+			:reboot-prep
 		echo Ensuring next boot is in normal mode...
 		echo bcdedit /deletevalue {default} safeboot
 		bcdedit /deletevalue {default} safeboot
@@ -96,19 +93,25 @@ if '%errorlevel%' NEQ '0' (
 		del C:\autoclean-trontemp.bat
 
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	%debugmode%
 
-		echo "Command running: REG IMOPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
-		REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
+		:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
+		:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
 		pause
 
-	echo Adding flags to text file
-		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo Setting next stage batch file
+		echo C:\CleanTechTemp\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		%debugmode%
+
+	:starttron
+		echo Starting Tron...
+		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc
+		pause
 		echo,
 
-		echo Setting next stage batch file
-		echo "C:\CleanTechTemp\autoclean-finish.bat" %1 %2 %3 %4 %5 %6>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%debugmode%
+	:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (
+
+
 		shutdown /r /t 0
 	::	) else shutdown /r /t 0

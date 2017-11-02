@@ -212,12 +212,12 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		echo Setting next stage batch file
-		echo "C:\CleanTechTemp\autoclean-reallyfinish.bat" %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo C:\CleanTechTemp\autoclean-reallyfinish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		%debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: C:\CleanTechTemp\boottimer.exe
 		echo,
-		C:\CleanTechTemp\boottimer.exe
+		start C:\CleanTechTemp\boottimer.exe
 		timeout 20
-		C:\CleanTechTemp\nircmd\nircmd.exe "dlg "BootTimer.exe" "" click yes
+		C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes

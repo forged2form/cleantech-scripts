@@ -81,6 +81,7 @@ color 4f
 		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Start Clean"
 		"C:\CleanTechTemp\nircmd\nircmd.exe" win settopmost title "CleanTech - Start Clean" 1
 
+	:: --- START boottimer_1-2_pre.bat
 	:boottimer
 		title CleanTech - BootTimer
 		echo Press any key when BootTimer has reported its number.
@@ -127,9 +128,10 @@ color 4f
 		%debugmode%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq C:\CleanTechTemp\BootTimer.exe"
-		timeout 10
+		timeout 3
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
+		:: --- END boottimer_1-2_pre.bat
 		%debugmode%
 		cls & color 1f
 pause
@@ -201,6 +203,8 @@ pause
 
 	pause
 
+	goto remflag REM skip for now b/c issues
+
 	::Set up for TechTutors account during safeboot environment
 	:ttadminlogin
 		echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
@@ -216,6 +220,7 @@ pause
 		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 		    echo,
 
+	:remflag
 	:: Removing autoclean-start flag file
 	echo del "C:\CleanTechTemp\autoclean-startclean"
 	echo,

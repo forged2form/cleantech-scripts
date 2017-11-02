@@ -87,7 +87,6 @@ if '%errorlevel%' NEQ '0' (
 		echo First name: %2
 		echo Date: %3
 		echo AV needed?: %4
-		echo Ninite Installer: %ninite%
 		echo Offline?: %6
 		echo --------------------------------------
 		echo,
@@ -255,7 +254,7 @@ if '%errorlevel%' NEQ '0' (
 	    echo -------------------------------------------------------------
 	    echo WhatInStartup starting... Please double-check startup entries
 	    echo -------------------------------------------------------------
-	    start /wait "C:\CleanTechTemp/whatinstartup/WhatInStartup.exe"
+	    start /wait C:\CleanTechTemp/whatinstartup/WhatInStartup.exe
 		
 		cls
 		color 2f

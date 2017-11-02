@@ -5,12 +5,12 @@
 :: ------------------
 
 :: Crappy to do list follows...
-:: Look into Task Manager vs. StartupTool (Nirsoft)
+:: Look into Task Manager vs. StartupTool (Nirsoft) - REQ from Will
 :: In flag file, create last command name for restarting
 :: 			(ie: if %6 then set lastcommand = %6)
 :: SYSTEM BEEP AT TIMES OF INPUT
 :: add test for null entries
-:: add test for network connectivity (eth & BEAST access)
+:: add test for network connectivity (NIC working & BEAST accessible)
 :: look into ability to drag and drop text file or csv with client data,
 :: (e.g. name, av needed, password)
 :: Should log start time of each script (really, of each command)
@@ -67,7 +67,7 @@ if '%errorlevel%' NEQ '0' (
 		set lastname=
 		set firstname=
 		set input=
-		set av=
+		set av=n
 		set debugmode=no
 		set offline=no
 		set debugmode=rem
@@ -79,19 +79,16 @@ if '%errorlevel%' NEQ '0' (
 		if /i %offline%==y (set "offline=yes" & goto :clientinfo)
 		if /i %offline%==n (set "offline=no" & goto :drivelettertest)
 		echo Incorrect input. & goto :offlineset
-	
-	:drivelettertest
-	for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
-	
-	:netletter
+
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
         IF NOT "%%~f"=="" (
             set /a FormattedDate=10000 * %%f + 100 * %%d + %%a
             set FormattedDate=!FormattedDate:~-0,4!-!FormattedDate:~-4,2!-!FormattedDate:~-2,2!
         )
     )
-	
-	:clientinfo
+
+    :clientinfo
+	:: --- START client_info_entry.bat
 		color E0
 		echo ------------------------
 		echo Please enter client info
@@ -135,22 +132,29 @@ if '%errorlevel%' NEQ '0' (
 			set passconfirm=
 			set /p passconfirm="Is this correct? (y/n): "
 
-			if /i %passconfirm%==y goto :avira
+			if /i %passconfirm%==y goto :passcorrect
 			if /i %passconfirm%==n goto :passwordneeded
 			echo Incorrect input. & goto :passconfirm
+			:passcorrect
 	
-		:avira
+		:av
 			echo,
-			set av=
-			set /p av="Does the client need Avira installed? (y/n): "
+			set av=n
+			:: REPLACE with TrendMicro eventually
+			:: set /p av="Does the client need Avira installed? (y/n): "
 
-		:aviraconfirm
+		:avconfirm
 			if /i %av%==y goto :netmap
 			if /i %av%==n goto :netmap
-			echo Incorrect input. & goto :avira
+			echo Incorrect input. & goto :av
+	:: --- END client_info_entry.bat
 
+	:: --- START map_beast.bat
+	:drivelettertest
+	for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
+	
+	if offline==y goto :cleanupfilesprep
 	:netmap
-		if offline==y goto :cleanupfilesprep
 		echo Mapping Beast Utilities folder to drive letter %netletter%
 		echo,
 
@@ -161,34 +165,21 @@ if '%errorlevel%' NEQ '0' (
 
 		color 1f
 		echo Network drive mapped to %netletter%
-		echo Creating clean up subdirectories for %firstname% %lastname% on the BEAST...
+    :: --- END map_beast.bat
+
+    :: --- START cleanupfilesprep.bat
+	:cleanupfilesprep
+		echo Creating local clean up subdirectories for %firstname% %lastname%
 		echo,
 
-	:cleanupfilesprep
 		set "workingdir=C:\CleanTechTemp"
 		mkdir "C:\CleanTechTemp"
 		echo cd "C:\CleanTechTemp"
 		cd "C:\CleanTechTemp"
 		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
-		@echo off
-
-	:disableav
-		color 4f
-		echo IMPORTANT
-		echo -----------------------------------------------------------------------
-		echo Please check for running av and disable real-time features temporarily.
-		echo You'll need to ensure that it will be in passive mode throughout reboots.
-		echo Press any key when you've finished to continue.
-		echo -----------------------------------------------------------------------
-		echo Command running: "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
-		call "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
-		%debugmode%
-		color 1f
-
-:: Setting flag file
-
-		echo copy /y NUL autoclean-prep >NUL
+		:: Setting flag file
+		echo Command running: copy /y NUL autoclean-prep >NUL
 		echo,
 
 		copy /y NUL autoclean-prep >NUL
@@ -203,34 +194,37 @@ if '%errorlevel%' NEQ '0' (
 		mkdir "%clientdir%"
 		echo,
 
+			:disableav
+			color 4f
+			echo IMPORTANT
+			echo -----------------------------------------------------------------------
+			echo Please check for running av and disable real-time features temporarily.
+			echo You'll need to ensure that it will be in passive mode throughout reboots.
+			echo Press any key when you've finished to continue.
+			echo -----------------------------------------------------------------------
+			echo Command running: "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
+			call "C:\CleanTechTemp\securitysoftview\SecuritySoftView.exe"
+			%debugmode%
+		:: --- END cleanupfilesprep.bat
+
+			color 1f 			REM set color to 
+
 	:maxwindow
 		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Prep Stage"
 
-	:registryprep
+	:: --- START reg_backup.bat
+	:registrybackup
+		reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" "%clientdir%\PreClean-SystemRestore.reg"
 
-		:restorepoint
-			echo Creating Pre-Clean restore point...
-			reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" "%clientdir%\PreClean-SystemRestore.reg"
-			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
-			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
-			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
-			%debugmode%
-			
-		:uac
+		:uacbackup
 			echo Saving current UAC values
 
+			REM safety code incase we aprubtly closed or crashed... Don't want to overwrite client's original registry entries
 			IF EXIST "%clientdir%\Preclean-Policies_System.reg" goto :uac-reg
 
 			:policies-system
 				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System "%clientdir%\Preclean-Policies_System.reg"
 				echo,
-
-			:uac-reg
-			    echo Turning off UAC temporarily...
-			    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-			    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-			    echo,
-
 		    
 		:autologon
 		    echo Saving current AutoLogon values
@@ -242,9 +236,34 @@ if '%errorlevel%' NEQ '0' (
 		    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg"
 		    echo,
 		    %debugmode%
+	    :: --- END reg_backup.bat
 
-			:autologoncheck
-		    	if /i %autoadminlogonenabled%==1 goto :systeminfo
+	    :: --- START reg_prepmode_changes.bat
+	    :uac-reg
+			    echo Turning off UAC temporarily...
+			    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+			    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+			    echo,
+
+		:restorepoint
+			echo Creating Pre-Clean restore point...
+			reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /t reg_dword /v SystemRestorePointCreationFrequency /d 0 /f >nul 2>&1
+			powershell "Enable-ComputerRestore -Drive "%SystemDrive%""
+			powershell "Checkpoint-Computer -Description 'CleanTech: Pre-Clean checkpoint'"
+			%debugmode%
+		:: --- END reg_prepmode_changes.bat
+
+		:: --- START techtutors_admin_account_create.bat
+		:createttadmin
+		:: Creating Tech Tutors admin accout to avoid PIN-based autologin issues and ot aid in recovery in case things go cataclysmic
+		echo net user /add techtutors
+		net user /add techtutors
+		echo net localgroup administrators /add techtutors
+		net localgroup administrators /add techtutors
+		:: --- END techtutors_admin_account_create.bat
+		
+			REM :autologoncheck
+		    REM	if /i %autoadminlogonenabled%==1 goto :systeminfo
 
 	REM skipping due to current bugs	    :setautologin
 	rem		    echo Setting autologin for CleanTech session...
@@ -288,23 +307,18 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 		echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
-		:: Removing autoclean-start flag file
 		echo Command running: del autoclean-prep
 		echo,
 		del autoclean-prep
 		:: NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 
-		:createttadmin
-		:: Creating Tech Tutors admin accout to avoid PIN-based autologin issues
-		echo net user /add techtutors
-		net user /add techtutors
-		echo net localgroup administrators /add techtutors
-		net localgroup administrators /add techtutors
-
+		:: --- START boottimer_1-1_pre.bat
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: "C:\CleanTechTemp\boottimer.exe"
 		echo,
-		C:\CleanTechTemp\boottimer.exe
-		timeout 20
-		C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
-rem This could be causing boot timer to not properly init -->		shutdown /r /t 0
+		start C:\CleanTechTemp\boottimer.exe
+		echo press any key when you're ready for stage 2
+		pause,
+		:: C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
+		shutdown /r /t 0
+		:: --- END boottimer_1-1_pre.bat
