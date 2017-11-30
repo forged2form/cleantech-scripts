@@ -195,7 +195,10 @@ echo At skip_mbam
 pause
 
 	:uninstallview
-	call "C:\CleanTechTemp/uninstallview.exe"
+
+	call "C:\CleanTechTemp\pc-decrapifier.exe"
+	
+	call "C:\CleanTechTemp\uninstallview.exe"
 	echo Command running: del autoclean-mbam
 	del autoclean-mbam
 	echo,
