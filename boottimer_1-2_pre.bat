@@ -1,23 +1,10 @@
 :: @echo off
 
-:: ------------------
-:: AUTOCLEAN-PREP.BAT
-:: ------------------
+:: ---------------------
+:: boottimer_1-2_pre.bat
+:: ---------------------
 
-:: Crappy to do list follows...
-:: Look into Task Manager vs. StartupTool (Nirsoft)
-:: In flag file, create last command name for restarting
-:: 			(ie: if %6 then set lastcommand = %6)
-:: SYSTEM BEEP AT TIMES OF INPUT
-:: add test for null entries
-:: add test for network connectivity (eth & BEAST access)
-:: look into ability to drag and drop text file or csv with client data,
-:: (e.g. name, av needed, password)
-:: Should log start time of each script (really, of each command)
-::     - Observe logwithdate batch file to see how vocatus accomplishes this
-:: Need to swtich away from flags and read from a file instead for the client
-:: info. Will be easier to restart one of the stages if something goes sideways.
-:: Add test / install for .NET Framework 3.5 (Keep in mind Win 7/8/8.1/10)
+:: %1 is location of batch file to run after timer is complete. If not, exit cleanly, opening text file to view
 
 :: BatchGotAdmin 
 :-------------------------------------
@@ -43,6 +30,11 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 
 	:: --- START boottimer_1-2_pre.bat
+
+	if NOT defined %1 "set finishaction=notepad %testfile%" else "set finishaction=%1"
+
+	if NOT defined %2 "set testfile=boottimertest" else set testfile=%2
+
 		:boottimer
 		title CleanTech - BootTimer
 		echo Press any key when BootTimer has reported its number.
@@ -92,4 +84,8 @@ if '%errorlevel%' NEQ '0' (
 		timeout 3
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
+
+		echo "Running command: "%finishaction%
+		echo pause
+		%finishaction%
 		:: --- END boottimer_1-2_pre.bat

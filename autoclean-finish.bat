@@ -139,8 +139,8 @@ if '%errorlevel%' NEQ '0' (
 		logman start CleanTech-PostCleanTest
 
 		echo Waiting for perfmon to finish...
-	    echo timeout 120
-		timeout 120
+	    echo timeout 330
+		timeout 330
 		echo ...Done!
 		echo,
 

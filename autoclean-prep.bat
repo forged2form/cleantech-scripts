@@ -74,11 +74,12 @@ if '%errorlevel%' NEQ '0' (
 
 		if defined %1 (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
 
-	:offlineset
-	set /p offline="Would you like to work offline? (y/n]) "
-		if /i %offline%==y (set "offline=yes" & goto :clientinfo)
-		if /i %offline%==n (set "offline=no" & goto :drivelettertest)
-		echo Incorrect input. & goto :offlineset
+	:::offlineset
+	::set offline=
+	::set /p offline="Would you like to work offline? (y/n]) "
+	::	if /i %offline%==y (set "offline=yes" & goto :clientinfo)
+	::	if /i %offline%==n (set "offline=no" & goto :drivelettertest)
+	::	echo Incorrect input. & goto :offlineset
 
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
         IF NOT "%%~f"=="" (
@@ -113,14 +114,14 @@ if '%errorlevel%' NEQ '0' (
 		:checkautologin
 			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :avira) || goto :avira REM skipping autologin prompts
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :av) || goto :av REM skipping autologin prompts
 			pause
 
 		:passquestion
 			set password=
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 			if /i %passq%==y goto :passwordneeded
-			if /i %passq%==n goto :avira
+			if /i %passq%==n goto :av
 			echo Incorrect input. & goto :passquestion
 
 		:passwordneeded
@@ -141,17 +142,17 @@ if '%errorlevel%' NEQ '0' (
 			echo,
 			set av=n
 			:: REPLACE with TrendMicro eventually
-			:: set /p av="Does the client need Avira installed? (y/n): "
+			:: set /p av="Does the client need av installed? (y/n): "
 
 		:avconfirm
-			if /i %av%==y goto :netmap
-			if /i %av%==n goto :netmap
+			if /i %av%==y goto :drivelettertest
+			if /i %av%==n goto :drivelettertest
 			echo Incorrect input. & goto :av
 	:: --- END client_info_entry.bat
 
 	:: --- START map_beast.bat
 	:drivelettertest
-	for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netletter)
+	for %%d in (f g h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
 	
 	if offline==y goto :cleanupfilesprep
 	:netmap
@@ -207,7 +208,7 @@ if '%errorlevel%' NEQ '0' (
 			%debugmode%
 		:: --- END cleanupfilesprep.bat
 
-			color 1f 			REM set color to 
+			color 1f
 
 	:maxwindow
 		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Prep Stage"
@@ -295,8 +296,8 @@ if '%errorlevel%' NEQ '0' (
 		logman start CleanTech-PreCleanTest
 
 		echo Waiting for perfmon to finish...
-	    echo timeout 120
-		timeout 120
+	    echo timeout 330
+		timeout 330
 		color E0 & %debugmode% & color 1f
 
 	:nextstageprep

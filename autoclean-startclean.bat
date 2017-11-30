@@ -128,7 +128,7 @@ color 4f
 		%debugmode%
 		echo Killing BootTimer.exe's command window
 		taskkill /FI "WINDOWTITLE eq C:\CleanTechTemp\BootTimer.exe"
-		timeout 3
+		timeout 30
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
 		:: --- END boottimer_1-2_pre.bat
