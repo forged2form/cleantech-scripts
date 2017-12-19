@@ -1,8 +1,8 @@
 :: Transfer user data
 
-takeown
+takeown /r /a /f FILE
 
-icacls
+icacls /t FILE
 
 xcopy %olddir% /f /s /e %newdir%
 
