@@ -172,8 +172,8 @@ if '%errorlevel%' NEQ '0' (
 		echo Mapping Beast Utilities folder to drive letter %netletter%
 		echo,
 
-    	echo Command running: net use %netletter% \\BEAST\Utilities /user:techtutors *
-		net use %netletter% \\BEAST\Utilities /p:no /user:techtutors * 
+    	echo Command running: net use %netletter% \\TechTutors-1\Utilities /user:techtutors *
+		net use %netletter% \\TechTutors-1\Utilities /p:no /user:techtutors * 
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 

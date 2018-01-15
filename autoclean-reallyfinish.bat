@@ -160,8 +160,8 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		color E0
-    	echo Command running: net use %netletter% "\\BEAST\Clean Up Logs" /user:techtutors *
-		net use %netletter% "\\BEAST\Clean Up Logs" /p:no /user:techtutors * 
+    	echo Command running: net use %netletter% "\\TechTutors-1\Clean Up Logs" /user:techtutors *
+		net use %netletter% "\\TechTutors-1\Clean Up Logs" /p:no /user:techtutors * 
 		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
 		echo,
 
