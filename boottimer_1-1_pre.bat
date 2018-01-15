@@ -46,7 +46,7 @@ if '%errorlevel%' NEQ '0' (
     echo starting BootTimer
     echo Starting BootTimer. Prepare for reboot...
 		
-	echo Command running: "C:\CleanTechTemp\boottimer.exe"
+	echo Command running: "C:\CleanTechTemp\boottimer.exe"	
 	echo,
 	start C:\CleanTechTemp\boottimer.exe
 	echo press any key when you're ready to reboot

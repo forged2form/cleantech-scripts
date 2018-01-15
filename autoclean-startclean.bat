@@ -256,4 +256,15 @@ pause
 	echo,
 	%debugmode%
 
+	:speedmode
+	set speedmode=
+	set /p speedmode="Did you want to 'speed things up'? (y/n) "
+	if /i speedmode==y goto :shutdown
+	if /i speedmode==n goto :reboot
+	echo "Invalid entry: Please enter Y or N..." && goto :speedmode
+
+	:shutdown
+	shutdown /t 0
+
+	:reboot
 	shutdown /r /t 0

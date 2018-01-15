@@ -88,6 +88,17 @@ if '%errorlevel%' NEQ '0' (
         )
     )
 
+    :: Prep for 'speed-mode' - rudimentary -- FIXME!
+    :speedmode
+    set speedmode=
+    set /p speedmode="Would you like to speed things up? (y/n) "
+	if /i %speedmode%==y goto :hibernateoff
+	if /i %speedmode%==n goto :clientinfo
+	goto :speedmode
+
+	:hibernateoff
+	powercfg /hibernate off
+
     :clientinfo
 	:: --- START client_info_entry.bat
 		color E0
@@ -98,6 +109,8 @@ if '%errorlevel%' NEQ '0' (
 
 		:clientname
 			set input=
+			set firstname=
+			set lastname=
 			set /p firstname="Client's first name: "
 			set /p lastname="Client's Last name: "
 			echo,

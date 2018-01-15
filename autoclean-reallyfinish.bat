@@ -278,6 +278,18 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 :done
+
+	:speedmode
+	set speedmode=
+	set /p speedmode="Did you 'speed things up'? (y/n) "
+	if /i speedmode==y goto :hibernateon
+	if /i speedmode==n goto :finalize
+	echo "Invalid entry: Please enter Y or N..." && goto :speedmode
+
+:hibernateon
+powercfg /hibernate on
+
+:finalize
 echo press any key to remove startup entry and finish!
 pause
 echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
