@@ -107,13 +107,13 @@ color 4f
 		if %errorlevel% NEQ 0 (
 			echo not ready...
 			timeout 5
-			goto :waitfortext
+			goto waitfortext
 		)
 
 		::if !ERRORLEVEL! NEQ 0 (
 		::	echo Error level is: %errorlevel%
 		::	timeout 2
-		::	goto :waitfortext
+		::	goto waitfortext
 		::)
 
 		:grabnumber
@@ -140,8 +140,8 @@ pause
 	%debugmode%
 	color E0
 
-	if EXIST autoclean-mbam goto :uninstallview
-	if EXIST autoclean-startclean goto :mbam
+	if EXIST autoclean-mbam goto uninstallview
+	if EXIST autoclean-startclean goto mbam
 	
 	:noflagfile
 	color 1f
@@ -259,9 +259,9 @@ pause
 	:speedmode
 	set speedmode=
 	set /p speedmode="Did you want to 'speed things up'? (y/n) "
-	if /i speedmode==y goto :shutdown
-	if /i speedmode==n goto :reboot
-	echo "Invalid entry: Please enter Y or N..." && goto :speedmode
+	if /i speedmode==y goto shutdown
+	if /i speedmode==n goto reboot
+	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 	:shutdown
 	shutdown /t 0

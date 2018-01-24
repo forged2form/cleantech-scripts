@@ -77,9 +77,9 @@ if '%errorlevel%' NEQ '0' (
 	:::offlineset
 	::set offline=
 	::set /p offline="Would you like to work offline? (y/n]) "
-	::	if /i %offline%==y (set "offline=yes" & goto :clientinfo)
-	::	if /i %offline%==n (set "offline=no" & goto :drivelettertest)
-	::	echo Incorrect input. & goto :offlineset
+	::	if /i %offline%==y (set "offline=yes" & goto clientinfo)
+	::	if /i %offline%==n (set "offline=no" & goto drivelettertest)
+	::	echo Incorrect input. & goto offlineset
 
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
         IF NOT "%%~f"=="" (
@@ -92,9 +92,9 @@ if '%errorlevel%' NEQ '0' (
     :speedmode
     set speedmode=
     set /p speedmode="Would you like to speed things up? (y/n) "
-	if /i %speedmode%==y goto :hibernateoff
-	if /i %speedmode%==n goto :clientinfo
-	goto :speedmode
+	if /i %speedmode%==y goto hibernateoff
+	if /i %speedmode%==n goto clientinfo
+	goto speedmode
 
 	:hibernateoff
 	powercfg /hibernate off
@@ -118,37 +118,37 @@ if '%errorlevel%' NEQ '0' (
 		:clientnameconfirm
 			set /p input="You entered: %firstname% %lastname%. Is this correct? (y/n): "
 			rem %=%
-			if /i %input%==y goto :clientnamegood
-			if /i %input%==n goto :clientname
-			echo Incorrect input. & goto :clientnameconfirm
+			if /i %input%==y goto clientnamegood
+			if /i %input%==n goto clientname
+			echo Incorrect input. & goto clientnameconfirm
 
 		:clientnamegood
 
 		:checkautologin
 			set autoadminlogonenabled=0
 			reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto :av) || goto :av REM skipping autologin prompts
+			if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto av) || goto av REM skipping autologin prompts
 			pause
 
 		:passquestion
 			set password=
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
-			if /i %passq%==y goto :passwordneeded
-			if /i %passq%==n goto :av
-			echo Incorrect input. & goto :passquestion
+			if /i %passq%==y goto passwordneeded
+			if /i %passq%==n goto av
+			echo Incorrect input. & goto passquestion
 
 		:passwordneeded
 			set /p password="Please enter the password for %USERNAME%: "
-			if /i %password%=="" echo You didn't enter anything! *Sigh* Try again... & goto :passwordneeded
+			if /i %password%=="" echo You didn't enter anything! *Sigh* Try again... & goto passwordneeded
 
 			:passconfirm
 			echo You entered: %password%
 			set passconfirm=
 			set /p passconfirm="Is this correct? (y/n): "
 
-			if /i %passconfirm%==y goto :passcorrect
-			if /i %passconfirm%==n goto :passwordneeded
-			echo Incorrect input. & goto :passconfirm
+			if /i %passconfirm%==y goto passcorrect
+			if /i %passconfirm%==n goto passwordneeded
+			echo Incorrect input. & goto passconfirm
 			:passcorrect
 	
 		:av
@@ -158,23 +158,23 @@ if '%errorlevel%' NEQ '0' (
 			:: set /p av="Does the client need av installed? (y/n): "
 
 		:avconfirm
-			if /i %av%==y goto :drivelettertest
-			if /i %av%==n goto :drivelettertest
-			echo Incorrect input. & goto :av
+			if /i %av%==y goto drivelettertest
+			if /i %av%==n goto drivelettertest
+			echo Incorrect input. & goto av
 	:: --- END client_info_entry.bat
 
 	:: --- START map_beast.bat
 	:drivelettertest
-	for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+	for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 	
-	if offline==y goto :cleanupfilesprep
+	if offline==y goto cleanupfilesprep
 	:netmap
 		echo Mapping Beast Utilities folder to drive letter %netletter%
 		echo,
 
     	echo Command running: net use %netletter% \\TechTutors-1\Utilities /user:techtutors *
 		net use %netletter% \\TechTutors-1\Utilities /p:no /user:techtutors * 
-		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
+		if errorlevel 1 echo That didn't seem to work. Try again... & goto netmap
 		echo,
 
 		color 1f
@@ -234,7 +234,7 @@ if '%errorlevel%' NEQ '0' (
 			echo Saving current UAC values
 
 			REM safety code incase we aprubtly closed or crashed... Don't want to overwrite client's original registry entries
-			IF EXIST "%clientdir%\Preclean-Policies_System.reg" goto :uac-reg
+			IF EXIST "%clientdir%\Preclean-Policies_System.reg" goto uac-reg
 
 			:policies-system
 				REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System "%clientdir%\Preclean-Policies_System.reg"
@@ -242,7 +242,7 @@ if '%errorlevel%' NEQ '0' (
 		    
 		:autologon
 		    echo Saving current AutoLogon values
-		    IF EXIST "%clientdir%\Preclean-Winlogon.reg" goto :autologoncheck
+		    IF EXIST "%clientdir%\Preclean-Winlogon.reg" goto autologoncheck
 		    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 		    %debugmode%
@@ -277,7 +277,7 @@ if '%errorlevel%' NEQ '0' (
 		:: --- END techtutors_admin_account_create.bat
 		
 			REM :autologoncheck
-		    REM	if /i %autoadminlogonenabled%==1 goto :systeminfo
+		    REM	if /i %autoadminlogonenabled%==1 goto systeminfo
 
 	REM skipping due to current bugs	    :setautologin
 	rem		    echo Setting autologin for CleanTech session...
