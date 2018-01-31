@@ -89,7 +89,7 @@ if '%errorlevel%' NEQ '0' (
 
 	%debugmode%
 
-	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto :echostrings
+	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto echostrings
 	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
 
 	:echostrings

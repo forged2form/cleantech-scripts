@@ -132,6 +132,7 @@ if '%errorlevel%' NEQ '0' (
 
 		:passquestion
 			set password=
+			set passq=
 			set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 			if /i %passq%==y goto passwordneeded
 			if /i %passq%==n goto av

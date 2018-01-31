@@ -122,13 +122,13 @@ if '%errorlevel%' NEQ '0' (
 		if %errorlevel% NEQ 0 (
 			echo not ready...
 			timeout 5
-			goto :waitfortext
+			goto waitfortext
 		)
 
 		::if !ERRORLEVEL! NEQ 0 (
 		::	echo Error level is: %errorlevel%
 		::	timeout 2
-		::	goto :waitfortext
+		::	goto waitfortext
 		::)
 
 		:grabnumber
@@ -152,17 +152,17 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Really Finish
 
 	:drivelettertest
-		for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto :netmap)
+		for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 
 	:netmap
-		if %offline%==y goto :parsing
+		if %offline%==y goto parsing
 		echo Mapping Beast "Clean Up Logs" folder to drive letter %netletter%
 		echo,
 
 		color E0
     	echo Command running: net use %netletter% "\\TechTutors-1\CleanUpLogs" /user:techtutors *
 		net use %netletter% "\\TechTutors-1\CleanUpLogs" /p:no /user:techtutors * 
-		if errorlevel 1 echo That didn't seem to work. Try again... & goto :netmap
+		if errorlevel 1 echo That didn't seem to work. Try again... & goto netmap
 		echo,
 
 		color 1f
@@ -181,13 +181,13 @@ if '%errorlevel%' NEQ '0' (
 		mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo,
 
-		if /i %offline%==y goto :offlinecopy
+		if /i %offline%==y goto offlinecopy
 		echo Copying "%clientdir%" to The BEAST...
 		echo robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
 		echo ...Done!
 		echo,
-		goto :deletefiles
+		goto deletefiles
 
 		:offlinecopy
 		echo Copying "%clientdir%" to the Desktop
@@ -282,9 +282,9 @@ if '%errorlevel%' NEQ '0' (
 	:speedmode
 	set speedmode=
 	set /p speedmode="Did you 'speed things up'? (y/n) "
-	if /i speedmode==y goto :hibernateon
-	if /i speedmode==n goto :finalize
-	echo "Invalid entry: Please enter Y or N..." && goto :speedmode
+	if /i speedmode==y goto hibernateon
+	if /i speedmode==n goto finalize
+	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 :hibernateon
 powercfg /hibernate on
