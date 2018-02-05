@@ -72,7 +72,7 @@ if '%errorlevel%' NEQ '0' (
 		set offline=no
 		set debugmode=rem
 
-		if defined %1 (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
+	rem	if defined %1 (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
 
 	:::offlineset
 	::set offline=
@@ -310,13 +310,13 @@ if '%errorlevel%' NEQ '0' (
 		logman start CleanTech-PreCleanTest
 
 		echo Waiting for perfmon to finish...
-	    echo timeout 330
-		timeout 330
+	    echo timeout 660
+		timeout 660
 		color E0 & %debugmode% & color 1f
 
 	:nextstageprep
 		echo Adding flags to text file
-		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CT-flags.text
+		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CT-flags.txt
 		echo,
 		echo Adding next stage to Startup...
 		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"

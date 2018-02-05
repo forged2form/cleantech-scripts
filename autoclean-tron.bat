@@ -74,7 +74,7 @@ if '%errorlevel%' NEQ '0' (
 
 
 	echo Adding flags to text file
-		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
 		echo,
 
 	color 1f

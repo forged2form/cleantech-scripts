@@ -274,7 +274,7 @@ if '%errorlevel%' NEQ '0' (
 		%debugmode%
 
 		echo Adding flags to text file
-		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
 		echo,
 
 :done
@@ -282,8 +282,8 @@ if '%errorlevel%' NEQ '0' (
 	:speedmode
 	set speedmode=
 	set /p speedmode="Did you 'speed things up'? (y/n) "
-	if /i speedmode==y goto hibernateon
-	if /i speedmode==n goto finalize
+	if /i %speedmode%==y goto hibernateon
+	if /i %speedmode%==n goto finalize
 	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 :hibernateon

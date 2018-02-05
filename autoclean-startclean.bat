@@ -150,63 +150,6 @@ pause
 	echo,
 	copy /y NUL autoclean-startclean >NUL
 	%debugmode%
-	goto mbam
-
-	:mbam
-	color E0
-	echo "At :mbam"
-	echo Launching MBAM...
-	pause
-
-	copy /y NUL autoclean-mbam >NUL
-:: JOB: MBAM (Malwarebytes Anti-Malware)
-echo checking for existing MBAM install...
-pause
-set EXISTING_MBAM=dunno
-if exist "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
-if exist "%ProgramFiles%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
-if exist "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
-if exist "%ProgramFiles(x86)%\Malwarebytes\Anti-Malware\mbam.exe" set EXISTING_MBAM=yes
-echo done...
-pause
-if %EXISTING_MBAM%==yes (
-	echo MBAM exists! Skipping...
-	pause
-	goto skip_mbam
-	)
-
-		:: "stage_3_disinfect\mbam\Malwarebytes Anti-Malware v3.0.4.1269.exe" /verysilent
-		FOR /f "tokens=*" %%G IN ('dir /b "C:\CleanTechTemp\Tron\tron\resources\stage_3_disinfect\mbam\Malwarebytes*.exe"') DO "%%G" /SP- /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /NOCANCEL
-		if exist "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk" del "%PUBLIC%\Desktop\Malwarebytes Anti-Malware.lnk"
-		if exist "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk" del "%USERPROFILES%\Desktop\Malwarebytes Anti-Malware.lnk"
-		if exist "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk" del "%ALLUSERSPROFILE%\Desktop\Malwarebytes Anti-Malware.lnk"
-		copy /y "C:\CleanTechTemp\Tron\tron\resources\stage_3_disinfect\mbam\settings.conf" "%ProgramData%\Malwarebytes\Malwarebytes Anti-Malware\Configuration\settings.conf" >> "%LOGPATH%\%LOGFILE%" 2>NUL
-
-		:: Install the bundled definitions file and integrate the log into Tron's log
-		"C:\CleanTechTemp\Tron\tron\resources\stage_3_disinfect\mbam\mbam2-rules.exe" /sp- /verysilent /suppressmsgboxes /log="%clientdir%\mbam_rules_install.log" /norestart
-
-		:: Scan for and launch appropriate architecture version
-		if exist "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe" start "" "%ProgramFiles(x86)%\Malwarebytes Anti-Malware\mbam.exe"
-		if exist "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe" start "" "%ProgramFiles%\Malwarebytes Anti-Malware\mbam.exe"
-	)
-)
-:skip_mbam
-echo At skip_mbam
-pause
-
-	:uninstallview
-
-	call "C:\CleanTechTemp\pc-decrapifier.exe"
-	
-	call "C:\CleanTechTemp\uninstallview.exe"
-	echo Command running: del autoclean-mbam
-	del autoclean-mbam
-	echo,
-	color 1f
-
-	pause
-
-	goto remflag REM skip for now b/c issues
 
 	::Set up for TechTutors account during safeboot environment
 	:ttadminlogin
@@ -215,6 +158,8 @@ pause
 	    %debugmode%
 	    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg"
 	    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg"
+
+	    goto remflag REM skip for now b/c issues
 
 	    :setautologin
 		    echo Setting autologin for Tron session...
@@ -234,7 +179,7 @@ pause
 	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 	echo Adding flags to text file
-		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
 		echo,
 
 	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\autoclean-trontemp.bat
@@ -259,8 +204,8 @@ pause
 	:speedmode
 	set speedmode=
 	set /p speedmode="Did you want to 'speed things up'? (y/n) "
-	if /i speedmode==y goto shutdown
-	if /i speedmode==n goto reboot
+	if /i %speedmode%==y goto shutdown
+	if /i %speedmode%==n goto reboot
 	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 	:shutdown

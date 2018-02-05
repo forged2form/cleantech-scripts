@@ -105,6 +105,14 @@ if '%errorlevel%' NEQ '0' (
 		
 		%debugmode%
 
+	:uninstallview
+
+	call "C:\CleanTechTemp\pc-decrapifier.exe"
+	
+	call "C:\CleanTechTemp\uninstallview.exe"
+	echo,
+	color 1f
+
 	:installutils
 		title CleanTech: Installing/Updating Utils
 		color E0
@@ -139,18 +147,18 @@ if '%errorlevel%' NEQ '0' (
 		logman start CleanTech-PostCleanTest
 
 		echo Waiting for perfmon to finish...
-	    echo timeout 330
-		timeout 330
+	    echo timeout 660
+		timeout 660
 		echo ...Done!
 		echo,
 
 	    echo Copying Performance Monitor logs...
 		
 		echo Command running: takeown /f c:\perfmon /r /d y
-		takeown /f C:\CleanTech\ /r /d y
+		takeown /f C:\CT-Perfmon\ /r /d y
 		
-		echo robocopy /s C:\CleanTech\ "%clientdir%\perfmon"
-		robocopy /s C:\CleanTech\ "%clientdir%\perfmon"
+		echo robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
+		robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
 		echo ...Done!
 		echo,
 	
@@ -208,7 +216,7 @@ if '%errorlevel%' NEQ '0' (
 		del "C:\CleanTechTemp\autoclean-finish"
 
 		echo Adding flags to text file
-		echo "Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.text
+		echo "Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
 		echo,
 
 		echo Setting next stage batch file
