@@ -106,7 +106,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:starttron
 		echo Starting Tron...
-		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdb -sdc
+		C:\CleanTechTemp\Tron\tron\Tron.bat -a -str -sdc
 		echo,
 
 	:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "C:\CleanTechTemp\Tron\tron\resources\tron_stage.txt" (

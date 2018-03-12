@@ -152,7 +152,7 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Really Finish
 
 	:drivelettertest
-		for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
+		for %%d in (t u v w x y z) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 
 	:netmap
 		if %offline%==y goto parsing

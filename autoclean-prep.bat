@@ -166,7 +166,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:: --- START map_beast.bat
 	:drivelettertest
-	for %%d in (h i j k l m n o p q r s t u v) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
+	for %%d in (t u v w x y z) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 	
 	if offline==y goto cleanupfilesprep
 	:netmap
