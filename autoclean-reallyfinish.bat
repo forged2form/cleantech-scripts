@@ -3,7 +3,7 @@
 :: AUTOCLEAN-REALLYFINISH.BAT
 :: --------------------------
 
-:: @echo off
+@echo off
 color 4f
 :: BatchGotAdmin 
 :-------------------------------------

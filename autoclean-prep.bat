@@ -1,4 +1,4 @@
-:: @echo off
+@echo off
 
 :: ------------------
 :: AUTOCLEAN-PREP.BAT
@@ -49,7 +49,7 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Prep Stage
 	
 	cls
-	
+	r
 	set horiz_line=-
 	set dash=-
 	
@@ -61,8 +61,8 @@ if '%errorlevel%' NEQ '0' (
 	echo CleanTech - Prep Stage
 	echo %horiz_line%
 	echo,
-
-	:initializeVars
+DATE=`date +%Y-%m-%d-%H` && sudo ddrescue -n /dev/sdX CLIENT-NAME-$DATE.img CLIENT-NAME-$DATE.log && sudo ddrescue -r3 /dev/sdX CLIENT-NAME-$DATE.img CLIENT-NAME-$DATE.lo
+	:ingitializeVars
 		set netletter=
 		set lastname=
 		set firstname=
@@ -286,6 +286,10 @@ if '%errorlevel%' NEQ '0' (
 	REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
 	REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 	REM		    echo,
+
+	:chocoinstall
+	echo installing Chocolatey
+         @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).Downloa    dString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 	:systeminfo
 		echo Dumping preclean system info...

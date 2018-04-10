@@ -1,4 +1,4 @@
-:: @echo off
+@echo off
 
 :: ---------------------
 :: boottimer_1-2_pre.bat

@@ -1,4 +1,4 @@
-:: @echo off
+@echo off
 :: ------------------------
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------

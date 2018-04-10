@@ -7,7 +7,7 @@
 :: or ask for option to restart Tron..
 ::    - Will need to look into custom restart of Tron with saved Tron stage
 
-:: @echo off
+@echo off
 :: BatchGotAdmin 
 :-------------------------------------
 ::  --> Check for permissions
@@ -88,9 +88,9 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
 	%debugmode%
-
-	if %4==y set "ninite=Ninite Avira Chrome Teamviewer 12 Installer.exe" & goto echostrings
-	if %4==n set "ninite=Ninite Chrome Teamviewer 12 Installer.exe"
+	
+	choco install teamviewer vlc chrome -y
+	if %4==y call TrendMicroInstaller.exe
 
 	:echostrings
 		echo --------------------------------------
