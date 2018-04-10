@@ -61,7 +61,7 @@ if '%errorlevel%' NEQ '0' (
 	echo CleanTech - Prep Stage
 	echo %horiz_line%
 	echo,
-DATE=`date +%Y-%m-%d-%H` && sudo ddrescue -n /dev/sdX CLIENT-NAME-$DATE.img CLIENT-NAME-$DATE.log && sudo ddrescue -r3 /dev/sdX CLIENT-NAME-$DATE.img CLIENT-NAME-$DATE.lo
+
 	:ingitializeVars
 		set netletter=
 		set lastname=
