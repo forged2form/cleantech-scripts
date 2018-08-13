@@ -1,5 +1,5 @@
 @echo off
-
+:: TIM
 :: ------------------
 :: AUTOCLEAN-PREP.BAT
 :: ------------------
@@ -49,7 +49,7 @@ if '%errorlevel%' NEQ '0' (
 	title CleanTech - Prep Stage
 	
 	cls
-	r
+
 	set horiz_line=-
 	set dash=-
 	
@@ -87,14 +87,6 @@ if '%errorlevel%' NEQ '0' (
             set FormattedDate=!FormattedDate:~-0,4!-!FormattedDate:~-4,2!-!FormattedDate:~-2,2!
         )
     )
-
-    :: Prep for 'speed-mode' - rudimentary -- FIXME!
-    :speedmode
-    set speedmode=
-    set /p speedmode="Would you like to speed things up? (y/n) "
-	if /i %speedmode%==y goto hibernateoff
-	if /i %speedmode%==n goto clientinfo
-	goto speedmode
 
 	:hibernateoff
 	powercfg /hibernate off
@@ -320,7 +312,7 @@ if '%errorlevel%' NEQ '0' (
 
 	:nextstageprep
 		echo Adding flags to text file
-		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CT-flags.txt
+		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CleanTechTemp\CT-flags.txt
 		echo,
 		echo Adding next stage to Startup...
 		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"

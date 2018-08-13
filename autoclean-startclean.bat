@@ -2,6 +2,11 @@
 :: ------------------------
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------
+
+:: !!!!!!!
+:: NOTE: Change location of trontemp. Root of system drive causes issues with some AV even when disabled...
+:: !!!!!!!
+
 chcp 65001
 
 :: BatchGotAdmin
@@ -179,13 +184,13 @@ pause
 	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 	echo Adding flags to text file
-		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
+		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
-	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\autoclean-trontemp.bat
-	echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\autoclean-trontemp.bat
-	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,c:\autoclean-trontemp.bat" /f
+	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\CleanTechTemp\autoclean-trontemp.bat
+	echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\CleanTechTemp\autoclean-trontemp.bat
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,C:\CleanTechTemp\autoclean-trontemp.bat" /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,C:\CleanTechTemp\autoclean-trontemp.bat" /f
 	%debugmode%
 
 	bcdedit /set {default} safeboot network
@@ -200,13 +205,6 @@ pause
 	echo from the CleanTechTemp directory on the Desktop
 	echo,
 	%debugmode%
-
-	:speedmode
-	set speedmode=
-	set /p speedmode="Did you want to 'speed things up'? (y/n) "
-	if /i %speedmode%==y goto shutdown
-	if /i %speedmode%==n goto reboot
-	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 	:shutdown
 	shutdown /t 0

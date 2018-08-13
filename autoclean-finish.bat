@@ -109,19 +109,9 @@ if '%errorlevel%' NEQ '0' (
 
 	call "C:\CleanTechTemp\pc-decrapifier.exe"
 	
-	call "C:\CleanTechTemp\uninstallview.exe"
+	call "C:\CleanTechTemp\geek.exe"
 	echo,
 	color 1f
-
-	:installutils
-		title CleanTech: Installing/Updating Utils
-		color E0
-		echo ---------------------------------------------
-		echo Launching Ninite. Please Close when finished.
-		echo ---------------------------------------------
-		echo Command running: START "" /WAIT "C:\CleanTechTemp\%ninite%"
-		START "" /WAIT "C:\CleanTechTemp\%ninite%"
-		echo,
 
 	:systeminfo
 		color 1f
@@ -216,7 +206,7 @@ if '%errorlevel%' NEQ '0' (
 		del "C:\CleanTechTemp\autoclean-finish"
 
 		echo Adding flags to text file
-		echo "Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
+		echo "Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 		echo Setting next stage batch file

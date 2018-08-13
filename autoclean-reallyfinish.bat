@@ -228,13 +228,6 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		%debugmode%
-
-	:remttadmin
-		echo Removing TechTutors admin user
-		echo net user TechTutors /delete
-		net user TechTutors /delete
-		if %errorlevel% EQU 0 echo ...done! & goto reset
-		echo "Something went wrong." & pause
 		
 	:reset
 		echo Turning UAC back on...
@@ -274,17 +267,10 @@ if '%errorlevel%' NEQ '0' (
 		%debugmode%
 
 		echo Adding flags to text file
-		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
+		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 :done
-
-	:speedmode
-	set speedmode=
-	set /p speedmode="Did you 'speed things up'? (y/n) "
-	if /i %speedmode%==y goto hibernateon
-	if /i %speedmode%==n goto finalize
-	echo "Invalid entry: Please enter Y or N..." && goto speedmode
 
 :hibernateon
 powercfg /hibernate on

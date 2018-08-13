@@ -55,55 +55,97 @@ if '%errorlevel%' NEQ '0' (
 
         :clientnamegood
 
-    :ttadmin
-    ::test for existence of tt admin user
+:wificonfig
+    echo Installing TechTutors Wi-Fi Access...
+    netsh wlan add profile filename="Wi-Fi-TechTutors-5G.xml"
+    netsh wlan set profileorder name=TechTutors interface=* priority=1
+    netsh wlan add profile filename="Wi-Fi-TechTutors.xml"
+    netsh wlan set profileorder name=TechTutors interface=* priority=2
+    echo,
+
+    echo Connecting to TechTutors Wi-Fi
+    netsh connect name=TechTutors ssid=Techtutors
+    echo,
+
+:installutils
+    echo Installing Chocolatey...
+
+    echo,
+    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+    echo,
+    echo Installing common utilities and apps...
+    start /wait choco install -y bonjour googlechrome teamviewer tightvnc
+    echo,
+    echo ALL DONE!
+    pause
+
+:remoteaccess
+    echo,
+    echo Configuring remote access (including Safemode)
+    reg import remoteaccess.reg
+
+:ttadmin
+::test for existence of tt admin user
     net user|findstr /i "techtutors"
     if %errorlevel% EQU 0 echo "Techtutors admin already exists. Skipping..." & goto ttpassgood
 
-    :ttadminadd
+:ttadminadd
     net user /add TechTutors
     net localgroup /add administrators TechTutors
 
-    :ttpass
+:ttpass
     echo,
     set ttpass=
     set /p ttpass="Please enter TechTutors username password: "
 
-    :ttpassconfirm
+:ttpassconfirm
     set ttpconfirm=y
     set /p ttpconfirm="You entered %ttpass% , is that correct? (Y/n) "
     if /i %ttpconfirm%==y goto setttpass
     if /i%ttpconfirm%==n goto ttpass
     echo Incorrect input. Try again. & goto ttpassconfirm
 
-    :setttpass
+:setttpass
     echo,
     echo Setting TechTutors local admin password...
     net user TechTutors %ttpass%
     echo,
 
-    :ttpassgood
+:ttpassgood
     echo TechTutors admin account ready.
     echo,
 
-    :installutils
-    echo Installing Chocolatey...
+:hostnametest
+    set hostq=y
+    set /p hostq="Current hostname is %COMPUTERNAME%. Would you like to change it? (Y/n) "
     echo,
-    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+    if /i %hostq%==y goto hostnamechange
+    if /i %hostq%==n goto almostdone
+    echo "Invalid input. Pleast try again..."
+    goto hostnametest    
+
+:hostnamechange
+    set newhostname=%COMPUTERNAME%
+    set newhostq=n
+    set /p newhostname="Please enter a new host-name "
     echo,
-    echo Installing TeamViewer Host...
+    set /p newhostq="You entered %newhostname%, is this correct? (y/N) "
+    if /i %newhostq%==y goto newhostname
+    if /i %newhostq%==n goto hostnamechange
+    echo "Invalid input. Pleast try again..."
+    goto hostnamechange
+
+:newhostname
+    WMIC computersystem where name='%COMPUTERNAME%' call rename name='%newhostname%'
+
+:firewall
+    echo Adding TeamViewer to exeception list
+    netsh advfirewall add rule name="TeamViewer TCP" program="C:\Program Files (x86)\TeamViewer\TeamViewer.exe" protocol=tcp dir=in enable=yes action=allow Profile=Private,Public
+    netsh advfirewall add rule name="TeamViewer UDP" program="C:\Program Files (x86)\TeamViewer\TeamViewer.exe" protocol=udp dir=in enable=yes action=allow Profile=Private,Public
+
+:almostdone
+    echo, "We need to reboot. Let's do that now, mmmKay? Close anything you need before you press another button..."
     echo,
-    start /wait teamviewer_host_setup.exe
-    echo,
-    echo Installing common utilities and apps...
-    start /wait choco install -y googlechrome adobereader flashplayerplugin silverlight vlc teamviewer
-    echo,
-    echo ALL DONE!
     pause
-
-    :DeSuck
-    echo "De-Sucking Windows 10... (Well, as much as one CAN De-Suck it at least...)"
-    echo,
-    ::FIXME! Add ps script and logic for choosing w/ or w/o OD
-
-    :end
+    shutdown /r /t 0
+:end

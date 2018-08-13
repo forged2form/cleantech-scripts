@@ -74,7 +74,7 @@ if '%errorlevel%' NEQ '0' (
 
 
 	echo Adding flags to text file
-		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CT-flags.txt
+		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 	color 1f
@@ -90,11 +90,14 @@ if '%errorlevel%' NEQ '0' (
 
 		:putshellback
 		echo Removing trontemp batch file...
-		del C:\autoclean-trontemp.bat
+		del C:\CleanTechTemp\autoclean-trontemp.bat
+
+		"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
 
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	%debugmode%
+
 
 		:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
 		:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f

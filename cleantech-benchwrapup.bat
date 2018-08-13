@@ -36,8 +36,43 @@ if '%errorlevel%' NEQ '0' (
     net user /active:no techtutors
 
     :fixtime
-    net stop "Windows Time"
-    reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters /v Type /t REG_SZ /d NoSync
-    net start "Windows Time"
+    echo "Fixing Windows Time.."
+    net stop w32time
+
+w32tm /unregister
+
+w32tm /register
+
+net start w32time
+
+w32tm /resync
+    ::net stop "Windows Time"
+    ::reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters /v Type /t REG_SZ /d NoSync
+    ::net start "Windows Time"
+    ::reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters /v Type /t REG_SZ /d Sync
+    ::net stop "Windows Time"
+    ::net start "Windows Time"
+    echo "Done!"
+    echo,
+
+    :del_remoteaccess
+    echo, Uninstalling tightvnc
+    choco uninstall -y tightvnc
+    echo,
+    
+    echo,
+    echo,
+    echo Removing remote access (including Safemode)
+    reg import del_remoteaccess.reg
+
+    :del_ttwifi
+    echo Removing TechTutors Wi-Fi networks
+    echo,
+    netsh wlan delete profile name=TechTutors
+    netsh wlan delete profile name=TechTutors-5G
+    netsh wlan delete profile name=TechTutors-Guest
 
     :end
+    color af
+    echo All done!
+    pause
