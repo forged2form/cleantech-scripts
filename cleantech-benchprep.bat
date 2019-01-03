@@ -30,6 +30,9 @@ if '%errorlevel%' NEQ '0' (
     mode 100,35
 	title TechTutors - Install Chocolatey and Utils
 
+
+goto wificonfig
+
 :clientinfo
     :: --- START client_info_entry.bat
         color E0
@@ -67,14 +70,22 @@ if '%errorlevel%' NEQ '0' (
     netsh connect name=TechTutors ssid=Techtutors
     echo,
 
-:installutils
-    echo Installing Chocolatey...
+:choco
+    if not exist "%systemdrive\ProgramData\chocolatey\bin\choco.exe" goto chocoinstall
+    choco upgrade all
+    goto installapps
 
+    :chocoinstall
+    echo Installing Chocolatey...
     echo,
-    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%profilesfolder%\Public\chocolatey\bin"
+    echo,
+
+    :installapps
     echo,
     echo Installing common utilities and apps...
-    start /wait choco install -y bonjour googlechrome teamviewer tightvnc
+    choco install -y bonjour googlechrome tightvnc
     echo,
     echo ALL DONE!
     pause
@@ -93,22 +104,10 @@ if '%errorlevel%' NEQ '0' (
     net user /add TechTutors
     net localgroup /add administrators TechTutors
 
-:ttpass
-    echo,
-    set ttpass=
-    set /p ttpass="Please enter TechTutors username password: "
-
-:ttpassconfirm
-    set ttpconfirm=y
-    set /p ttpconfirm="You entered %ttpass% , is that correct? (Y/n) "
-    if /i %ttpconfirm%==y goto setttpass
-    if /i%ttpconfirm%==n goto ttpass
-    echo Incorrect input. Try again. & goto ttpassconfirm
-
 :setttpass
     echo,
     echo Setting TechTutors local admin password...
-    net user TechTutors %ttpass%
+    net user TechTutors *
     echo,
 
 :ttpassgood

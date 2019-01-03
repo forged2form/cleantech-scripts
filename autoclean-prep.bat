@@ -313,6 +313,7 @@ if '%errorlevel%' NEQ '0' (
 	:nextstageprep
 		echo Adding flags to text file
 		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CleanTechTemp\CT-flags.txt
+		echo "AutoClean-Prep command: C:\CleanTechTemp\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%"
 		echo,
 		echo Adding next stage to Startup...
 		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"

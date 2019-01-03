@@ -139,9 +139,9 @@ color 4f
 		:: --- END boottimer_1-2_pre.bat
 		%debugmode%
 		cls & color 1f
-pause
+
 	title CleanTech - Start Clean
-pause
+
 	%debugmode%
 	color E0
 
