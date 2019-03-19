@@ -53,8 +53,8 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
 	set "workingdir=C:\CleanTechTemp"
-	echo cd "C:\CleanTechTemp"
-	cd "C:\CleanTechTemp"
+	echo cd "%workingdir%"
+	cd "%workingdir%"
 
 	set lastname=%lastname%
 	set firstname=%firstname%
@@ -63,7 +63,7 @@ if '%errorlevel%' NEQ '0' (
 
 	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
-	"C:\CleanTechTemp/nircmd/nircmd.exe" win max ititle "CleanTech - Wrap Up"
+	"%workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Wrap Up"
 	
 	echo copy /y NUL autoclean-finish >NUL
 	echo,
@@ -88,7 +88,7 @@ if '%errorlevel%' NEQ '0' (
 
 	%debugmode%
 	
-	choco install teamviewer vlc chrome -y
+	::choco install teamviewer vlc chrome -y
 	if %no%==y call TrendMicroInstaller.exe
 
 	:echostrings
@@ -106,9 +106,9 @@ if '%errorlevel%' NEQ '0' (
 
 	:uninstallview
 
-	call "C:\CleanTechTemp\pc-decrapifier.exe"
+	call "%workingdir%\pc-decrapifier.exe"
 	
-	call "C:\CleanTechTemp\geek.exe"
+	call "%workingdir%\geek.exe"
 	echo,
 	color 1f
 
@@ -195,26 +195,26 @@ if '%errorlevel%' NEQ '0' (
 	    echo ------------------------------------------------------
 	    echo WhatInStartup starting... Please check startup entries
 	    echo ------------------------------------------------------
-	    start /wait C:\CleanTechTemp\whatinstartup\WhatInStartup.exe
+	    start /wait %workingdir%\whatinstartup\WhatInStartup.exe
 
 	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		%debugmode%
 
-		echo Command running: del "C:\CleanTechTemp\autoclean-finish"
-		del "C:\CleanTechTemp\autoclean-finish"
+		echo Command running: del "%workingdir%\autoclean-finish"
+		del "%workingdir%\autoclean-finish"
 
 		echo Adding flags to text file
-		echo "Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
+		echo "Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >>%workingdir%\CT-flags.txt
 		echo,
 
 		echo Setting next stage batch file
-		echo C:\CleanTechTemp\autoclean-reallyfinish.bat %lastname% %firstname% %FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo %workingdir%\autoclean-reallyfinish.bat %lastname% %firstname% %FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		%debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: C:\CleanTechTemp\boottimer.exe
+		echo Command running: %workingdir%\boottimer.exe
 		echo,
-		start C:\CleanTechTemp\boottimer.exe
+		start %workingdir%\boottimer.exe
 		timeout 20
-		C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
+		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
