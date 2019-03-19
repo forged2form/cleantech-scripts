@@ -70,17 +70,17 @@ if '%errorlevel%' NEQ '0' (
 		::)
 
 		:grabnumber
-		%debugmode%
+		%tac_debugmode%
 		echo Grabbing number from dialog box...
-		echo Command running: "C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
-		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
+		echo Command running: "%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
+		"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
 		echo,
-		%debugmode%
+		%tac_debugmode%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		%debugmode%
+		%tac_debugmode%
 		echo Killing BootTimer.exe's command window
-		taskkill /FI "WINDOWTITLE eq C:\CleanTechTemp\BootTimer.exe"
+		taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
 		timeout 3
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f

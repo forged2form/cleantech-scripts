@@ -56,12 +56,12 @@ if '%errorlevel%' NEQ '0' (
 	echo cd "%workingdir%"
 	cd "%workingdir%"
 
-	set lastname=%lastname%
-	set firstname=%firstname%
-	set FormattedDate=%FormattedDate%
-	set offline=
+	set tac_lastname=%tac_lastname%
+	set tac_firstname=%tac_firstname%
+	set tac_FormattedDate=%tac_FormattedDate%
+	set tac_offline=
 
-	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
+	set "clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 
 	"%workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Wrap Up"
 	
@@ -70,23 +70,23 @@ if '%errorlevel%' NEQ '0' (
 	copy /y NUL autoclean-finish >NUL
 
 	echo Setting client info variables
-	set lastname=%lastname%
-	set firstname=%firstname%
-	set FormattedDate=%FormattedDate%
-	set av=%no%
-	set debugmode=rem
-	set offline=
+	set tac_lastname=%tac_lastname%
+	set tac_firstname=%tac_firstname%
+	set tac_FormattedDate=%tac_FormattedDate%
+	set tac_av=%no%
+	set tac_debugmode=rem
+	set tac_offline=
 	
 	:stringtest
 	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
-	echo Pause? %debugmode%
-	echo Offline? %offline%
+	echo Last Name: %tac_lastname%
+	echo First name: %tac_firstname%
+	echo Date: %tac_FormattedDate%
+	echo Pause? %tac_debugmode%
+	echo Offline? %tac_offline%
 	echo,
 
-	%debugmode%
+	%tac_debugmode%
 	
 	::choco install teamviewer vlc chrome -y
 	if %no%==y call TrendMicroInstaller.exe
@@ -94,15 +94,15 @@ if '%errorlevel%' NEQ '0' (
 	:echostrings
 		echo --------------------------------------
 		echo Client Info:
-		echo Last Name: %lastname%
-		echo First name: %firstname%
-		echo Date: %FormattedDate%
+		echo Last Name: %tac_lastname%
+		echo First name: %tac_firstname%
+		echo Date: %tac_FormattedDate%
 		echo AV needed?: %no%
 		echo Ninite Installer: %ninite%
 		echo --------------------------------------
 		echo,
 		
-		%debugmode%
+		%tac_debugmode%
 
 	:uninstallview
 
@@ -117,8 +117,8 @@ if '%errorlevel%' NEQ '0' (
 		title CleanTech: Performance Test #2
 
 		echo Dumping postclean system info...
-		echo Command running: msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-systeminfo-%FormattedDate%.nfo"
-		msinfo32 /nfo "%clientdir%\%lastname%-%firstname%-postclean-systeminfo-%FormattedDate%.nfo"
+		echo Command running: msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
+		msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
 		echo,
 
 		echo Starting Performance Monitor. Please wait... 
@@ -159,7 +159,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: takeown /f c:\Logs /r /d y
 		takeown /f C:\Logs\ /r /d y
 		echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
-		%debugmode%
+		%tac_debugmode%
 		robocopy /s C:\Logs\ "%clientdir%\Logs"
 		echo,
 
@@ -171,7 +171,7 @@ if '%errorlevel%' NEQ '0' (
 		title CleanTech: Removing Cleanup Files
 		echo Removing cleanup files...
 		echo,
-		%debugmode%
+		%tac_debugmode%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -183,7 +183,7 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%debugmode%
+		%tac_debugmode%
 
 	:userfinish
 	    color E0
@@ -199,18 +199,18 @@ if '%errorlevel%' NEQ '0' (
 
 	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		%debugmode%
+		%tac_debugmode%
 
 		echo Command running: del "%workingdir%\autoclean-finish"
 		del "%workingdir%\autoclean-finish"
 
 		echo Adding flags to text file
-		echo "Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >>%workingdir%\CT-flags.txt
+		echo "Finish Flags = %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 " >>%workingdir%\CT-flags.txt
 		echo,
 
 		echo Setting next stage batch file
-		echo %workingdir%\autoclean-reallyfinish.bat %lastname% %firstname% %FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
-		%debugmode%
+		echo %workingdir%\autoclean-reallyfinish.bat %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		%tac_debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...
 		echo Command running: %workingdir%\boottimer.exe

@@ -46,10 +46,10 @@ if '%errorlevel%' NEQ '0' (
     echo starting BootTimer
     echo Starting BootTimer. Prepare for reboot...
 		
-	echo Command running: "C:\CleanTechTemp\boottimer.exe"	
+	echo Command running: "%tac_workingdir%\boottimer.exe"	
 	echo,
-	start C:\CleanTechTemp\boottimer.exe
+	start %tac_workingdir%\boottimer.exe
 	echo press any key when you're ready to reboot
 	pause,
-	:: C:\CleanTechTemp\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
+	:: %tac_workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
 	shutdown /r /t 0

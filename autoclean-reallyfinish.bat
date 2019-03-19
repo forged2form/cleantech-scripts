@@ -49,52 +49,45 @@ if '%errorlevel%' NEQ '0' (
 	echo %horiz_line%
 	echo,
 
-	echo Setting client info variables
-	set lastname=%lastname%
-	set firstname=%firstname%
-	set FormattedDate=%FormattedDate%
-	set av=%no%
-	set offline=
-
 	set "workingdir=C:\CleanTechTemp"
 	echo cd "C:\CleanTechTemp"
 	cd "C:\CleanTechTemp"
-	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
+	set "clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 
-	"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
+	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
 	
-	echo copy /y NUL "C:\CleanTechTemp\autoclean-reallyfinish" >NUL
+	echo copy /y NUL "%tac_workingdir%\autoclean-reallyfinish" >NUL
 	echo,
-	copy /y NUL "C:\CleanTechTemp\autoclean-reallyfinish" >NUL
+	copy /y NUL "%tac_workingdir%\autoclean-reallyfinish" >NUL
 
-	set debugmode=rem nothing to see here
+	set tac_debugmode=rem nothing to see here
 	
 	:stringtest
 	echo Testing strings...
-	echo Last Name: %lastname%
-	echo First name: %firstname%
-	echo Date: %FormattedDate%
-	echo Pause? %debugmode%
+	echo Last Name: %tac_lastname%
+	echo First name: %tac_firstname%
+	echo Date: %tac_FormattedDate%
+	echo Pause? %tac_debugmode%
 	echo,
 
-	%debugmode%
+	%tac_debugmode%
 
 	:echostrings
 		echo --------------------------------------
 		echo Client Info:
-		echo Last Name: %lastname%
-		echo First name: %firstname%
-		echo Date: %FormattedDate%
+		echo Last Name: %tac_lastname%
+		echo First name: %tac_firstname%
+		echo Date: %tac_FormattedDate%
 		echo AV needed?: %no%
 		echo Offline?: 
 		echo --------------------------------------
 		echo,
 		
-		%debugmode%
+		%tac_debugmode%
 
 	:setwindow
-		"C:\CleanTechTemp\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
-		"C:\CleanTechTemp\nircmd\nircmd.exe" win settopmost title "CleanTech - Really Finish" 1
+		"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
+		"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title "CleanTech - Really Finish" 1
 
 	:boottimer
 		title CleanTech - BootTimer
@@ -131,21 +124,21 @@ if '%errorlevel%' NEQ '0' (
 		::)
 
 		:grabnumber
-		%debugmode%
+		%tac_debugmode%
 		echo Grabbing number from dialog box...
-		echo Command running: C:\CleanTechTemp\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Postclean.txt"
-		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Postclean.txt"
+		echo Command running: %tac_workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
+		"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
 		echo,
-		%debugmode%
+		%tac_debugmode%
 		taskkill /im BootTimer.exe /t
 		reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
-		%debugmode%
+		%tac_debugmode%
 		echo Killing BootTimer.exe's command window
-		taskkill /FI "WINDOWTITLE eq C:\CleanTechTemp\BootTimer.exe"
+		taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
 		timeout 30
 		echo Killing BootTimer.exe's chrome process
 		taskkill /im chrome.exe /f
-		%debugmode%
+		%tac_debugmode%
 		cls & color 1f
 
 	title CleanTech - Really Finish
@@ -154,7 +147,7 @@ if '%errorlevel%' NEQ '0' (
 		for %%d in (t u v w x y z) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 
 	:netmap
-		if %offline%==y goto parsing
+		if %tac_offline%==y goto parsing
 		echo Mapping Beast "Clean Up Logs" folder to drive letter %netletter%
 		echo,
 
@@ -176,22 +169,22 @@ if '%errorlevel%' NEQ '0' (
 		echo Moving Log files
 		echo,
 
-		echo Command running: mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
-		mkdir "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		echo Command running: mkdir "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+		mkdir "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 		echo,
 
-		if /i %offline%==y goto offlinecopy
+		if /i %tac_offline%==y goto offlinecopy
 		echo Copying "%clientdir%" to The BEAST...
-		echo robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
-		robocopy /s "%clientdir%" "%netletter%\%lastname%-%firstname%-%FormattedDate%"
+		echo robocopy /s "%clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+		robocopy /s "%clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 		echo ...Done!
 		echo,
 		goto deletefiles
 
 		:offlinecopy
 		echo Copying "%clientdir%" to the Desktop
-		echo robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
-		robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%lastname%-%firstname%-%FormattedDate%"
+		echo robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+		robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 		echo ...Done!
 		echo,
 
@@ -200,7 +193,7 @@ if '%errorlevel%' NEQ '0' (
 		echo Removing cleanup files...
 		echo,
 
-		%debugmode%
+		%tac_debugmode%
 
 		echo Command running: logman delete -n CleanTech-PostCleanTest
 		logman delete -n CleanTech-PostCleanTest
@@ -221,12 +214,12 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		echo,
-		%debugmode%
+		%tac_debugmode%
 
 	:restorepoint
 		echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 		powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
-		%debugmode%
+		%tac_debugmode%
 		
 	:reset
 		echo Turning UAC back on...
@@ -263,10 +256,10 @@ if '%errorlevel%' NEQ '0' (
 		echo Command running: rmdir C:\CleanTechTemp
 		if exist "C:\autoclean-prep.bat" del c:\C:\autoclean-prep.bat /q
 	rem	rmdir "C:\CleanTechTemp" /s /q
-		%debugmode%
+		%tac_debugmode%
 
 		echo Adding flags to text file
-		echo "Really Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
+		echo "Really Finish Flags = %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 " >> %tac_workingdir%\CT-flags.txt
 		echo,
 
 :done

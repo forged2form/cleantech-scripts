@@ -43,14 +43,14 @@ goto wificonfig
 
         :clientname
             set clientnametest=y
-            set firstname=
-            set lastname=
+            set tac_firstname=
+            set tac_lastname=
             set /p firstname="Client's first name: "
             set /p lastname="Client's Last name: "
             echo,
 
         :clientnameconfirm
-            set /p clientnametest="You entered: %firstname% %lastname%. Is this correct? (y/n): "
+            set /p clientnametest="You entered: %tac_firstname% %tac_lastname%. Is this correct? (y/n): "
             rem %=%
             if /i %clientnametest%==y goto clientnamegood
             if /i %clientnametest%==n goto clientname
