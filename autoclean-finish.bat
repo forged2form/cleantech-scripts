@@ -56,10 +56,10 @@ if '%errorlevel%' NEQ '0' (
 	echo cd "C:\CleanTechTemp"
 	cd "C:\CleanTechTemp"
 
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	set offline=%6
+	set lastname=%lastname%
+	set firstname=%firstname%
+	set FormattedDate=%FormattedDate%
+	set offline=
 
 	set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
@@ -70,13 +70,12 @@ if '%errorlevel%' NEQ '0' (
 	copy /y NUL autoclean-finish >NUL
 
 	echo Setting client info variables
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	set av=%4
+	set lastname=%lastname%
+	set firstname=%firstname%
+	set FormattedDate=%FormattedDate%
+	set av=%no%
 	set debugmode=rem
-	if defined %5 set debugmode=%5 else goto:stringtest	
-	set offline=%6
+	set offline=
 	
 	:stringtest
 	echo Testing strings...
@@ -90,15 +89,15 @@ if '%errorlevel%' NEQ '0' (
 	%debugmode%
 	
 	choco install teamviewer vlc chrome -y
-	if %4==y call TrendMicroInstaller.exe
+	if %no%==y call TrendMicroInstaller.exe
 
 	:echostrings
 		echo --------------------------------------
 		echo Client Info:
-		echo Last Name: %1
-		echo First name: %2
-		echo Date: %3
-		echo AV needed?: %4
+		echo Last Name: %lastname%
+		echo First name: %firstname%
+		echo Date: %FormattedDate%
+		echo AV needed?: %no%
 		echo Ninite Installer: %ninite%
 		echo --------------------------------------
 		echo,
@@ -206,11 +205,11 @@ if '%errorlevel%' NEQ '0' (
 		del "C:\CleanTechTemp\autoclean-finish"
 
 		echo Adding flags to text file
-		echo "Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
+		echo "Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 		echo Setting next stage batch file
-		echo C:\CleanTechTemp\autoclean-reallyfinish.bat %1 %2 %3 %4 %5 %6>"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
+		echo C:\CleanTechTemp\autoclean-reallyfinish.bat %lastname% %firstname% %FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
 		%debugmode%
 
 		echo Starting BootTimer. Prepare for reboot...

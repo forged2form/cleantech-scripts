@@ -21,7 +21,7 @@ if '%errorlevel%' NEQ '0' (
 ) else ( goto gotAdmin )
 
 :UACPrompt
-    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vb	s"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
 
     "%temp%\getadmin.vbs"
@@ -62,20 +62,20 @@ color 4f
 	:echostrings
 		echo -----------------------
 		echo Client Info:
-		echo Last Name: %1
-		echo First name: %2
-		echo Date: %3
-		echo AV needed?: %4
+		echo Last Name: %lastname%
+		echo First name: %firstname%
+		echo Date: %FormattedDate%
+		echo AV needed?: %no%
 		echo Debug?: %5
-		echo Offline?: %6
+		echo Offline?: 
 		echo -----------------------
 		echo,
 
-		set lastname=%1
-		set firstname=%2
-		set FormattedDate=%3
+		set lastname=%lastname%
+		set firstname=%firstname%
+		set FormattedDate=%FormattedDate%
 		set debugmode=
-		set offline=%6
+		set offline=
 
 		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
@@ -124,8 +124,8 @@ color 4f
 		:grabnumber
 		%debugmode%
 		echo Grabbing number from dialog box...
-		echo Command running: "C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
-		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Preclean.txt"
+		echo Command running: "C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Preclean.txt"
+		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Preclean.txt"
 		echo,
 		%debugmode%
 		taskkill /im BootTimer.exe /t
@@ -184,11 +184,11 @@ color 4f
 	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 	echo Adding flags to text file
-		echo "Start Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
+		echo "Start Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
-	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\CleanTechTemp\autoclean-trontemp.bat
-	echo "C:\CleanTechTemp\autoclean-tron.bat" %1 %2 %3 %4 %5 %6>C:\CleanTechTemp\autoclean-trontemp.bat
+	echo Comand running: echo "C:\CleanTechTemp\autoclean-tron.bat" %lastname% %firstname% %FormattedDate% %no% %5 >C:\CleanTechTemp\autoclean-trontemp.bat
+	echo "C:\CleanTechTemp\autoclean-tron.bat" %lastname% %firstname% %FormattedDate% %no% %5 >C:\CleanTechTemp\autoclean-trontemp.bat
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,C:\CleanTechTemp\autoclean-trontemp.bat" /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,C:\CleanTechTemp\autoclean-trontemp.bat" /f
 	%debugmode%

@@ -50,11 +50,11 @@ if '%errorlevel%' NEQ '0' (
 	echo,
 
 	echo Setting client info variables
-	set lastname=%1
-	set firstname=%2
-	set FormattedDate=%3
-	set av=%4
-	set offline=%6
+	set lastname=%lastname%
+	set firstname=%firstname%
+	set FormattedDate=%FormattedDate%
+	set av=%no%
+	set offline=
 
 	set "workingdir=C:\CleanTechTemp"
 	echo cd "C:\CleanTechTemp"
@@ -68,7 +68,6 @@ if '%errorlevel%' NEQ '0' (
 	copy /y NUL "C:\CleanTechTemp\autoclean-reallyfinish" >NUL
 
 	set debugmode=rem nothing to see here
-	if defined %5 set debugmode=%5 else goto:stringtest	
 	
 	:stringtest
 	echo Testing strings...
@@ -83,11 +82,11 @@ if '%errorlevel%' NEQ '0' (
 	:echostrings
 		echo --------------------------------------
 		echo Client Info:
-		echo Last Name: %1
-		echo First name: %2
-		echo Date: %3
-		echo AV needed?: %4
-		echo Offline?: %6
+		echo Last Name: %lastname%
+		echo First name: %firstname%
+		echo Date: %FormattedDate%
+		echo AV needed?: %no%
+		echo Offline?: 
 		echo --------------------------------------
 		echo,
 		
@@ -134,8 +133,8 @@ if '%errorlevel%' NEQ '0' (
 		:grabnumber
 		%debugmode%
 		echo Grabbing number from dialog box...
-		echo Command running: C:\CleanTechTemp\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
-		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%1-%2-%3-BootTimer-Postclean.txt"
+		echo Command running: C:\CleanTechTemp\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Postclean.txt"
+		"C:\CleanTechTemp\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%lastname%-%firstname%-%FormattedDate%-BootTimer-Postclean.txt"
 		echo,
 		%debugmode%
 		taskkill /im BootTimer.exe /t
@@ -267,7 +266,7 @@ if '%errorlevel%' NEQ '0' (
 		%debugmode%
 
 		echo Adding flags to text file
-		echo "Really Finish Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
+		echo "Really Finish Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 :done

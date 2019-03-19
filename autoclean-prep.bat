@@ -7,7 +7,7 @@
 :: Crappy to do list follows...
 :: Look into Task Manager vs. StartupTool (Nirsoft) - REQ from Will
 :: In flag file, create last command name for restarting
-:: 			(ie: if %6 then set lastcommand = %6)
+:: 			(ie: if  then set lastcommand = )
 :: SYSTEM BEEP AT TIMES OF INPUT
 :: add test for null entries
 :: add test for network connectivity (NIC working & BEAST accessible)
@@ -67,12 +67,10 @@ if '%errorlevel%' NEQ '0' (
 		set lastname=
 		set firstname=
 		set input=
-		set av=n
-		set debugmode=no
-		set offline=no
 		set debugmode=rem
+		set offline=no
 
-	rem	if defined %1 (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
+	rem	if defined %lastname% (set "debugmode=pause" & set "debugmode=pause") else (goto:drivelettertest)
 
 	:::offlineset
 	::set offline=
@@ -81,6 +79,7 @@ if '%errorlevel%' NEQ '0' (
 	::	if /i %offline%==n (set "offline=no" & goto drivelettertest)
 	::	echo Incorrect input. & goto offlineset
 
+	:: Set date variable
     for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,Hour^,Minute^,Month^,Second^,Year /Format:table') do (
         IF NOT "%%~f"=="" (
             set /a FormattedDate=10000 * %%f + 100 * %%d + %%a
@@ -88,6 +87,7 @@ if '%errorlevel%' NEQ '0' (
         )
     )
 
+    :: Turn off hibernation
 	:hibernateoff
 	powercfg /hibernate off
 
@@ -143,17 +143,6 @@ if '%errorlevel%' NEQ '0' (
 			if /i %passconfirm%==n goto passwordneeded
 			echo Incorrect input. & goto passconfirm
 			:passcorrect
-	
-		:av
-			echo,
-			set av=n
-			:: REPLACE with TrendMicro eventually
-			:: set /p av="Does the client need av installed? (y/n): "
-
-		:avconfirm
-			if /i %av%==y goto drivelettertest
-			if /i %av%==n goto drivelettertest
-			echo Incorrect input. & goto av
 	:: --- END client_info_entry.bat
 
 	:: --- START map_beast.bat
@@ -180,10 +169,10 @@ if '%errorlevel%' NEQ '0' (
 		echo,
 
 		set "workingdir=C:\CleanTechTemp"
-		mkdir "C:\CleanTechTemp"
-		echo cd "C:\CleanTechTemp"
-		cd "C:\CleanTechTemp"
-		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
+		mkdir "%workingdir%"
+		echo cd "%workingdir%"
+		cd "%workingdir$"
+		set "clientdir=%workingdir%\%lastname%-%firstname%-%FormattedDate%"
 
 		:: Setting flag file
 		echo Command running: copy /y NUL autoclean-prep >NUL
@@ -194,8 +183,8 @@ if '%errorlevel%' NEQ '0' (
 
 		echo Copying automation files to C:\CleanTechTemp
 		echo,
-		echo Command running: robocopy "%netletter%\Clean Up" "C:\CleanTechTemp" /XD "*.sync" /s
-		robocopy "%netletter%\Clean Up" "C:\CleanTechTemp" /XD "*.sync" /s
+		echo Command running: robocopy "%netletter%\Clean Up" "%workingdir%" /XD "*.sync" /s
+		robocopy "%netletter%\Clean Up" "%workingdir%" /XD "*.sync" /s
 
 		echo Command running: mkdir "%clientdir%"
 		mkdir "%clientdir%"
@@ -312,12 +301,16 @@ if '%errorlevel%' NEQ '0' (
 
 	:nextstageprep
 		echo Adding flags to text file
-		echo "Prep Flags = Last name: %lastname% , First name: %firstname% , Date: %FormattedDate% , Ninite: %ninite% , Debugmode: %debugmode% , Offline: %offline%" > C:\CleanTechTemp\CT-flags.txt
-		echo "AutoClean-Prep command: C:\CleanTechTemp\autoclean-startclean.bat %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%"
+		echo "lastname=%lastname%" > C:\CleanTechTemp\CT-flags.txt
+		echo "firstname=%firstname%" >> C:\CleanTechTemp\CT-flags.txt
+		echo "date=%FormattedDate%" >> C:\CleanTechTemp\CT-Flags.txt
+		echo "debugmode=%debugmode%" >> C:\CLeanTechTemp\CT-Flags.txt
+		echo "offline=%offline%" >> C:\CleanTechTempTemp\CT-flags.txt
+		echo "Variables stored in C:\CleanTechTemp\CT-Flags.text: Last Name: %lastname% First Name: %firstname% Date: %FormattedDate% Debug Mode: %debugmode% Offline Mode: %offline%"
 		echo,
 		echo Adding next stage to Startup...
-		echo Command running: echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %ninite% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-		echo "C:\CleanTechTemp\autoclean-startclean.bat" %lastname% %firstname% %FormattedDate% %av% %debugmode% %offline%>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo Command running: echo "%workingdir%\autoclean-startclean.bat">"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		echo "%workingdir%\autoclean-startclean.bat">"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
 
 		echo Command running: del autoclean-prep
 		echo,
@@ -326,7 +319,7 @@ if '%errorlevel%' NEQ '0' (
 
 		:: --- START boottimer_1-1_pre.bat
 		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: "C:\CleanTechTemp\boottimer.exe"
+		echo Command running: "%workingdir%\boottimer.exe"
 		echo,
 		start C:\CleanTechTemp\boottimer.exe
 		echo press any key when you're ready for stage 2

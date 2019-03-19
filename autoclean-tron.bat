@@ -51,30 +51,29 @@ if '%errorlevel%' NEQ '0' (
 	cd "C:\CleanTechTemp"
 
 	debugmode=rem nothing to see here
-	if defined %5 set debugmode=%5
 
 	:echostrings
 		color E0
 		echo -----------------------
 		echo Client Info:
-		echo Last Name: %1
-		echo First name: %2
-		echo Date: %3
-		echo AV needed?: %4
-		echo Offline?: %6
+		echo Last Name: %lastname%
+		echo First name: %firstname%
+		echo Date: %FormattedDate%
+		echo AV needed?: %no%
+		echo Offline?: 
 		echo -----------------------
 		echo,
 
-		set lastname=%1
-		set firstname=%2
-		set FormattedDate=%3
-		set offline=%6
+		set lastname=%lastname%
+		set firstname=%firstname%
+		set FormattedDate=%FormattedDate%
+		set offline=
 
 		set "clientdir=C:\CleanTechTemp\%lastname%-%firstname%-%FormattedDate%"
 
 
 	echo Adding flags to text file
-		echo "Tron Flags = %1 %2 %3 %4 %5 %6" >> C:\CleanTechTemp\CT-flags.txt
+		echo "Tron Flags = %lastname% %firstname% %FormattedDate% %no% %5 " >> C:\CleanTechTemp\CT-flags.txt
 		echo,
 
 	color 1f
@@ -104,7 +103,7 @@ if '%errorlevel%' NEQ '0' (
 		pause
 
 		echo Setting next stage batch file
-		echo C:\CleanTechTemp\autoclean-finish.bat %1 %2 %3 %4 %5 %6>"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+		echo C:\CleanTechTemp\autoclean-finish.bat %lastname% %firstname% %FormattedDate% %no% %5 >"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
 		%debugmode%
 
 	:starttron
