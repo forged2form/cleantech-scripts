@@ -274,9 +274,8 @@ title CleanTech - Really Finish
 	echo,
 
 	cd %homepath%
-	echo Command running: rmdir C:\CleanTechTemp
-	if exist "C:\autoclean-prep.bat" del c:\C:\autoclean-prep.bat /q
-		rem	rmdir "C:\CleanTechTemp" /s /q
+	echo Command running: rmdir %tac_workingdir%
+	rd /s /q %tac_workingdir%
 	%tac_debugmode%
 
 :reallyfinishdone
