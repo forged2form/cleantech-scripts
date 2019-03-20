@@ -137,8 +137,8 @@ echo,
 
 	::Restoring user's original login settings
 	echo Removing AutoLogon
-	echo Command running: "REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg""
-	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg"
+	echo Command running: "REG IMPORT "%tac_clientdir%\Preclean-Winlogon.reg""
+	REG IMPORT "%tac_clientdir%\Preclean-Winlogon.reg"
 
 :trondone
 	color 4f
