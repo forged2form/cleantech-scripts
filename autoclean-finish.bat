@@ -254,9 +254,19 @@ color 1f
 	set tac_step=finishdone
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
+	cls
+	echo -----------------------------------------
 	echo Starting BootTimer. Prepare for reboot...
+	echo -----------------------------------------
+	echo You can either let the countdown reboot
+	echo for you, or you can choose to reboot via
+	echo the dialogue box that opens. Your call.
+	echo,
+
+	timeout 20
 	echo Command running: %workingdir%\boottimer.exe
 	echo,
+	
 	start %workingdir%\boottimer.exe
 	timeout 20
 	%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
