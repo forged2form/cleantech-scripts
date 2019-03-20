@@ -59,9 +59,17 @@ echo,
 
 set tac_workingdir=C:\CleanTechTemp
 
+:winvertest
+	for /f "tokens=4-5 delims=. " %%i in ('ver') do set VERSION=%%i.%%j
+	if "%version%" == "10.0" set tac_winver=Win10
+	if "%version%" == "6.3" set tac_winver=Win8.1
+	if "%version%" == "6.2" set tac_winver=Win8
+	if "%version%" == "6.1" set tac_winver=Win7
+	if "%version%" == "6.0" set tac_winver=WinVista
+
 echo Adding to Startup...
-echo Command running: copy "%tac_workingdir%\autoclean.bat" "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
-copy "%tac_workingdir%\autoclean.bat" "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
+echo Command running: copy "%tac_workingdir%\autoclean.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
+copy "%tac_workingdir%\autoclean.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
 
 if not exist %tac_workingdir%\CT-Flags.txt goto initvars
 
