@@ -367,10 +367,10 @@ REM		    echo,
 
 	:perfmonimportpreclean
 		echo Importing perfmon xml...
-		echo logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre.xml
+		echo logman import -n CTPreclean -xml %tac_workingdir%\Perfmon-Pre.xml
 		echo,
 
-		logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
+		logman import -n CTPreclean -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
 
 		if %errorlevel% NEQ 0 (
 		echo not ready...
@@ -382,10 +382,10 @@ REM		    echo,
 
 	:perfmonimportpostclean
 		echo Importing perfmon xml...
-		echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+		echo logman import -n CTPostclean -xml Perfmon-Post.xml
 		echo,
 
-		logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+		logman import -n CTPostclean -xml Perfmon-Post.xml
 
 		if %errorlevel% NEQ 0 (
 		echo not ready...
@@ -399,8 +399,8 @@ REM		    echo,
 	    echo Starting Performance Monitor. Please wait...
 		echo,
 		
-		echo Command running: logman start CleanTech-PreCleanTest
-		logman start CleanTech-PreCleanTest
+		echo Command running: logman start CTPreclean
+		logman start CTPreclean
 
 		echo Waiting for perfmon to finish...
 	    echo timeout 660

@@ -155,8 +155,8 @@ color 1f
     echo Starting Performance Monitor. Please wait...
 	echo,
 	
-	echo Command running: logman start CleanTech-PostCleanTest
-	logman start CleanTech-PostCleanTest
+	echo Command running: logman start CTPostclean
+	logman start CTPostclean
 
 	echo Waiting for perfmon to finish...
     echo timeout 660
@@ -199,12 +199,12 @@ color 1f
 	echo,
 	%tac_debugmode%
 
-	echo Command running: logman delete -n CleanTech-PostCleanTest
-	logman delete -n CleanTech-PostCleanTest
+	echo Command running: logman delete -n CTPostclean
+	logman delete -n CTPostclean
 	echo,
 
-	echo Command running: logman delete -n CleanTech-PreCleanTest
-	logman delete -n CleanTech-PreCleanTest
+	echo Command running: logman delete -n CTPreclean
+	logman delete -n CTPreclean
 	echo,
 
 	%tac_debugmode%

@@ -228,12 +228,12 @@ title CleanTech - Really Finish
 
 	%tac_debugmode%
 
-	echo Command running: logman delete -n CleanTech-PostCleanTest
-	logman delete -n CleanTech-PostCleanTest
+	echo Command running: logman delete -n CTPostclean
+	logman delete -n CTPostclean
 	echo,
 
-	echo Command running: logman delete -n CleanTech-PreCleanTest
-	logman delete -n CleanTech-PreCleanTest
+	echo Command running: logman delete -n CTPreclean
+	logman delete -n CTPreclean
 	echo,
 	
 	echo Command running: rd /s /q C:\Logs
@@ -274,6 +274,23 @@ title CleanTech - Really Finish
     echo WhatInStartup starting... Please double-check startup entries
     echo -------------------------------------------------------------
     start /wait C:\CleanTechTemp/whatinstartup/WhatInStartup.exe
+
+    cls
+	color 4f
+	echo IMPORTANT	
+	echo -------------------------------------------------------------------------
+	echo Please double-check that previously disabled AV is re-enabled.
+	echo,
+
+	echo Press any key to start SecuritySoftview for a list of AV and firewalls.
+	echo,
+
+	echo Once you're done re-activating any AV, close SecuritySoftView to
+	echo continue the script.
+	echo -------------------------------------------------------------------------
+	pause
+	echo Command running: "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
+	start /wait "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
 	
 	cls
 	color 2f
