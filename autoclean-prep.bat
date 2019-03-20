@@ -208,6 +208,7 @@ goto passquestion
 			echo That didn't seem to work. Pres any key to try again...
 			pause
 			color E0
+			cls
 			goto netmap
 			)
 		echo,
@@ -304,10 +305,11 @@ set tac_step=regchanges
 set tac_>%tac_workingdir%\CT-Flags.txt
 
 :uac-reg
-	    echo Turning off UAC temporarily...
-	    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-	    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-	    echo,
+	echo,
+    echo Turning off UAC temporarily...
+    echo Command running: REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+    REG ADD HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
+    echo,
 
 :restorepoint
 	echo Creating Pre-Clean restore point...
@@ -364,9 +366,9 @@ REM		    echo,
 	mkdir %tac_perfmondir%
 
 	echo Importing perfmon xml...
-	echo logman import -n CleanTech-PreCleanTest -xml %workingdir%\Perfmon-Pre.xml
+	echo logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre.xml
 	echo,
-	logman import -n CleanTech-PreCleanTest -xml %workingdir%\Perfmon-Pre-Pre.xml
+	logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
 
     echo Starting Performance Monitor. Please wait...
 	echo,
