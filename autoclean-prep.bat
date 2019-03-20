@@ -366,11 +366,24 @@ REM		    echo,
 	mkdir %tac_perfmondir%
 
 	:perfmonimportpreclean
+		echo Clearing any old CTPreclean settings
+		echo logman delete -n CTPreclean
+		logman delete -n CTPreclean
+		echo logman delete -n CTPostclean
+		logman delete -n CTPostclean
+		echo,
 		echo Importing perfmon xml...
-		echo logman import -n CTPreclean -xml %tac_workingdir%\Perfmon-Pre.xml
+		echo logman import -n CTPreclean -xml "%tac_workingdir%\Perfmon-Pre.xml"
 		echo,
 
-		logman import -n CTPreclean -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
+		logman import -n CTPreclean -xml "%tac_workingdir%\Perfmon-Pre.xml"
+
+		if %errorlevel% EQU -2147467259 (
+			echo,
+			echo PreClean perfmon import SUCCESS!
+			%tac_debugmode%
+			goto perfmonimportpostclean
+			)
 
 		if %errorlevel% NEQ 0 (
 		echo not ready...
@@ -382,10 +395,17 @@ REM		    echo,
 
 	:perfmonimportpostclean
 		echo Importing perfmon xml...
-		echo logman import -n CTPostclean -xml Perfmon-Post.xml
+		echo logman import -n CTPostclean -xml "%tac_workingdir%\Perfmon-Post.xml"
 		echo,
 
-		logman import -n CTPostclean -xml Perfmon-Post.xml
+		logman import -n CTPostclean -xml "%tac_workingdir%\Perfmon-Post.xml"
+
+		if %errorlevel% EQU -2147467259 (
+			echo,
+			echo PreClean perfmon import SUCCESS!
+			%tac_debugmode%
+			goto perfmontest
+			)
 
 		if %errorlevel% NEQ 0 (
 		echo not ready...
