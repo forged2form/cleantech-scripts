@@ -287,9 +287,6 @@ title CleanTech - Really Finish
 	echo,
 
 	cd %homepath%
-	echo Command running: rmdir %tac_workingdir%
-	del /s /q %tac_workingdir%\
-	rd /s /q %tac_workingdir%
 
 	echo,
 	echo Command running: rmdir /s /q %tac_perfmondir%
@@ -301,7 +298,7 @@ title CleanTech - Really Finish
 powercfg /hibernate on
 
 :finalize
-echo press any key to remove startup entry and finish!
+echo press any key to remove temp folder + startup entry and finish!
 pause
 
 :reallyfinishdone
@@ -310,3 +307,6 @@ pause
 
 	echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
 	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
+
+	echo Command running: rmdir %tac_workingdir%
+	rd /s /q %tac_workingdir%
