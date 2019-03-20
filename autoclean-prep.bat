@@ -82,7 +82,7 @@ if exist C:\CleanTechTemp\CT-Flags.txt (
 if not !tac_step!==prepdone (
 	echo Resuming from step:!tac_step!
 	pause
-	goto !step!
+	goto !tac_step!
 	) else (
 	color 4f
 	echo,
@@ -235,7 +235,7 @@ goto passquestion
 
 	:disableav
 	color 4f
-	echo IMPORTANT
+	echo IMPORTANT	
 	echo -----------------------------------------------------------------------
 	echo Please check for running av and disable real-time features temporarily.
 	echo You'll need to ensure that it will be in passive mode throughout reboots.

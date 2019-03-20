@@ -77,7 +77,7 @@ if !tac_step!==finishdone (
 if NOT !tac_step!==trondone (
 	echo Resuming from step:!tac_step!
 	pause
-	goto !step!
+	goto !tac_step!
 )
 
 :finishstart

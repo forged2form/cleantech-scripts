@@ -73,7 +73,7 @@ if !tac_step!==trondone (
 if NOT !tac_step!==startcleandone (
 	echo Resuming from step:!tac_step!
 	pause
-	goto !step!
+	goto !tac_step!
 )
 
 :tronstart

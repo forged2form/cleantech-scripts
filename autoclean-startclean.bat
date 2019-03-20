@@ -76,7 +76,7 @@ if !tac_step!==startcleandone (
 if NOT !tac_step!==prepdone (
 	echo Resuming from step:!tac_step!
 	pause
-	goto !step!
+	goto !tac_step!
 )
 
 :startclean
