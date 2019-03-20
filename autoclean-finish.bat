@@ -111,7 +111,23 @@ if NOT !tac_step!==trondone (
 	set tac_step=uninstallview
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	call "%workingdir%\pc-decrapifier.exe"
+	color 4f
+	echo MANUAL STEP	
+	echo -------------------------------------------------------------------------
+	echo Two programs will open. First PC PC Decrapifier, then Geek Uninstaller.
+	echo Please go through PC-D first, and allow it to finish. Note, you might
+	echo need to click 'skip' on some uninstallations if they hand. If prompted,
+	echo do not stop running scripts on the page.
+	echo Finish with Geek uninstaller to remove anything PC-D couldn't remove or
+	echo see. Once you've close the Geek uninstaller windows, the autoclean script
+	echo will resume.
+	echo -------------------------------------------------------------------------
+	pause
+	
+	set tac_step=uninstallview
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	start /wait "%workingdir%\pc-decrapifier.exe"
 
 	call "%workingdir%\geek.exe"
 
@@ -192,7 +208,7 @@ color 1f
 	echo Command running: logman delete -n CleanTech-PreCleanTest
 	logman delete -n CleanTech-PreCleanTest
 	echo,
-	
+
 	%tac_debugmode%
 
 :userfinish

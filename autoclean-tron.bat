@@ -117,7 +117,8 @@ color 1f
 	set tac_step=nir
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	%tac_workingdir%\nircmd\nircmd.exe win min process explorer.exe
+	::might not be needed. can easily start with Ctl-Alt-Del
+	::%tac_workingdir%\nircmd\nircmd.exe win min process explorer.exe
 
 :reboot-prep
 echo Ensuring next boot is in normal mode...
@@ -127,7 +128,8 @@ echo,
 
 :putshellback
 
-	"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
+	:: Why is this here?
+	::"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
 
 	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
