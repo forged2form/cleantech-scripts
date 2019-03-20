@@ -237,11 +237,14 @@ goto passquestion
 	:disableav
 	color 4f
 	echo IMPORTANT	
-	echo -----------------------------------------------------------------------
+	echo -------------------------------------------------------------------------
 	echo Please check for running av and disable real-time features temporarily.
 	echo You'll need to ensure that it will be in passive mode throughout reboots.
-	echo Press any key when you've finished to continue.
-	echo -----------------------------------------------------------------------
+	echo Press any key to start SecuritySoftview for a list of active AV and
+	echo Firewalls. Once you're done deactivating any AV, close SecuritySoftView
+	echo to continue the scripts.
+	echo -------------------------------------------------------------------------
+	pause
 	echo Command running: "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
 	call "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
 	%tac_debugmode%

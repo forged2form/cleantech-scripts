@@ -152,9 +152,12 @@ if NOT !tac_step!==prepdone (
 	%tac_debugmode%
 	echo Killing BootTimer.exe's command window
 	taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
-	timeout 30
-	echo Killing BootTimer.exe's chrome process
-	taskkill /im chrome.exe /f
+	
+	::superfluous as we're rebooting right away anyways...
+::	timeout 30
+::	echo Killing BootTimer.exe's chrome process
+::	taskkill /im chrome.exe /f
+::	taskkill /im iexplor.exe /f
 	:: --- END boottimer_1-2_pre.bat
 	%tac_debugmode%
 	cls & color 1f
