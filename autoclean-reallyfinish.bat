@@ -150,8 +150,8 @@ echo,
 	:grabnumber
 	%tac_debugmode%
 	echo Grabbing number from dialog box...
-	echo Command running: %tac_workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
-	"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
+	echo Command running: %tac_workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
+	"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
 	echo,
 	%tac_debugmode%
 	taskkill /im BootTimer.exe /t
@@ -198,17 +198,17 @@ title CleanTech - Really Finish
 	echo,
 
 	if /i %tac_offline%==y goto offlinecopy
-	echo Copying "%clientdir%" to The BEAST...
-	echo robocopy /s "%clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
-	robocopy /s "%clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	echo Copying "%tac_clientdir%" to The BEAST...
+	echo robocopy /s "%tac_clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	robocopy /s "%tac_clientdir%" "%netletter%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 	echo ...Done!
 	echo,
 	goto deletefiles
 
 	:offlinecopy
-	echo Copying "%clientdir%" to the Desktop
-	echo robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
-	robocopy /s "%clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	echo Copying "%tac_clientdir%" to the Desktop
+	echo robocopy /s "%tac_clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	robocopy /s "%tac_clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 	echo ...Done!
 	echo,
 
@@ -252,7 +252,7 @@ title CleanTech - Really Finish
 	::Old commands. Should re-import reg from earlier instead, only use this if that fails for some inexplicible reason (AV?)
 	::REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /f
    	::REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /
-   	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\Preclean-Winlogon.reg" /f
+   	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg" /f
 
 :userfinish
     color E0
@@ -269,13 +269,17 @@ title CleanTech - Really Finish
 	echo ---------
 	echo,
 	echo Please take a moment to tidy up the Client's desktop. Thanks!
-	echo When you're ready, press enter to remove temporary directory...
+	echo When you're ready, press enter to remove temporary directories...
 	pause
 	echo,
 
 	cd %homepath%
 	echo Command running: rmdir %tac_workingdir%
 	rd /s /q %tac_workingdir%
+
+	echo,
+	echo Command running: rmdir /s /q %tac_perfmondir%
+	rd /s /q %tac_perfmondir%
 	%tac_debugmode%
 
 :reallyfinishdone

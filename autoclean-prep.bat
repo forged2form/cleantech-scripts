@@ -105,6 +105,7 @@ if not !tac_step!==prepdone (
 	set tac_firstname=
 	set tac_tac_debugmode=rem
 	set tac_offline=no
+	set tac_perfmondir=C:\CT-Perfmon
 	set tac_clientdir=
 	set tac_>%tac_workingdir%\CT-Flags.txt
 

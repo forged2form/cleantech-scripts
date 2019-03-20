@@ -126,8 +126,8 @@ color 1f
 	title CleanTech: Performance Test #2
 
 	echo Dumping postclean system info...
-	echo Command running: msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
-	msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
+	echo Command running: msinfo32 /nfo "%tac_clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
+	msinfo32 /nfo "%tac_clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
 	echo,
 
 	echo Starting Performance Monitor. Please wait... 
@@ -161,8 +161,8 @@ color 1f
 	echo Command running: takeown /f c:\perfmon /r /d y
 	takeown /f C:\CT-Perfmon\ /r /d y
 	
-	echo robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
-	robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
+	echo robocopy /s C:\CT-Perfmon\ "%tac_clientdir%\perfmon"
+	robocopy /s C:\CT-Perfmon\ "%tac_clientdir%\perfmon"
 	echo ...Done!
 	echo,
 	echo Moving Log files
@@ -170,15 +170,15 @@ color 1f
 
 	echo Command running: takeown /f c:\Logs /r /d y
 	takeown /f C:\Logs\ /r /d y
-	echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
+	echo Command running: robocopy /s C:\Logs\ "%tac_clientdir%\Logs"
 	%tac_debugmode%
-	robocopy /s C:\Logs\ "%clientdir%\Logs"
+	robocopy /s C:\Logs\ "%tac_clientdir%\Logs"
 	echo,
 
 	echo Command running: takeown /f c:\ADW /r /d y
 	takeown /f C:\ADW\ /r /d y
-	echo Command running: robocopy /s C:\ADW "%clientdir%\ADW"
-	robocopy /s C:\ADW\ "%clientdir%\ADW"
+	echo Command running: robocopy /s C:\ADW "%tac_clientdir%\ADW"
+	robocopy /s C:\ADW\ "%tac_clientdir%\ADW"
 
 	title CleanTech: Removing Cleanup Files
 	echo Removing cleanup files...
