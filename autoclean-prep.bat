@@ -202,7 +202,14 @@ goto passquestion
 
 		echo Command running: net use %tac_netletter% \\TechTutors-1\Utilities /user:techtutors *
 		net use %tac_netletter% \\TechTutors-1\Utilities /p:no /user:techtutors * 
-		if errorlevel 1 echo That didn't seem to work. Try again... & goto netmap
+		if errorlevel 1 (
+			cls
+			color 4f
+			echo That didn't seem to work. Pres any key to try again...
+			pause
+			color E0
+			goto netmap
+			)
 		echo,
 
 		color 1f
@@ -240,8 +247,11 @@ goto passquestion
 	echo -------------------------------------------------------------------------
 	echo Please check for running av and disable real-time features temporarily.
 	echo You'll need to ensure that it will be in passive mode throughout reboots.
+	echo,
 	echo Press any key to start SecuritySoftview for a list of active AV and
-	echo Firewalls. Once you're done deactivating any AV, close SecuritySoftView
+	echo Firewalls.
+	echo,
+	echo Once you're done deactivating any AV, close SecuritySoftView
 	echo to continue the scripts.
 	echo -------------------------------------------------------------------------
 	pause
