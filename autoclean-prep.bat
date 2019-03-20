@@ -68,8 +68,8 @@ set tac_workingdir=C:\CleanTechTemp
 	if "%version%" == "6.0" set tac_winver=WinVista
 
 echo Adding to Startup...
-echo Command running: copy "%tac_workingdir%\autoclean.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
-copy "%tac_workingdir%\autoclean.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
+echo Command running: copy "autoclean-launcher.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
+copy "autoclean-launcher.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
 
 if not exist %tac_workingdir%\CT-Flags.txt goto initvars
 
@@ -155,11 +155,12 @@ echo,
 	echo Incorrect input. & goto clientnameconfirm
 
 :clientnamegood
+goto passquestion
 
 ::	set autoadminlogonenabled=0
 ::	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-	if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto av) || goto av REM skipping autologin prompts
-	pause
+::	if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto av) || goto av REM skipping autologin prompts
+::	pause
 
 :passquestion
 	set password=
