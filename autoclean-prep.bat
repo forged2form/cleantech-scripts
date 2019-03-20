@@ -360,10 +360,13 @@ REM		    echo,
 	lodctr /r
 	echo,
 
+	echo Creating perfmon directory
+	mkdir %tac_perfmondir%
+
 	echo Importing perfmon xml...
-	echo logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
+	echo logman import -n CleanTech-PreCleanTest -xml %workingdir%\Perfmon-Pre.xml
 	echo,
-	logman import -n CleanTech-PreCleanTest -xml Perfmon-Pre.xml
+	logman import -n CleanTech-PreCleanTest -xml %workingdir%\Perfmon-Pre-Pre.xml
 
     echo Starting Performance Monitor. Please wait...
 	echo,

@@ -297,10 +297,6 @@ title CleanTech - Really Finish
 	rd /s /q %tac_perfmondir%
 	%tac_debugmode%
 
-:reallyfinishdone
-	set tac_step=reallyfinishdone
-	set tac_>%tac_workingdir%\CT-Flags.txt
-
 :hibernateon
 powercfg /hibernate on
 
@@ -308,5 +304,9 @@ powercfg /hibernate on
 echo press any key to remove startup entry and finish!
 pause
 
-echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
-del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
+:reallyfinishdone
+	set tac_step=reallyfinishdone
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
+	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-launcher.bat"
