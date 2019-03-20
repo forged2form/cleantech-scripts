@@ -152,14 +152,6 @@ color 1f
 	msinfo32 /nfo "%tac_clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
 	echo,
 
-	echo Starting Performance Monitor. Please wait... 
-	echo,
-	
-	echo Importing perfmon xml...
-	echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
-	echo,
-	logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
-
     echo Starting Performance Monitor. Please wait...
 	echo,
 	

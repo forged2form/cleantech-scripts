@@ -365,20 +365,47 @@ REM		    echo,
 	echo Creating perfmon directory
 	mkdir %tac_perfmondir%
 
-	echo Importing perfmon xml...
-	echo logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre.xml
-	echo,
-	logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
+	:perfmonimportpreclean
+		echo Importing perfmon xml...
+		echo logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre.xml
+		echo,
 
-    echo Starting Performance Monitor. Please wait...
-	echo,
-	
-	echo Command running: logman start CleanTech-PreCleanTest
-	logman start CleanTech-PreCleanTest
+		logman import -n CleanTech-PreCleanTest -xml %tac_workingdir%\Perfmon-Pre-Pre.xml
 
-	echo Waiting for perfmon to finish...
-    echo timeout 660
-	timeout 660
+		if %errorlevel% NEQ 0 (
+		echo not ready...
+		timeout 5
+		goto perfmonimportpreclean
+		)
+		echo,
+		echo PreClean perfmon import SUCCESS!
+
+	:perfmonimportpostclean
+		echo Importing perfmon xml...
+		echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+		echo,
+
+		logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+
+		if %errorlevel% NEQ 0 (
+		echo not ready...
+		timeout 5
+		goto perfmonimportpostclean
+		)
+		echo,
+		echo PostClean perfmon import SUCCESS!
+
+	:perfmontest
+	    echo Starting Performance Monitor. Please wait...
+		echo,
+		
+		echo Command running: logman start CleanTech-PreCleanTest
+		logman start CleanTech-PreCleanTest
+
+		echo Waiting for perfmon to finish...
+	    echo timeout 660
+		timeout 660
+
 	color E0
 	%tac_debugmode%
 	color 1f
