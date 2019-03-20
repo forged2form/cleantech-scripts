@@ -78,21 +78,9 @@ if NOT !tac_step!==finishdone (
 )
 
 :startreallyfinish
+	set tac_step=startreallyfinish
+	set tac_>%tac_workingdir%\CT-Flags.txt
 "%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
-
-echo copy /y NUL "%tac_workingdir%\autoclean-reallyfinish" >NUL
-echo,
-copy /y NUL "%tac_workingdir%\autoclean-reallyfinish" >NUL
-
-set tac_debugmode=rem nothing to see here
-
-:stringtest
-echo Testing strings...
-echo Last Name: %tac_lastname%
-echo First name: %tac_firstname%
-echo Date: %tac_FormattedDate%
-echo Pause? %tac_debugmode%
-echo,
 
 %tac_debugmode%
 
@@ -114,6 +102,9 @@ echo,
 	"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title "CleanTech - Really Finish" 1
 
 :boottimer
+	set tac_step=boottimer
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	title CleanTech - BootTimer
 	echo Press any key when BootTimer has reported its number.
 	echo DO NOT close the BootTimer dialog box yet!
@@ -169,6 +160,9 @@ echo,
 title CleanTech - Really Finish
 
 :drivelettertest
+	set tac_step=drivelettertest
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	for %%d in (t u v w x y z) do (if not exist %%d: echo Beast "Clean Up Logs" folder will be mapped to: %%d: & set "netletter=%%d:" & echo, & goto netmap)
 
 :netmap
@@ -179,17 +173,28 @@ title CleanTech - Really Finish
 	color E0
 	echo Command running: net use %netletter% "\\TechTutors-1\CleanUpLogs" /user:techtutors *
 	net use %netletter% "\\TechTutors-1\CleanUpLogs" /p:no /user:techtutors * 
-	if errorlevel 1 echo That didn't seem to work. Try again... & goto netmap
-	echo,
+		if errorlevel 1 (
+			cls
+			color 4f
+			echo That didn't seem to work. Pres any key to try again...
+			pause
+			color E0
+			goto netmap
+			)
+		echo,
 
-	color 1f
+		color 1f
 	echo Network drive mapped to %netletter%
 
 :parsing
+	set tac_step=parsing
+	set tac_>%tac_workingdir%\CT-Flags.txt
 	echo Let's put together some of the data we've collected...
 	:: checkout
 
 :files
+	set tac_step=files
+	set tac_>%tac_workingdir%\CT-Flags.txt
 	title CleanTech: Moving Log Files
 	echo Moving Log files
 	echo,
@@ -214,6 +219,9 @@ title CleanTech - Really Finish
 	echo,
 
 	:deletefiles
+	set tac_step=deletefiles
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	title CleanTech: Removing Cleanup Files
 	echo Removing cleanup files...
 	echo,
@@ -239,6 +247,9 @@ title CleanTech - Really Finish
 	%tac_debugmode%
 
 :restorepoint
+	set tac_step=restorepoint
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	echo Command running: powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 	powershell "Checkpoint-Computer -Description 'CleanTech: Post-Clean checkpoint'"
 	%tac_debugmode%
@@ -255,6 +266,8 @@ title CleanTech - Really Finish
    	::REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /
 
 :userfinish
+	set tac_step=userfinish
+	set tac_>%tac_workingdir%\CT-Flags.txt
     color E0
 
     echo -------------------------------------------------------------
@@ -275,14 +288,18 @@ title CleanTech - Really Finish
 
 	cd %homepath%
 	echo Command running: rmdir %tac_workingdir%
+	del /s /q %tac_workingdir%\
 	rd /s /q %tac_workingdir%
 
 	echo,
 	echo Command running: rmdir /s /q %tac_perfmondir%
+	del /s /q %tac_perfmondir%
 	rd /s /q %tac_perfmondir%
 	%tac_debugmode%
 
 :reallyfinishdone
+	set tac_step=reallyfinishdone
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
 :hibernateon
 powercfg /hibernate on
