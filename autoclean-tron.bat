@@ -127,11 +127,17 @@ echo,
 
 :putshellback
 
-"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
+	"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
 
-echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-%tac_debugmode%
+	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	%tac_debugmode%
+
+	::Restoring user's original login settings
+	echo Removing AutoLogon
+	echo Command running: "	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg" /f
+""
+	REG IMPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg" /f
 
 :trondone
 	color 4f
