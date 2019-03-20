@@ -26,93 +26,117 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 :--------------------------------------
-    color 1f
-    mode 100,35
-	title CleanTech - Tron
- 
-    SETLOCAL EnableDelayedExpansion
-	
-	cls
-	
-	set horiz_line=-
-	set dash=-
-	
-	for /L %%i in (0,1,88) do (
-		set horiz_line=-!horiz_line!
-	)
-	
-	echo %horiz_line%
-	echo CleanTech - Tron Stage
-	echo %horiz_line%
+color 1f
+mode 100,35
+title CleanTech - Tron
+
+SETLOCAL EnableDelayedExpansion
+
+cls
+
+set horiz_line=-
+set dash=-
+
+for /L %%i in (0,1,88) do (
+	set horiz_line=-!horiz_line!
+)
+
+echo %horiz_line%
+echo CleanTech - Tron Stage
+echo %horiz_line%
+echo,
+
+set "tac_workingdir=C:\CleanTechTemp"
+echo cd "C:\CleanTechTemp"
+cd "C:\CleanTechTemp"
+
+tac_debugmode=rem nothing to see here
+
+echo Printing Last run variables:
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do echo %%i
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do set %%i
+
+::tron done test
+if !tac_step!==trondone (
+	color 4f
 	echo,
-	
-	set "workingdir=C:\CleanTechTemp"
-	echo cd "C:\CleanTechTemp"
-	cd "C:\CleanTechTemp"
+	echo It appears that you've already completed this step.
+	echo Please relaunch from autoclean-launcher.bat.
+	echo If you think you are seeing this in error
+	echo please contact tech support. :P
+	echo Press a key to exit...
+	echo,
+	pause
+	exist
+)
 
-	tac_debugmode=rem nothing to see here
+if NOT !tac_step!==startcleandone (
+	echo Resuming from step:!tac_step!
+	pause
+	goto !step!
+)
 
-	:echostrings
-		color E0
-		echo -----------------------
-		echo Client Info:
-		echo Last Name: %tac_lastname%
-		echo First name: %tac_firstname%
-		echo Date: %tac_FormattedDate%
-		echo AV needed?: %no%
-		echo Offline?: 
-		echo -----------------------
-		echo,
+:tronstart
+	set tac_step=tronstart
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-		set tac_lastname=%tac_lastname%
-		set tac_firstname=%tac_firstname%
-		set tac_FormattedDate=%tac_FormattedDate%
-		set tac_offline=
+:echostrings
+	set tac_step=echostrings
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-		set "clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	color E0
+	echo -----------------------
+	echo Client Info:
+	echo Last Name: %tac_lastname%
+	echo First name: %tac_firstname%
+	echo Date: %tac_FormattedDate%
+	echo AV needed?:
+	echo Offline?: 
+	echo -----------------------
+	echo,
 
+color 1f
 
-	echo Adding flags to text file
-		echo "Tron Flags = %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 " >> %tac_workingdir%\CT-flags.txt
-		echo,
+:nir
+	set tac_step=nir
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	color 1f
+	%tac_workingdir%\nircmd\nircmd.exe win min process explorer.exe
 
-	:nir
-		%tac_workingdir%\nircmd\nircmd.exe win min process explorer.exe
+:reboot-prep
+echo Ensuring next boot is in normal mode...
+echo bcdedit /deletevalue {default} safeboot
+bcdedit /deletevalue {default} safeboot
+echo,
 
-			:reboot-prep
-		echo Ensuring next boot is in normal mode...
-		echo bcdedit /deletevalue {default} safeboot
-		bcdedit /deletevalue {default} safeboot
-		echo,
+:putshellback
+echo Removing trontemp batch file...
+del %tac_workingdir%\autoclean-trontemp.bat
 
-		:putshellback
-		echo Removing trontemp batch file...
-		del %tac_workingdir%\autoclean-trontemp.bat
+"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
 
-		"C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
+echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+%tac_debugmode%
 
-	echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-	%tac_debugmode%
+	:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
+	:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
 
+:starttron
+	set tac_step=starttron
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-		:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
-		:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
-		pause
+	echo Starting Tron...
+	%tac_workingdir%\Tron\tron\Tron.bat -a -str -sdc
+	echo,
 
-		echo Setting next stage batch file
-		echo %tac_workingdir%\autoclean-finish.bat %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 >"%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%tac_debugmode%
+:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\tron\resources\tron_stage.txt" (
 
-	:starttron
-		echo Starting Tron...
-		%tac_workingdir%\Tron\tron\Tron.bat -a -str -sdc
-		echo,
-
-	:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\tron\resources\tron_stage.txt" (
-
-
-		shutdown /r /t 0
-	::	) else shutdown /r /t 0
+:trondone
+	color 4f
+	set tac_step=trondone
+	set tac_stage=finish
+	set tac_>%tac_workingdir%\CT-Flags.txt
+	echo "Press a key to restart...."
+	pause
+	shutdown /r /t 0

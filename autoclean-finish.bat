@@ -32,189 +32,198 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
-	color 1f
-    mode 100,35
-	title CleanTech - Wrap Up
- 
-    SETLOCAL EnableDelayedExpansion
-	
-	cls
-	
-	set horiz_line=-
-	set dash=-
-	
-	for /L %%i in (0,1,88) do (
-		set horiz_line=-!horiz_line!
-	)
-	
-	echo %horiz_line%
-	echo CleanTech - Wrap Up
-	echo %horiz_line%
+color 1f
+mode 100,35
+title CleanTech - Wrap Up
+
+SETLOCAL EnableDelayedExpansion
+
+cls
+
+set horiz_line=-
+set dash=-
+
+for /L %%i in (0,1,88) do (
+	set horiz_line=-!horiz_line!
+)
+
+echo %horiz_line%
+echo CleanTech - Wrap Up
+echo %horiz_line%
+echo,
+
+set "workingdir=C:\CleanTechTemp"
+echo cd "%workingdir%"
+cd "%workingdir%"
+
+echo Printing Last run variables:
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do echo %%i
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do set %%i
+
+::finish done test
+if !tac_step!==finishdone (
+	color 4f
 	echo,
-
-	set "workingdir=C:\CleanTechTemp"
-	echo cd "%workingdir%"
-	cd "%workingdir%"
-
-	set tac_lastname=%tac_lastname%
-	set tac_firstname=%tac_firstname%
-	set tac_FormattedDate=%tac_FormattedDate%
-	set tac_offline=
-
-	set "clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
-
-	"%workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Wrap Up"
-	
-	echo copy /y NUL autoclean-finish >NUL
+	echo It appears that you've already completed this step.
+	echo Please relaunch from autoclean-launcher.bat.
+	echo If you think you are seeing this in error
+	echo please contact tech support. :P
+	echo Press a key to exit...
 	echo,
-	copy /y NUL autoclean-finish >NUL
+	pause
+	exist
+)
 
-	echo Setting client info variables
-	set tac_lastname=%tac_lastname%
-	set tac_firstname=%tac_firstname%
-	set tac_FormattedDate=%tac_FormattedDate%
-	set tac_av=%no%
-	set tac_debugmode=rem
-	set tac_offline=
-	
-	:stringtest
-	echo Testing strings...
+if NOT !tac_step!==trondone (
+	echo Resuming from step:!tac_step!
+	pause
+	goto !step!
+)
+
+:finishstart
+	set tac_step=finishstart
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+"%workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Wrap Up"
+
+%tac_debugmode%
+
+:: WTH ????
+::choco install teamviewer vlc chrome -y
+::if %no%==y call TrendMicroInstaller.exe
+
+:echostrings
+	set tac_step=echostrings
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	echo --------------------------------------
+	echo Client Info:
 	echo Last Name: %tac_lastname%
 	echo First name: %tac_firstname%
 	echo Date: %tac_FormattedDate%
-	echo Pause? %tac_debugmode%
-	echo Offline? %tac_offline%
+	echo AV needed?: %tac_av%
+	echo --------------------------------------
 	echo,
-
-	%tac_debugmode%
 	
-	::choco install teamviewer vlc chrome -y
-	if %no%==y call TrendMicroInstaller.exe
+	%tac_debugmode%
 
-	:echostrings
-		echo --------------------------------------
-		echo Client Info:
-		echo Last Name: %tac_lastname%
-		echo First name: %tac_firstname%
-		echo Date: %tac_FormattedDate%
-		echo AV needed?: %no%
-		echo Ninite Installer: %ninite%
-		echo --------------------------------------
-		echo,
-		
-		%tac_debugmode%
-
-	:uninstallview
+:uninstallview
+	set tac_step=uninstallview
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
 	call "%workingdir%\pc-decrapifier.exe"
-	
+
 	call "%workingdir%\geek.exe"
-	echo,
-	color 1f
 
-	:systeminfo
-		color 1f
-		title CleanTech: Performance Test #2
+echo,
+color 1f
 
-		echo Dumping postclean system info...
-		echo Command running: msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
-		msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
-		echo,
-
-		echo Starting Performance Monitor. Please wait... 
-		echo,
-		
-		echo Importing perfmon xml...
-		echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
-		echo,
-		logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
-
-	    echo Starting Performance Monitor. Please wait...
-		echo,
-		
-		echo Command running: logman start CleanTech-PostCleanTest
-		logman start CleanTech-PostCleanTest
-
-		echo Waiting for perfmon to finish...
-	    echo timeout 660
-		timeout 660
-		echo ...Done!
-		echo,
-
-	    echo Copying Performance Monitor logs...
-		
-		echo Command running: takeown /f c:\perfmon /r /d y
-		takeown /f C:\CT-Perfmon\ /r /d y
-		
-		echo robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
-		robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
-		echo ...Done!
-		echo,
+:systeminfo
+	set tac_step=systeminfo
+	set tac_>%tac_workingdir%\CT-Flags.txt
 	
-	:files
-		title CleanTech: Consolidating Log Files
-		echo Moving Log files
-		echo,
+	color 1f
+	title CleanTech: Performance Test #2
 
-		echo Command running: takeown /f c:\Logs /r /d y
-		takeown /f C:\Logs\ /r /d y
-		echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
-		%tac_debugmode%
-		robocopy /s C:\Logs\ "%clientdir%\Logs"
-		echo,
+	echo Dumping postclean system info...
+	echo Command running: msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
+	msinfo32 /nfo "%clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
+	echo,
 
-		echo Command running: takeown /f c:\ADW /r /d y
-		takeown /f C:\ADW\ /r /d y
-		echo Command running: robocopy /s C:\ADW "%clientdir%\ADW"
-		robocopy /s C:\ADW\ "%clientdir%\ADW"
+	echo Starting Performance Monitor. Please wait... 
+	echo,
+	
+	echo Importing perfmon xml...
+	echo logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
+	echo,
+	logman import -n CleanTech-PostCleanTest -xml Perfmon-Post.xml
 
-		title CleanTech: Removing Cleanup Files
-		echo Removing cleanup files...
-		echo,
-		%tac_debugmode%
+    echo Starting Performance Monitor. Please wait...
+	echo,
+	
+	echo Command running: logman start CleanTech-PostCleanTest
+	logman start CleanTech-PostCleanTest
 
-		echo Command running: logman delete -n CleanTech-PostCleanTest
-		logman delete -n CleanTech-PostCleanTest
-		echo,
+	echo Waiting for perfmon to finish...
+    echo timeout 660
+	timeout 660
+	echo ...Done!
+	echo,
 
-		echo Command running: logman delete -n CleanTech-PreCleanTest
-		logman delete -n CleanTech-PreCleanTest
-		echo,
+:files
+	set tac_step=files
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-		echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-		%tac_debugmode%
+	title CleanTech: Consolidating Log Files
 
-	:userfinish
-	    color E0
-	    echo -------------------------------------------------------
-	    echo Default browser starting... Please install AdBlock Plus
-	    echo -------------------------------------------------------
-	    start /wait http://adblockplus.org
+    echo Copying Performance Monitor logs...
+	
+	echo Command running: takeown /f c:\perfmon /r /d y
+	takeown /f C:\CT-Perfmon\ /r /d y
+	
+	echo robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
+	robocopy /s C:\CT-Perfmon\ "%clientdir%\perfmon"
+	echo ...Done!
+	echo,
+	echo Moving Log files
+	echo,
 
-	    echo ------------------------------------------------------
-	    echo WhatInStartup starting... Please check startup entries
-	    echo ------------------------------------------------------
-	    start /wait %workingdir%\whatinstartup\WhatInStartup.exe
+	echo Command running: takeown /f c:\Logs /r /d y
+	takeown /f C:\Logs\ /r /d y
+	echo Command running: robocopy /s C:\Logs\ "%clientdir%\Logs"
+	%tac_debugmode%
+	robocopy /s C:\Logs\ "%clientdir%\Logs"
+	echo,
 
-	    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
-		%tac_debugmode%
+	echo Command running: takeown /f c:\ADW /r /d y
+	takeown /f C:\ADW\ /r /d y
+	echo Command running: robocopy /s C:\ADW "%clientdir%\ADW"
+	robocopy /s C:\ADW\ "%clientdir%\ADW"
 
-		echo Command running: del "%workingdir%\autoclean-finish"
-		del "%workingdir%\autoclean-finish"
+	title CleanTech: Removing Cleanup Files
+	echo Removing cleanup files...
+	echo,
+	%tac_debugmode%
 
-		echo Adding flags to text file
-		echo "Finish Flags = %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 " >>%workingdir%\CT-flags.txt
-		echo,
+	echo Command running: logman delete -n CleanTech-PostCleanTest
+	logman delete -n CleanTech-PostCleanTest
+	echo,
 
-		echo Setting next stage batch file
-		echo %workingdir%\autoclean-reallyfinish.bat %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 >"C:%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
-		%tac_debugmode%
+	echo Command running: logman delete -n CleanTech-PreCleanTest
+	logman delete -n CleanTech-PreCleanTest
+	echo,
 
-		echo Starting BootTimer. Prepare for reboot...
-		echo Command running: %workingdir%\boottimer.exe
-		echo,
-		start %workingdir%\boottimer.exe
-		timeout 20
-		%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
+	echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	%tac_debugmode%
+
+:userfinish
+	set tac_step=userfinish
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+    color E0
+    echo -------------------------------------------------------
+    echo Default browser starting... Please install AdBlock Plus
+    echo -------------------------------------------------------
+    start /wait http://adblockplus.org
+
+    echo ------------------------------------------------------
+    echo WhatInStartup starting... Please check startup entries
+    echo ------------------------------------------------------
+    start /wait %workingdir%\whatinstartup\WhatInStartup.exe
+
+    echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
+	%tac_debugmode%
+
+:finishdone
+	set tac_stage=reallyfinish
+	set tac_step=finishdone
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	echo Starting BootTimer. Prepare for reboot...
+	echo Command running: %workingdir%\boottimer.exe
+	echo,
+	start %workingdir%\boottimer.exe
+	timeout 20
+	%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes

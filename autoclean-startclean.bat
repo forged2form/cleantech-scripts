@@ -3,10 +3,6 @@
 :: AUTOCLEAN-STARTCLEAN.BAT
 :: ------------------------
 
-:: !!!!!!!
-:: NOTE: Change location of trontemp. Root of system drive causes issues with some AV even when disabled...
-:: !!!!!!!
-
 chcp 65001
 
 :: BatchGotAdmin
@@ -59,7 +55,37 @@ echo Command running: cd "%tac_workingdir%"
 cd "%tac_workingdir%"
 echo,
 
+echo Printing Last run variables:
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do echo %%i
+for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do set %%i
+
+::startcleandone test
+if !tac_step!==startcleandone (
+	color 4f
+	echo,
+	echo It appears that you've already completed this step.
+	echo Please relaunch from autoclean-launcher.bat.
+	echo If you think you are seeing this in error
+	echo please contact tech support. :P
+	echo Press a key to exit...
+	echo,
+	pause
+	exist
+)
+
+if NOT !tac_step!==prepdone (
+	echo Resuming from step:!tac_step!
+	pause
+	goto !step!
+)
+
+:startclean
+	set tac_step=startcleanstart
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 :echostrings
+	set tac_step=echostrings
+	set tac_>%tac_workingdir%\CT-Flags.txt
 	echo -----------------------
 	echo Client Info:
 	echo Last Name: %tac_lastname%
@@ -69,16 +95,8 @@ echo,
 	echo -----------------------
 	echo,
 
-	set tac_lastname=%tac_lastname%
-	set tac_firstname=%tac_firstname%
-	set tac_FormattedDate=%tac_FormattedDate%
-	set tac_debugmode=
-	set tac_offline=
-
-	set "tac_clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
-
-:: set tac_debugmode=rem
-if /i [%5]==[yes] (set tac_debugmode=pause) else (set "tac_debugmode=rem" & goto:setwindow)
+:: Clientdir should already be present in flag file now...
+::	set "tac_clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 
 :setwindow
 	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Start Clean"
@@ -86,6 +104,9 @@ if /i [%5]==[yes] (set tac_debugmode=pause) else (set "tac_debugmode=rem" & goto
 
 :: --- START boottimer_1-2_pre.bat
 :boottimer
+	set tac_step=boottimer
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	title CleanTech - BootTimer
 	echo Press any key when BootTimer has reported its number.
 	echo DO NOT close the BootTimer dialog box yet!
@@ -141,71 +162,60 @@ if /i [%5]==[yes] (set tac_debugmode=pause) else (set "tac_debugmode=rem" & goto
 title CleanTech - Start Clean
 
 %tac_debugmode%
-color E0
+:: !!!! What's going on here again?
+::color E0
+::
+::if EXIST autoclean-mbam goto uninstallview
+::if EXIST autoclean-startclean goto mbam
 
-if EXIST autoclean-mbam goto uninstallview
-if EXIST autoclean-startclean goto mbam
-
-:noflagfile
-color 1f
-echo "at :noflagfile"
-echo copy /y NUL autoclean-startclean >NUL
-echo,
-copy /y NUL autoclean-startclean >NUL
+::noflagfile
+::color 1f
 %tac_debugmode%
 
-::Set up for TechTutors account during safeboot environment
-:ttadminlogin
-	echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-    %tac_debugmode%
-    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\PreStartClean-Winlogon.reg"
-    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\PreStartClean-Winlogon.reg"
 
-    goto remflag REM skip for now b/c issues
+:restartprep
+	set tac_step=restartprep
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
-    :setautologin
+	
+	::Set up for TechTutors account during safeboot environment
+	:ttadminlogin
+		echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+		reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+		%tac_debugmode%
+		echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\PreStartClean-Winlogon.reg"
+		REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\PreStartClean-Winlogon.reg"
+
+	:setautologin
 	    echo Setting autologin for Tron session...
 	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d TechTutors /f
 	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d "" /f
 	   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
 	    echo,
 
-:remflag
-:: Removing autoclean-start flag file
-echo del "%tac_workingdir%\autoclean-startclean"
-echo,
-del "%tac_workingdir%\autoclean-startclean"
+	:safemodestart
+		echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,%tac_workingdir%\autoclean-launcher.bat" /f
+		reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,%tac_workingdir%\autoclean-launcher.bat" /f
+		%tac_debugmode%
 
-:: Swapping startup batch files
-echo del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
-del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-startcleantemp.bat"
+		bcdedit /set {default} safeboot network
 
-echo Adding flags to text file
-	echo "Start Flags = %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 " >> %tac_workingdir%\CT-flags.txt
+
+:startcleandone
+	set tac_step=startcleandone
+	set tac_stage=tron
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	color E0
+	echo --------------------
+	echo Preparing to reboot.
+	echo -------------------- 
 	echo,
+	echo If tron does not start after reboot,
+	echo please launch Tron using autoclean-tron.bat
+	echo from the CleanTechTemp directory on the Desktop
+	echo,
+	%tac_debugmode%
 
-echo Comand running: echo "%tac_workingdir%\autoclean-tron.bat" %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 >%tac_workingdir%\autoclean-trontemp.bat
-echo "%tac_workingdir%\autoclean-tron.bat" %tac_lastname% %tac_firstname% %tac_FormattedDate% %no% %5 >%tac_workingdir%\autoclean-trontemp.bat
-echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,%tac_workingdir%\autoclean-trontemp.bat" /f
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d "explorer.exe,%tac_workingdir%\autoclean-trontemp.bat" /f
-%tac_debugmode%
-
-bcdedit /set {default} safeboot network
-
-color E0
-echo --------------------
-echo Preparing to reboot.
-echo -------------------- 
-echo,
-echo If tron does not start after reboot,
-echo please launch Tron using autoclean-tron.bat
-echo from the CleanTechTemp directory on the Desktop
-echo,
-%tac_debugmode%
-
-:shutdown
-shutdown /t 0
-
-:reboot
-shutdown /r /t 0
+	:reboot
+	shutdown /r /t 0
