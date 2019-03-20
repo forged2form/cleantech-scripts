@@ -112,14 +112,20 @@ if NOT !tac_step!==trondone (
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
 	color 4f
-	echo MANUAL STEP	
+	cls
+	echo -------------------------------------------------------------------------
+	echo UninstallView
+	echo -------------------------------------------------------------------------
+	echo MANUAL STEP
 	echo -------------------------------------------------------------------------
 	echo Two programs will open. First PC PC Decrapifier, then Geek Uninstaller.
-	echo Please go through PC-D first, and allow it to finish. Note, you might
-	echo need to click 'skip' on some uninstallations if they hand. If prompted,
-	echo do not stop running scripts on the page.
+	echo Please go through PC-D first, and allow it to finish.
+	echo,
+	echo Note: You might need to click 'skip' on some uninstallations if they hand.
+	echo If prompted, do not stop running scripts on the page.
+	echo,
 	echo Finish with Geek uninstaller to remove anything PC-D couldn't remove or
-	echo see. Once you've close the Geek uninstaller windows, the autoclean script
+	echo see. Once you close the Geek uninstaller windows, the autoclean script
 	echo will resume.
 	echo -------------------------------------------------------------------------
 	pause
@@ -216,6 +222,7 @@ color 1f
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
     color E0
+    cls
     echo -------------------------------------------------------
     echo Default browser starting... Please install AdBlock Plus
     echo -------------------------------------------------------
@@ -231,6 +238,7 @@ color 1f
 
     start /wait http://adblockplus.org
 
+    cls
     echo ------------------------------------------------------
     echo WhatInStartup starting... Please check startup entries
     echo ------------------------------------------------------
@@ -266,7 +274,7 @@ color 1f
 	timeout 20
 	echo Command running: %workingdir%\boottimer.exe
 	echo,
-	
+
 	start %workingdir%\boottimer.exe
 	timeout 20
 	%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
