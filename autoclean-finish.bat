@@ -118,14 +118,14 @@ if NOT !tac_step!==trondone (
 	echo -------------------------------------------------------------------------
 	echo MANUAL STEP
 	echo -------------------------------------------------------------------------
-	echo Two programs will open. First PC PC Decrapifier, then Geek Uninstaller.
+	echo Two programs will open. PC Decrapifier and Geek Uninstaller.
 	echo Please go through PC-D first, and allow it to finish.
 	echo,
 	echo Note: You might need to click 'skip' on some uninstallations if they hand.
 	echo If prompted, do not stop running scripts on the page.
 	echo,
 	echo Finish with Geek uninstaller to remove anything PC-D couldn't remove or
-	echo see. Once you close the Geek uninstaller windows, the autoclean script
+	echo see. Once you close the Geek Uninstaller window, the autoclean script
 	echo will resume.
 	echo -------------------------------------------------------------------------
 	pause
