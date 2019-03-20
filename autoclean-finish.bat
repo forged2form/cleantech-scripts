@@ -123,7 +123,7 @@ if NOT !tac_step!==trondone (
 	echo will resume.
 	echo -------------------------------------------------------------------------
 	pause
-	
+
 	set tac_step=uninstallview
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
@@ -219,11 +219,30 @@ color 1f
     echo -------------------------------------------------------
     echo Default browser starting... Please install AdBlock Plus
     echo -------------------------------------------------------
+	echo MANUAL STEP	
+	echo -------------------------------------------------------------------
+	echo Adblockplus.org will load in the deault browers. Please install the
+	echo extension. Closing the browser will bring the next step.
+	echo,
+	echo Press a key to continue and close the browser window when you're
+	echo finished to move on to the next step.
+	echo -------------------------------------------------------------------
+	pause
+
     start /wait http://adblockplus.org
 
     echo ------------------------------------------------------
     echo WhatInStartup starting... Please check startup entries
     echo ------------------------------------------------------
+   	echo MANUAL STEP	
+	echo -------------------------------------------------------------------
+	echo Please check for any remaining startup entires using WhatInStartup.
+	echo Delete any that you are sure that are unecessary.
+	echo,
+	echo Press a key to continue and close the browser window when you're
+	echo finished to move on to the next step.
+	echo -------------------------------------------------------------------
+	pause
     start /wait %workingdir%\whatinstartup\WhatInStartup.exe
 
     echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
