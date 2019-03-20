@@ -133,9 +133,9 @@ if NOT !tac_step!==trondone (
 	set tac_step=uninstallview
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	call "%workingdir%\pc-decrapifier.exe"
+	"%workingdir%\pc-decrapifier.exe"
 
-	call "%workingdir%\geek.exe"
+	"%workingdir%\geek.exe"
 
 echo,
 color 1f
