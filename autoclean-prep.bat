@@ -360,7 +360,9 @@ REM		    echo,
 	echo Waiting for perfmon to finish...
     echo timeout 660
 	timeout 660
-	color E0 & %tac_debugmode% & color 1f
+	color E0
+	%tac_debugmode%
+	color 1f
 
 :nextstageprep
 	echo Adding flags to text file
@@ -368,10 +370,10 @@ REM		    echo,
 
 	:: NOTE: Need to check how to automatically log the number that gets presented in the BootTimer dialogue. (Does it output to STDERR?)
 
-	:: --- START boottimer_1-1_pre.bat
-:boottimer
-	set tac_step=boottimer
-	set tac_>%tac_workingdir%\CT-
+:prepdone
+	set tac_step=prepdone
+	set tac_stage=startclean
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
 	echo Starting BootTimer. Prepare for reboot...
 	echo Command running: "%tac_workingdir%\boottimer.exe"
@@ -380,10 +382,6 @@ REM		    echo,
 	echo press any key when you're ready for stage 2
 	pause,
 
-:prepdone
-	set tac_step=prepdone
-	set tac_stage=startclean
-	set tac_>%tac_workingdir%\CT-Flags.txt
 	:: %tac_workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
 	shutdown /r /t 0
-	:: --- END boottimer_1-1_pre.bat
+	:: --- END boottimer_1-1_pre.bat ???
