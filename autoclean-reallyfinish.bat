@@ -160,8 +160,9 @@ echo,
 	echo Killing BootTimer.exe's command window
 	taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
 	timeout 30
-	echo Killing BootTimer.exe's chrome process
+	echo Killing BootTimer.exe's browser process
 	taskkill /im chrome.exe /f
+	taskkill /im iexplore.exe /f
 	%tac_debugmode%
 	cls & color 1f
 
