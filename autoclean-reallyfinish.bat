@@ -235,9 +235,6 @@ title CleanTech - Really Finish
 	rd /s /q C:\ADW
 	echo,
 
-	echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-reallyfinishtemp.bat"
-	echo,
 	%tac_debugmode%
 
 :restorepoint

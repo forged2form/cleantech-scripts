@@ -192,9 +192,7 @@ color 1f
 	echo Command running: logman delete -n CleanTech-PreCleanTest
 	logman delete -n CleanTech-PreCleanTest
 	echo,
-
-	echo Command running: del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
-	del "%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\autoclean-finishtemp.bat"
+	
 	%tac_debugmode%
 
 :userfinish

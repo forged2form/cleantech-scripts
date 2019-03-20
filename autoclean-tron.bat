@@ -97,6 +97,22 @@ if NOT !tac_step!==startcleandone (
 
 color 1f
 
+	:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
+	:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
+
+:starttron
+	set tac_step=starttron
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	echo Starting Tron...
+	start /wait %tac_workingdir%\Tron\tron\Tron.bat -a -str -sdc
+	echo,
+
+:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\tron\resources\tron_stage.txt" (
+
+:didtronfinish
+:: create prompt to see if tron finished OR test via trons own error / logs if possible
+
 :nir
 	set tac_step=nir
 	set tac_>%tac_workingdir%\CT-Flags.txt
@@ -110,27 +126,12 @@ bcdedit /deletevalue {default} safeboot
 echo,
 
 :putshellback
-echo Removing trontemp batch file...
-del %tac_workingdir%\autoclean-trontemp.bat
 
 "C:\Program Files (x86)\TeamViewer\TeamViewer.exe" &
 
 echo Command running: reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /t REG_SZ /d explorer.exe /f
 %tac_debugmode%
-
-	:: echo "Command running: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg""
-	:: REG IMPORT /f "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%clientdir%\PreStartClean-Winlogon.reg" /f
-
-:starttron
-	set tac_step=starttron
-	set tac_>%tac_workingdir%\CT-Flags.txt
-
-	echo Starting Tron...
-	%tac_workingdir%\Tron\tron\Tron.bat -a -str -sdc
-	echo,
-
-:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\tron\resources\tron_stage.txt" (
 
 :trondone
 	color 4f

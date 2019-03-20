@@ -71,5 +71,5 @@ if exist %tac_workingdir%\CT-Flags.txt (
 	for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do set %%i
 	)
 	if exist autoclean-%tac_stage%.bat autocean-!tac_stage!.bat
-	else %tac_workingdir%\autoclean-!tac_stage!.bat
+	if exist %tac_workingdir%\autoclean-!tac_stage!.bat %tac_workingdir%\autoclean-!tac_stage!.bat
 )
