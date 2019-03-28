@@ -157,18 +157,18 @@ echo,
 	rem %=%
 	if /i %input%==y goto clientnamegood
 	if /i %input%==n goto clientname
-	echo Incorrect input. & goto clientnameconfirm
+	echo Incorrect input.
+	goto clientnameconfirm
 
 :clientnamegood
 
 :pinquestion
 	set pinq=
 	set /p pinq="Does the the current user (%USERNAME%) use a 4-6 digit PIN to login? (y/n): "
-	
-	:: skip auto login
-	if /i %pinq%==y goto passwordneeded
-	if /i %pinq%==n goto drivelettertest
-	echo Incorrect input. & goto pinquestion
+	if /i %pinq%==y goto autoadminlogontest
+	if /i %pinq%==n goto passquestion
+	echo Incorrect input.
+	goto pinquestion
 
 :passquestion
 	set password=
@@ -176,10 +176,11 @@ echo,
 	set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 	if /i %passq%==y goto passwordneeded
 	if /i %passq%==n goto nopass
-	echo Incorrect input. & goto passquestion
+	echo Incorrect input.
+	goto passquestion
 
 :passwordneeded
-	set /p password="Please enter the password for %USERNAME%: "
+	set /p password="Please enter the password for user: %USERNAME%: "
 	if /i %password%=="" echo You didn't enter anything! *Sigh* Try again... & goto passwordneeded
 
 	:passconfirm
@@ -203,7 +204,11 @@ echo,
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
 	if %ERRORLEVEL% EQU 0 (
 		set tac_autoadminlogonenabled=1
+		echo
+		echo ----------------------------
 		echo tac_autoadminlogonenabled=!tac_autoadminlogonenabled!
+		echo ----------------------------
+		echo
 		goto beastmap
 		)
 :: --- END client_info_entry.bat
