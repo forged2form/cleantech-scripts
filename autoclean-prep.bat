@@ -67,7 +67,7 @@ set tac_workingdir=C:\CleanTechTemp
 	if "%version%" == "6.1" set tac_winver=Win7
 	if "%version%" == "6.0" set tac_winver=WinVista
 
-echo Adding to Startup...
+echo Adding autologon scripts to Startup...
 echo Command running: copy "autoclean-launcher.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy "autoclean-launcher.bat" "C:\%HOMEPATH%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\"
 
@@ -78,6 +78,8 @@ if exist C:\CleanTechTemp\CT-Flags.txt (
 	for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do echo %%i
 	for /f "delims=" %%i in (%tac_workingdir%\CT-Flags.txt) do set %%i
 	)
+
+::Test to see if this script has already been called and completed.
 ::prepdone test
 if not !tac_step!==prepdone (
 	echo Resuming from step:!tac_step!
@@ -110,6 +112,8 @@ if not !tac_step!==prepdone (
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
 rem	if defined %tac_lastname% (set "tac_tac_debugmode=pause" & set "tac_tac_debugmode=pause") else (goto:drivelettertest)
+
+:: For future usage. Hoping to intelligently add an offline mode using the FAHT sticks that will sync with the Beast when plugged in.
 
 :::tac_offlineset
 ::set tac_offline=
@@ -156,19 +160,22 @@ echo,
 	echo Incorrect input. & goto clientnameconfirm
 
 :clientnamegood
-goto passquestion
 
-::	set autoadminlogonenabled=0
-::	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
-::	if %ERRORLEVEL% EQU 0 (set autoadminlogonenabled=1 & echo autoadminlogonenabled=!autoadminlogonenabled! & goto av) || goto av REM skipping autologin prompts
-::	pause
+:pinquestion
+	set pinq=
+	set /p pinq="Does the the current user (%USERNAME%) use a 4-6 digit PIN to login? (y/n): "
+	
+	:: skip auto login
+	if /i %pinq%==y goto passwordneeded
+	if /i %pinq%==n goto drivelettertest
+	echo Incorrect input. & goto pinquestion
 
 :passquestion
 	set password=
 	set passq=
 	set /p passq="Does the the current user (%USERNAME%) require a password? (y/n): "
 	if /i %passq%==y goto passwordneeded
-	if /i %passq%==n goto drivelettertest
+	if /i %passq%==n goto nopass
 	echo Incorrect input. & goto passquestion
 
 :passwordneeded
@@ -176,14 +183,29 @@ goto passquestion
 	if /i %password%=="" echo You didn't enter anything! *Sigh* Try again... & goto passwordneeded
 
 	:passconfirm
-	echo You entered: %password%
-	set passconfirm=
-	set /p passconfirm="Is this correct? (y/n): "
+		echo You entered: %password%
+		set passconfirm=NULL
+		set /p passconfirm="Is this correct? (y/n): "
+		if /i %passconfirm%==y goto passcorrect
+		if /i %passconfirm%==n goto passwordneeded
+		echo Incorrect input. & goto passconfirm
 
-	if /i %passconfirm%==y goto passcorrect
-	if /i %passconfirm%==n goto passwordneeded
-	echo Incorrect input. & goto passconfirm
-	:passcorrect
+:nopass
+	set password=NULL
+
+:passcorrect
+
+:autoadminlogontest
+	set tac_step=autoadminlogontest
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
+	set tac_autoadminlogonenabled=NULL
+	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
+	if %ERRORLEVEL% EQU 0 (
+		set tac_autoadminlogonenabled=1
+		echo tac_autoadminlogonenabled=!tac_autoadminlogonenabled!
+		goto beastmap
+		)
 :: --- END client_info_entry.bat
 
 :: --- START map_beast.bat
@@ -274,19 +296,20 @@ goto passquestion
 		reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" "%tac_clientdir%\PreClean-SystemRestore.reg"
 
 	:uacbackup
-
 		echo Saving current UAC values
 
-		REM safety code incase we aprubtly closed or crashed... Don't want to overwrite client's original registry entries
-		IF EXIST "%tac_clientdir%\Preclean-Policies_System.reg" goto uac-reg
+		REM safety code incase we abruptly closed or crashed... Don't want to overwrite client's original registry entries
+		IF EXIST "%tac_clientdir%\Preclean-Policies_System.reg" goto policies-saved
 
 	:policies-system
 		REG EXPORT HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System "%tac_clientdir%\Preclean-Policies_System.reg"
 		echo,
+
+	:policies-saved
 	    
 	:autologon
 	    echo Saving current AutoLogon values
-	    IF EXIST "%tac_clientdir%\Preclean-Winlogon.reg" goto autologoncheck
+	    IF EXIST "%tac_clientdir%\Preclean-Winlogon.reg" goto autologon-saved
 	    echo reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 	    reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 
@@ -295,14 +318,15 @@ goto passquestion
 	    echo REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg"
 	    REG EXPORT "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" "%tac_clientdir%\Preclean-Winlogon.reg"
 	    echo,
+    :autologon-saved
 
 	    %tac_debugmode%
 :: --- END reg_backup.bat
 
 :: --- START reg_prepmode_changes.bat
 :regchanges
-set tac_step=regchanges
-set tac_>%tac_workingdir%\CT-Flags.txt
+	set tac_step=regchanges
+	set tac_>%tac_workingdir%\CT-Flags.txt
 
 :uac-reg
 	echo,
@@ -321,25 +345,25 @@ set tac_>%tac_workingdir%\CT-Flags.txt
 
 :: --- START techtutors_admin_account_create.bat
 :createttadmin
-set tac_step=createttadmin
-set tac_>%tac_workingdir%\CT-Flags.txt
+::Skip this for now
+::	set tac_step=createttadmin
+::	set tac_>%tac_workingdir%\CT-Flags.txt
 
-:: Creating Tech Tutors admin accout to avoid PIN-based autologin issues and ot aid in recovery in case things go cataclysmic
-echo net user /add techtutors
-net user /add techtutors
-echo net localgroup administrators /add techtutors
-net localgroup administrators /add techtutors
+	:: Creating Tech Tutors admin accout to avoid PIN-based autologin issues and ot aid in recovery in case things go cataclysmic
+::	echo net user /add techtutors
+::	net user /add techtutors
+::	echo net localgroup administrators /add techtutors
+::	net localgroup administrators /add techtutors
 :: --- END techtutors_admin_account_create.bat
 
-	REM :autologoncheck
-    REM	if /i %autoadminlogonenabled%==1 goto systeminfo
+:setautologon
+	if /i %tac_autoadminlogonenabled%==1 goto chocoinstall
 
-REM skipping due to current bugs	    :setautologin
-rem		    echo Setting autologin for CleanTech session...
-rem		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
-REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
-REM		   	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
-REM		    echo,
+	echo Setting autologin for CleanTech session...
+	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
+	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultPassword /t REG_SZ /d %PASSWORD% /f
+	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+	echo,
 
 :chocoinstall
 	set tac_step=chocoinstall
@@ -448,6 +472,7 @@ REM		    echo,
 	echo press any key when you're ready for stage 2
 	pause,
 
+	timeout 10	
 	:: %tac_workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
 	shutdown /r /t 0
 	:: --- END boottimer_1-1_pre.bat ???
