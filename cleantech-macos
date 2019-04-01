@@ -98,7 +98,7 @@ echo Installing HomeBrew...
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 echo Installing Onyx, appcleaner, adobe flash player, TeamViewer 13
-brew cask install onyx appcleaner flashplayer
+brew cask install onyx appcleaner flash-player
 
 cp $CWD/Utilities/Installers/"Install TeamViewer 13.pkg" $CWD
 echo $SUDOPASS|sudo -S installer -pkg $CWD/"Install TeamViewer 13.pkg" -target /

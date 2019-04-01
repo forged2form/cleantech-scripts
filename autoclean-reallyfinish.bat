@@ -268,12 +268,6 @@ title CleanTech - Really Finish
 :userfinish
 	set tac_step=userfinish
 	set tac_>%tac_workingdir%\CT-Flags.txt
-    color E0
-
-    echo -------------------------------------------------------------
-    echo WhatInStartup starting... Please double-check startup entries
-    echo -------------------------------------------------------------
-    start /wait C:\CleanTechTemp/whatinstartup/WhatInStartup.exe
 
     cls
 	color 4f
@@ -289,8 +283,8 @@ title CleanTech - Really Finish
 	echo continue the script.
 	echo -------------------------------------------------------------------------
 	pause
-	echo Command running: "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
-	start /wait "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
+	echo "Command running: call %tac_workingdir%\securitysoftview\SecuritySoftView.exe"
+	call "%tac_workingdir%\securitysoftview\SecuritySoftView.exe"
 	
 	cls
 	color 2f
@@ -315,6 +309,9 @@ title CleanTech - Really Finish
 powercfg /hibernate on
 
 :finalize
+cls
+color E0
+echo ---------------------------------------------------------------
 echo press any key to remove temp folder + startup entry and finish!
 pause
 

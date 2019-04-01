@@ -473,11 +473,10 @@ echo,
 	echo Starting BootTimer. Prepare for reboot...
 	echo Command running: "%tac_workingdir%\boottimer.exe"
 	echo,
+	
 	start %tac_workingdir%\boottimer.exe
-	echo press any key when you're ready for stage 2
-	pause,
-
+	echo Rebooting in 10 seconds...
 	timeout 10	
-	:: %tac_workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes <-- NOT WORKING?!?
+	
 	shutdown /r /t 0
 	:: --- END boottimer_1-1_pre.bat ???
