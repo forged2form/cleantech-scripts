@@ -20,12 +20,12 @@ echo Please enter client Details...
 read -p "First Name: " FIRSTNAME
 read -p "Last Name: " LASTNAME
 
-while [ $SUDOTEST -ne 0 ] do
+while [ $SUDOTEST -ne 0 ] ; do
 	echo Testing sudo password... If you can\'t get this to work, you might need to close the script and create a user password.
 	echo -n "Please enter user password: "
 	read -s SUDOPASS
 	echo $SUDOPASS|sudo -S echo "Password works!"
-	SUDOTEST=$(echo $?)
+	SUDOTEST=$(echo $?);
 done
 
 echo Installing TT Wifi Access...
@@ -33,38 +33,38 @@ WIFIDEV="$(networksetup -listallhardwareports|grep -I -A2 Wi-Fi|sed -n 's/.*\(en
 read -p "Please enter the current TechTutors Wi-Fi Password: " WIFIPASS
 echo $SUDOPASS| sudo -S networksetup -addpreferredwirelessnetworkatindex $WIFIDEV TechTutors-5G 0 WPA2 $WIFIPASS
 
-if [ ! -d "$CWD" ] then
+if [ ! -d "$CWD" ] ; then
 	echo Creating working directory on Desktop
-	mkdir "$CWD"
+	mkdir "$CWD";
 fi
 
 cd "$CWD"
 
 echo Mounting TechTutors-1 Network Shares...
 
-while [ $NETPASSOK -ne 0 ] do
+while [ $NETPASSOK -ne 0 ] ; do
 	read -p "Please enter TechTutors network share password: " NETPASS
 	smbutil view //techtutors:$NETPASS@techtutors-1.local
-	NETPASSOK=$(echo $?)
+	NETPASSOK=$(echo $?);
 done
 
-for SHARE in "Public" "SysInfo" "CleanUpLogs" "Utilities"; do
+for SHARE in "Public" "SysInfo" "CleanUpLogs" "Utilities" ; do
 	MOUNTDIR="$CWD"/"$SHARE"
 
 if [ ! -d "$MOUNTDIR" ] ; then
-	mkdir "$MOUNTDIR"
+	mkdir "$MOUNTDIR";
 fi
 
 mount -t smbfs //techtutors:$NETPASS@TechTutors-1.local/"$SHARE" "$MOUNTDIR"
 
-if [ $? -gt 0 ]; then
+if [ $? -gt 0 ] ; then
 	echo ERROR with mounting. Attempting unmounting any existing mounts...
 	sudo umount //techtutors-1.local/"$SHARE";
 fi
 
-if [ $? -eq 0 ]; then
+if [ $? -eq 0 ] ; then
 	# Need to add test that this worked correctly and loop back around. (In case of multiple password failures.)
-	echo Mapped TechTutors-1 Network Share \""$SHARE"\" to "$MOUNTDIR"
+	echo Mapped TechTutors-1 Network Share \""$SHARE"\" to "$MOUNTDIR";
 fi
 done
 
