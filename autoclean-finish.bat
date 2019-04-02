@@ -263,10 +263,9 @@ color 1f
 	echo the dialogue box that opens. Your call.
 	echo,
 
-	timeout 10
 	echo Command running: %workingdir%\boottimer.exe
 	echo,
-	call %workingdir%\boottimer.exe
+	start %workingdir%\boottimer.exe
 
 	timeout 20
 	%workingdir%\nircmd\nircmd.exe dlg "BootTimer.exe" "" click yes
