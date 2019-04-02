@@ -16,16 +16,6 @@ WIFIDEV=
 SUDOPASS=
 SERVER=techtutors-1.local
 
-echo Installing TT Wifi Access...
-WIFIDEV="$(networksetup -listallhardwareports|grep -I -A2 Wi-Fi|sed -n 's/.*\(en[0-9]\).*/\1/p')"
-read -p "Please enter the current TechTutors Wi-Fi Password: " WIFIPASS
-networksetup -addpreferredwirelessnetworkatindex $WIFIDEV TechTutors-5G 0 WPA2 $WIFIPASS
-
-if [ ! -d "$CWD" ] ; then
-	echo Creating working directory on Desktop
-	mkdir "$CWD"
-fi
-
 echo Please enter client Details...
 read -p "First Name: " FIRSTNAME
 read -p "Last Name: " LASTNAME
@@ -37,6 +27,16 @@ while [ $SUDOTEST -ne 0 ] ; do
 	echo $SUDOPASS|sudo -S echo "Password works!"
 	SUDOTEST=$(echo $?)
 done
+
+echo Installing TT Wifi Access...
+WIFIDEV="$(networksetup -listallhardwareports|grep -I -A2 Wi-Fi|sed -n 's/.*\(en[0-9]\).*/\1/p')"
+read -p "Please enter the current TechTutors Wi-Fi Password: " WIFIPASS
+echo $SUDOPASS| sudo -S networksetup -addpreferredwirelessnetworkatindex $WIFIDEV TechTutors-5G 0 WPA2 $WIFIPASS
+
+if [ ! -d "$CWD" ] ; then
+	echo Creating working directory on Desktop
+	mkdir "$CWD"
+fi
 
 cd "$CWD"
 
