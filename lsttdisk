@@ -1,0 +1,20 @@
+#!/bin/bash
+echo
+echo "Listing attached disks"
+echo
+echo -e "DVD Drive:\t\t/dev/disk/by-id/data-HL-DT-ST_DVD-RW_GH41N_K9ZA7H93152"
+echo -e "Boot Drive:\t\t/dev/disk/by-id/ata-SAMSUNG_HD502HJ_S26EJ9AB201025"
+echo -e "Data Drive:\t\t/dev/disk/by-id/ata-ST4000DM004-2CV104_ZFN0D6XP"
+echo -e "Old Beast Drive:\t/dev/disk/by-id/ata-WDC_WD6400AAKS-22A7B2_WD-WCASY5758938" 
+echo 
+
+LSVARS="--color -x -C --ignore=*-part* --ignore=wwn* --ignore=*DVD* --ignore=*S26EJ9AB201025* --ignore=*ZFN0D6XP* --ignore=*WD-WCASY5758938*"
+FINDEXCLUDES="! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*S26EJ9AB201025*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' \)"
+
+ls $LSVARS /dev/disk/by-id
+echo
+ls $LSVARS /dev/disk/by-id|grep --color -i usb
+echo
+find /dev/disk/by-id -type l ! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*S26EJ9AB201025*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' \)
+echo
+
