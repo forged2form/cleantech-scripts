@@ -9,18 +9,20 @@ FAHT_CONFIRM=n
 FAHT_CLIENTNAME=
 FAHT_DATE=`date +%Y-%m-%d-%H`
 FAHT_WORKINGDIR=/home/$(whoami)
-FAHT_MACHINE=$(dmidecode|grep "Product Name:"|sed 's/.*Product Name: //')
-FAHT_CORE_COUNT=$(dmidecode|grep "Socket Designation: CPU "|sed 's/[^0-9]*//g'|tail -1)
+FAHT_MACHINE=$(dmidecode|grep -i "Product Name:"|sed 's/.*Product Name: //')
+FAHT_CORE_COUNT=$(dmidecode|grep -i "Socket Designation: CPU "|sed 's/[^0-9]*//g'|tail -1)
 FAHT_CORE_COUNT=$(($FAHT_CORE_COUNT +1))
-FAHT_CORE_THREAD=$(dmidecode|grep -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
-FAHT_MEMORY_GB=$(dmidecode|grep -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
+FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
+FAHT_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
 FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT * $FAHT_CORE_THREAD))
-FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
+FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
-FAHT_LIVE_DEV=$(mount|grep "on / "|sed -n 's/^\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')
-
-set -o posix ;set|grep FAHT|less
+FAHT_LIVE_DEV=$(mount|grep -i "on / "|sed -n 's/^\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')
+smartctl --scan|grep -v $FAHT_LIVE_DEV
+sleep
+set -o posix ;set|grep FAHT
+sleep
 #>$FAHT_WORKINGDIR/sysinfo.txt
 
 clear
@@ -54,8 +56,8 @@ echo -e "Client: $CLIENTNAME\n"
 
 ttdiaglog=/home/techtutors/log/diag-$CLIENTNAME-$DATE.txt
 
-for p in `ip -o link | grep -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$ttdiaglog.txt
+for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$ttdiaglog.txt
 
-for p in `ip -o link | grep -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>>$ttdiaglog.txt
+for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>>$ttdiaglog.txt
 
 echo -e "All Done!\n"
