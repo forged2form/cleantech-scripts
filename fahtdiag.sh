@@ -11,6 +11,7 @@ FAHT_CONFIRM=n
 FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
 FAHT_DATE=`date +%Y-%m-%d-%H`
 FAHT_WORKINGDIR=/home/techtutors/fahttest/$FAHT_CLIENTNAME-$FAHT_DATE
+FAHT_AUDIO=
 
 ### Prep client folder ###
 mkdir $FAHT_WORKINGDIR
@@ -21,6 +22,7 @@ FAHT_CORE_COUNT=$(dmidecode|grep -i "Socket Designation: CPU "|sed 's/[^0-9]*//g
 FAHT_CORE_COUNT=$(($FAHT_CORE_COUNT +1))
 FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
 FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
+FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')
 FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT*$FAHT_CORE_THREAD))
 FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
 FAHT_CPU_SPEED=$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')
@@ -35,8 +37,13 @@ sleep 10
 #>$FAHT_WORKINGDIR/sysinfo.txt
 
 ### Dump systeminfo ###
-# modprobe eeprom
-# hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
+modprobe eeprom
+lshw>$FAHT_WORKINGDIR/lshw.txt
+dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
+lscpu>$FAHT_WORKDIT/lscpu.txt
+smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
+acpi -i>$FAHT_WORKINGDIR/battery.txt
+hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
 
 clear
 echo -e "---------------------------"
@@ -61,16 +68,52 @@ while true; do
 	esac
 done
 
-while
+CONFIRM=
 
-CLIENTNAME=$LASTNAME-$FIRSTNAME
+### Old stuff.. Keep for now...
 
-echo -e "Client: $CLIENTNAME\n"
+# CLIENTNAME=$LASTNAME-$FIRSTNAME
 
-ttdiaglog=/home/techtutors/log/diag-$CLIENTNAME-$DATE.txt
+# echo -e "Client: $CLIENTNAME\n"
 
-for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$ttdiaglog.txt
+# ttdiaglog=/home/techtutors/log/diag-$CLIENTNAME-$DATE.txt
 
-for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>>$ttdiaglog.txt
+### Network test - Ethernet ###
+clear
+echo -------------------------------
+echo Testing Ethernet... Please wait
+echo -------------------------------
+echo
+for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/ethtest.txt
+
+### Network test - Wireless ###
+echo -----------------------------
+echo Testing Wi-Fi.... Please wait
+echo -----------------------------
+echo
+for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/wifitest.txt
+
+
+### Audio test ###
+clear
+echo ----------------------------
+echo Testing Audio... Please wait
+echo ----------------------------
+echo
+speaker-test -t sine -f 1000 -l 1
+
+while true; do
+	echo Did you hear the test tone? \(y/n\) 
+	read -n1 CONFIRM
+	: ${CONFIRM:=y}
+	echo
+
+	case ${CONFIRM,,} in
+		y|Y) FAHT_AUDIO=PASSED && break;;
+		n|N) FAHT_AUDIO=FAILED && break;;
+		*) echo -e "Invalid entry. Please retry.... \n\n";;
+	esac
+done
+
 
 echo -e "All Done!\n"
