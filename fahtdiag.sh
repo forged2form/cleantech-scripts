@@ -5,8 +5,8 @@
 
 
 ### Init variables ###
-FAHT_FIRSTNAME=Tech
-FAHT_LASTNAME=Tutors
+FAHT_FIRSTNAME=Darling
+FAHT_LASTNAME=Ryan
 FAHT_CONFIRM=n
 FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
 FAHT_DATE=`date +%Y-%m-%d-%H`
@@ -26,6 +26,7 @@ FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9
 FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT*$FAHT_CORE_THREAD))
 FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
 FAHT_CPU_SPEED=$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')
+FAHT_BATT_DESC=$(acpi -i)
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
 FAHT_LIVE_DEV=$(mount|grep -i "on / "|sed -n 's/^\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')
@@ -44,6 +45,7 @@ lscpu>$FAHT_WORKDIT/lscpu.txt
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
 acpi -i>$FAHT_WORKINGDIR/battery.txt
 hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
+smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 clear
 echo -e "---------------------------"
@@ -115,5 +117,14 @@ while true; do
 	esac
 done
 
+### GFX Benchmark ###
+clear
+echo -------------------------------
+echo Testing GFX card... Please wait
+echo -------------------------------
+echo
+$FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
+
+( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
 
 echo -e "All Done!\n"
