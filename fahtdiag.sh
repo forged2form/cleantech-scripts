@@ -3,27 +3,40 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
-FAHT_FIRSTNAME=
-FAHT_LASTNAME=
+
+### Init variables ###
+FAHT_FIRSTNAME=Tech
+FAHT_LASTNAME=Tutors
 FAHT_CONFIRM=n
-FAHT_CLIENTNAME=
+FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
 FAHT_DATE=`date +%Y-%m-%d-%H`
-FAHT_WORKINGDIR=/home/$(whoami)
+FAHT_WORKINGDIR=/home/techtutors/fahttest/$FAHT_CLIENTNAME-$FAHT_DATE
+
+### Prep client folder ###
+mkdir $FAHT_WORKINGDIR
+
+### Grab summary info for summary sheet ###
 FAHT_MACHINE=$(dmidecode|grep -i "Product Name:"|sed 's/.*Product Name: //')
 FAHT_CORE_COUNT=$(dmidecode|grep -i "Socket Designation: CPU "|sed 's/[^0-9]*//g'|tail -1)
 FAHT_CORE_COUNT=$(($FAHT_CORE_COUNT +1))
 FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
-FAHT_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
-FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT * $FAHT_CORE_THREAD))
+FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
+FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT*$FAHT_CORE_THREAD))
 FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
+FAHT_CPU_SPEED=$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
 FAHT_LIVE_DEV=$(mount|grep -i "on / "|sed -n 's/^\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')
-smartctl --scan|grep -v $FAHT_LIVE_DEV
-sleep
-set -o posix ;set|grep FAHT
-sleep
+FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
+( set -o posix; set ) | grep FAHT > /tmp/hwinfo.txt 
+sleep 10
+#	cat ->$FAHT_WORKING_DIR/hw_summary_vars.txt
+
 #>$FAHT_WORKINGDIR/sysinfo.txt
+
+### Dump systeminfo ###
+# modprobe eeprom
+# hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
 
 clear
 echo -e "---------------------------"
