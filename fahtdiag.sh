@@ -115,5 +115,22 @@ while true; do
 	esac
 done
 
+### SMART Testing ###
+
+smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
+
+echo Estimated time to complete Extended SMART test: $smart_long_test_max_minutes
+echo
+echo Beginning SMART long test on $curr_smart_dev
+echo Test started on $(date). Estimated time of completion: $(date -d '+$smart_long_test_max_mins minutes')
+smartctl -t long $curr_smart_dev
+
+smart_start_time=$((date +%s))
+smart_minutes_remaining=$((smart_start_time/60))
+
+for i in {1..$smart_long_test_max_minutes}; do
+	sleep 60
+	echo $i;
+done | dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 
 echo -e "All Done!\n"
