@@ -26,7 +26,7 @@ FAHT_FIRSTNAME=
 FAHT_LASTNAME=
 CONFIRM=n
 FAHT_AUDIO=
-FAHT_DATE=`date +%Y-%m-%d-%H`
+FAHT_DATE=$(date +%Y-%m-%d-%Hh)
 PAUSE=pause_input
 
 while true; do
@@ -136,7 +136,13 @@ echo ----------------------------
 $PAUSE
 echo
 
-speaker-test -t sine -f 1000 -l 1
+amixer -D pulse sset Master 100%
+
+for i in {1..3}; do
+	mplayer /usr/share/ttaudio/starcmd.m4a;
+done;
+
+amixer -D pulse sset Master 40%
 
 while true; do
 	echo Did you hear the test tone? \(y/n\) 
