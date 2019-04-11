@@ -185,7 +185,7 @@ smart_minutes_remaining=$((smart_start_time/60))
 
 for i in {1..$smart_long_test_max_minutes}; do
 	sleep 60
-	echo -en "\r$i mins remaining"
+	echo -en "\r$(($smart_long_test_max_minutes-$i)) mins remaining"
 done
 echo
 echo Smart test done.
