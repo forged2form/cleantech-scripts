@@ -68,7 +68,7 @@ modprobe eeprom
 dmidecode>$FAHT_WORKINGDIR/demidecode.txt
 lshw>$FAHT_WORKINGDIR/lshw.txt
 dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
-lscpu>$FAHT_WORKDIT/lscpu.txt
+lscpu>$FAHT_WORKINGDIR/lscpu.txt
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
 acpi -i>$FAHT_WORKINGDIR/battery.txt
 hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
@@ -76,7 +76,7 @@ smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 ### Grab summary info for summary sheet ###
 
-FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode|grep -i "Product Name:"|sed 's/.*Product Name: //')
+FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode.txt|grep -i "Product Name:"|sed 's/.*Product Name: //')
 FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
 FAHT_CORE_COUNT=$(($(cat $FAHT_WORKINGDIR/lspcu.txt|grep -i ""|sed 's/[^0-9]*//g')*$FAHT_SOCKET_COUNT))
 FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
