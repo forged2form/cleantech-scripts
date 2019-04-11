@@ -186,7 +186,7 @@ smart_long_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartlongtest.txt|grep "Plea
 echo -en "\r$smart_long_test_max_minutes mins remaining"
 for i in {1..$smart_long_test_max_minutes}; do
 	sleep 60
-	time_remaining=$(($smart_long_test_max_minutes-$1))
+	time_remaining=(($smart_long_test_max_minutes-$1))
 	echo -en "\r$time_remaining mins remaining";
 done
 echo
