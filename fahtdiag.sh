@@ -3,23 +3,73 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
+### Dump current user to tmp var and re run as root  ###
+if (( UID !=0 )); then
+	echo Re-starting as root...
+	exec sudo -E "$0"
+fi
+
+clear
+echo -e "---------------------------"
+echo -e "TechTutor's Diag Script"
+echo -e "--------------------------- \n"
 
 ### Init variables ###
-FAHT_FIRSTNAME=Darling
-FAHT_LASTNAME=Ryan
-FAHT_CONFIRM=n
-FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
-FAHT_DATE=`date +%Y-%m-%d-%H`
-FAHT_WORKINGDIR=/home/techtutors/fahttest/$FAHT_CLIENTNAME-$FAHT_DATE
+FAHT_FIRSTNAME=
+FAHT_LASTNAME=
+CONFIRM=n
 FAHT_AUDIO=
+FAHT_DATE=`date +%Y-%m-%d-%H`
+
+while true; do
+	echo -e "First Name: \c "
+	read FAHT_FIRSTNAME
+
+	echo -e "Last Name: \c "
+	read FAHT_LASTNAME
+
+	echo -e "You entered \e[1m$FAHT_FIRSTNAME $FAHT_LASTNAME\e[0m. Is this correct? [Y/n] \c "
+	read -n1 CONFIRM
+	: ${CONFIRM:=y}
+	echo
+
+	case ${CONFIRM,,} in
+		y|Y) break;;
+		*) echo -e "Please retry... \n";;
+	esac
+done
+
+CONFIRM=
+FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
+FAHT_WORKINGDIR=/home/$(whoami)/fahttest/$FAHT_CLIENTNAME-	$FAHT_DATE
 
 ### Prep client folder ###
-mkdir $FAHT_WORKINGDIR
+if [ ! -f /home/$(whoami)/fahttest ]; then
+	mkdir /home/$(whoami)/fahttest
+	chown $(whoami):$(whoami) /home/$(whoami)/fahttest
+fi
+
+if [ ! -f $FAHT_WORKINGDIR ]; then
+	mkdir $FAHT_WORKINGDIR
+	chown $(whoami):$(whoami) $FAHT_WORKINGDIR
+fi
+
+### Dump systeminfo ###
+modprobe eeprom
+dmidecode>$FAHT_WORKINGDIR/demidecode.txt
+lshw>$FAHT_WORKINGDIR/lshw.txt
+dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
+lscpu>$FAHT_WORKDIT/lscpu.txt
+smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
+acpi -i>$FAHT_WORKINGDIR/battery.txt
+hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
+smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 ### Grab summary info for summary sheet ###
-FAHT_MACHINE=$(dmidecode|grep -i "Product Name:"|sed 's/.*Product Name: //')
-FAHT_CORE_COUNT=$(dmidecode|grep -i "Socket Designation: CPU "|sed 's/[^0-9]*//g'|tail -1)
-FAHT_CORE_COUNT=$(($FAHT_CORE_COUNT +1))
+
+FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode|grep -i "Product Name:"|sed 's/.*Product Name: //')
+FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
+FAHT_CORE_COUNT=$(($(cat $FAHT_WORKINGDIR/lspcu.txt|grep -i ""|sed 's/[^0-9]*//g')*$FAHT_SOCKET_COUNT))
 FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
 FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
 FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')
@@ -37,40 +87,6 @@ sleep 10
 
 #>$FAHT_WORKINGDIR/sysinfo.txt
 
-### Dump systeminfo ###
-modprobe eeprom
-lshw>$FAHT_WORKINGDIR/lshw.txt
-dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
-lscpu>$FAHT_WORKDIT/lscpu.txt
-smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
-acpi -i>$FAHT_WORKINGDIR/battery.txt
-hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
-smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
-
-clear
-echo -e "---------------------------"
-echo -e "TechTutor's Diag Script"
-echo -e "--------------------------- \n"
-
-while true; do
-	echo -e "First Name: \c "
-	read FIRSTNAME
-
-	echo -e "Last Name: \c "
-	read LASTNAME
-
-	echo -e "You entered \e[1m$FIRSTNAME $LASTNAME\e[0m. Is this correct? [Y/n] \c "
-	read -n1 CONFIRM
-	: ${CONFIRM:=y}
-	echo
-
-	case ${CONFIRM,,} in
-		y|Y) break;;
-		*) echo -e "Please retry... \n";;
-	esac
-done
-
-CONFIRM=
 
 ### Old stuff.. Keep for now...
 
@@ -144,5 +160,7 @@ echo
 $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 
 ( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
+
+chmod -Rfv $(whoami):$(whoami) $FAHT_WORKINGDIR
 
 echo -e "All Done!\n"
