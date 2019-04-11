@@ -168,21 +168,22 @@ echo
 curr_smart_dev=/dev/sda
 echo Beginning SMART long test on $curr_smart_dev
 
-smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
+#smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
-smartctl -t long $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtest.txt
+smartctl -t force -t long $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtest.txt
 
 cat $FAHT_WORKING_DIR/smartlongtest.txt
 smart_long_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartlongtest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 #echo Estimated time to complete Extended SMART test: $smart_long_test_max_minutes
 #echo
-echo Test started on $(date). Estimated time of completion: $(date -d '+$smart_long_test_max_mins minutes')
-smartctl -t long $curr_smart_dev
+#echo Test started on $(date). Estimated time of completion: $(date -d '+$smart_long_test_max_mins minutes')
+#smartctl -t force long $curr_smart_dev
 
-smart_start_time=$((date +%s))
-smart_minutes_remaining=$((smart_start_time/60))
+#smart_start_time=$((date +%s))
+#smart_minutes_remaining=$((smart_start_time/60))
 
+echo -en "\r$smart_long_test_max_minutes mins remaining"
 for i in {1..$smart_long_test_max_minutes}; do
 	sleep 60
 	echo -en "\r$(($smart_long_test_max_minutes-$i)) mins remaining"
