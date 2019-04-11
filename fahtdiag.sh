@@ -22,6 +22,7 @@ FAHT_LASTNAME=
 CONFIRM=n
 FAHT_AUDIO=
 FAHT_DATE=`date +%Y-%m-%d-%H`
+PAUSE=read -n 1 -s -r -p "Press any key to continue"
 
 while true; do
 	echo -e "First Name: \c "
@@ -57,6 +58,12 @@ if [ ! -d $FAHT_WORKINGDIR ]; then
 fi
 
 ### Dump systeminfo ###
+echo -e "-----------------------------------"
+echo -e "Dumping system info. Please wait..."
+echo -e "-----------------------------------\n"
+$PAUSE
+echo
+
 modprobe eeprom
 dmidecode>$FAHT_WORKINGDIR/demidecode.txt
 lshw>$FAHT_WORKINGDIR/lshw.txt
@@ -103,6 +110,7 @@ clear
 echo -------------------------------
 echo Testing Ethernet... Please wait
 echo -------------------------------
+$PAUSE
 echo
 for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/ethtest.txt
 
@@ -110,6 +118,7 @@ for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; d
 echo -----------------------------
 echo Testing Wi-Fi.... Please wait
 echo -----------------------------
+$PAUSE
 echo
 for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/wifitest.txt
 
@@ -119,7 +128,9 @@ clear
 echo ----------------------------
 echo Testing Audio... Please wait
 echo ----------------------------
+$PAUSE
 echo
+
 speaker-test -t sine -f 1000 -l 1
 
 while true; do
@@ -136,6 +147,12 @@ while true; do
 done
 
 ### SMART Testing ###
+clear
+echo --------------------------------
+echo Testing Hard Drives. Please wait
+echo --------------------------------
+$PAUSE
+echo
 
 smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
@@ -158,6 +175,7 @@ clear
 echo -------------------------------
 echo Testing GFX card... Please wait
 echo -------------------------------
+$PAUSE
 echo
 $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 
