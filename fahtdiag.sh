@@ -5,7 +5,7 @@
 
 pause_input () {
 	read -n 1 -s -r -p "Press any key to continue"
-	echo
+	echo -e "\n"
 }
 
 ### Dump current user to tmp var and re run as root  ###
