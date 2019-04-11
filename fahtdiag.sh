@@ -3,6 +3,11 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
+pause_input () {
+	read -n 1 -s -r -p "Press any key to continue"
+	echo
+}
+
 ### Dump current user to tmp var and re run as root  ###
 if (( UID !=0 )); then
 	whoami>/tmp/fahtdiaguser
@@ -22,7 +27,7 @@ FAHT_LASTNAME=
 CONFIRM=n
 FAHT_AUDIO=
 FAHT_DATE=`date +%Y-%m-%d-%H`
-PAUSE=$(read -n 1 -s -r -p "Press any key to continue")
+PAUSE=pause_input
 
 while true; do
 	echo -e "First Name: \c "
