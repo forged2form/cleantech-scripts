@@ -76,7 +76,7 @@ dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
 lscpu>$FAHT_WORKINGDIR/lscpu.txt
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
 acpi -i>$FAHT_WORKINGDIR/battery.txt
-hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
+#hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
 smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 ### Grab summary info for summary sheet ###
@@ -138,9 +138,9 @@ echo
 
 amixer -D pulse sset Master 100%
 
-for i in {1..3}; do
-	mplayer /usr/share/ttaudio/starcmd.m4a;
-done;
+#for i in {1..3}; do
+#	mplayer /usr/share/ttaudio/starcmd.m4a;
+#done;
 
 amixer -D pulse sset Master 40%
 
@@ -186,7 +186,8 @@ smart_long_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartlongtest.txt|grep "Plea
 echo -en "\r$smart_long_test_max_minutes mins remaining"
 for i in {1..$smart_long_test_max_minutes}; do
 	sleep 60
-	echo -en "\r$(($smart_long_test_max_minutes-$i)) mins remaining"
+	time_remaining=$(($smart_long_test_max_minutes-$1))
+	echo -en "\r$time_remaining mins remaining";
 done
 echo
 echo Smart test done.
@@ -195,7 +196,7 @@ smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
 #| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 
 ### GFX Benchmark ###
-clear
+#clear
 echo -------------------------------
 echo Testing GFX card... Please wait
 echo -------------------------------
