@@ -22,7 +22,7 @@ FAHT_LASTNAME=
 CONFIRM=n
 FAHT_AUDIO=
 FAHT_DATE=`date +%Y-%m-%d-%H`
-PAUSE=read -n 1 -s -r -p "Press any key to continue"
+PAUSE=$(read -n 1 -s -r -p "Press any key to continue")
 
 while true; do
 	echo -e "First Name: \c "
