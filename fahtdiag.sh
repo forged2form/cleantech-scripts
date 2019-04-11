@@ -48,12 +48,12 @@ FAHT_WORKINGDIR=/home/$FAHT_CURR_USER/fahttest/$FAHT_CLIENTNAME-	$FAHT_DATE
 ### Prep client folder ###
 if [ ! -f /home/$FAHT_CURR_USER/fahttest ]; then
 	mkdir /home/$FAHT_CURR_USER/fahttest
-	chown $FAHT_CURR_USER:$FAHT_CURR_USER /home/$FAHT_CURR_USER/fahttest
+	chown $FAHT_CURR_USER:$FAHT_CURR_USER /home/$FAHT_CURR_USER/fahttest;
 fi
 
 if [ ! -f $FAHT_WORKINGDIR ]; then
 	mkdir $FAHT_WORKINGDIR
-	chown $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
+	chown $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR;
 fi
 
 ### Dump systeminfo ###
