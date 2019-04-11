@@ -5,6 +5,7 @@
 
 ### Dump current user to tmp var and re run as root  ###
 if (( UID !=0 )); then
+	whoami>/tmp/fahtdiaguser
 	echo Re-starting as root...
 	exec sudo -E "$0"
 fi
@@ -15,6 +16,7 @@ echo -e "TechTutor's Diag Script"
 echo -e "--------------------------- \n"
 
 ### Init variables ###
+FAHT_CURR_USER=$(head -n 1 /tmp/fahtdiaguser)
 FAHT_FIRSTNAME=
 FAHT_LASTNAME=
 CONFIRM=n
@@ -41,17 +43,17 @@ done
 
 CONFIRM=
 FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
-FAHT_WORKINGDIR=/home/$(whoami)/fahttest/$FAHT_CLIENTNAME-	$FAHT_DATE
+FAHT_WORKINGDIR=/home/$FAHT_CURR_USER/fahttest/$FAHT_CLIENTNAME-	$FAHT_DATE
 
 ### Prep client folder ###
-if [ ! -f /home/$(whoami)/fahttest ]; then
-	mkdir /home/$(whoami)/fahttest
-	chown $(whoami):$(whoami) /home/$(whoami)/fahttest
+if [ ! -f /home/$FAHT_CURR_USER/fahttest ]; then
+	mkdir /home/$FAHT_CURR_USER/fahttest
+	chown $FAHT_CURR_USER:$FAHT_CURR_USER /home/$FAHT_CURR_USER/fahttest
 fi
 
 if [ ! -f $FAHT_WORKINGDIR ]; then
 	mkdir $FAHT_WORKINGDIR
-	chown $(whoami):$(whoami) $FAHT_WORKINGDIR
+	chown $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
 fi
 
 ### Dump systeminfo ###
@@ -161,6 +163,6 @@ $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 
 ( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
 
-chmod -Rfv $(whoami):$(whoami) $FAHT_WORKINGDIR
+chmod -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
 
 echo -e "All Done!\n"
