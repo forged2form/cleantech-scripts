@@ -183,16 +183,24 @@ smart_long_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartlongtest.txt|grep "Plea
 #smart_start_time=$((date +%s))
 #smart_minutes_remaining=$((smart_start_time/60))
 
+echo
 echo -en "\r$smart_long_test_max_minutes mins remaining"
-for i in {1..$smart_long_test_max_minutes}; do
+j=1
+while [ $j -lt $smart_long_test_max_minutes  ]; do
 	sleep 60
-	time_remaining=(($smart_long_test_max_minutes-$1))
-	echo -en "\r$time_remaining mins remaining";
+	time_remaining=$(( $smart_long_test_max_minutes - $j ))
+	echo -en "\r$time_remaining mins remaining"
+	let j=j+1;
 done
 echo
 echo Smart test done.
+echo
 
 smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
+echo
+cat $FAHT_WORKING_DIR/smartlongtestresult.txt
+ech
+
 #| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 
 ### GFX Benchmark ###
@@ -206,6 +214,6 @@ $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 
 ( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
 
-chmod -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
+chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
 
 echo -e "All Done!\n"
