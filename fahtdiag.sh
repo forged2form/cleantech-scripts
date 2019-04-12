@@ -83,20 +83,28 @@ smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode.txt|grep -i "Product Name:"|sed 's/.*Product Name: //')
 FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
-FAHT_CORE_COUNT=$(($(cat $FAHT_WORKINGDIR/lspcu.txt|grep -i ""|sed 's/[^0-9]*//g')*$FAHT_SOCKET_COUNT))
+FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i ""|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
 FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
 FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
 FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')
-FAHT_TOTAL_THREADS=$(($FAHT_CORE_COUNT*$FAHT_CORE_THREAD))
+FAHT_TOTAL_THREADS=$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))
 FAHT_CPU_MODEL=$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')
 FAHT_CPU_SPEED=$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')
 FAHT_BATT_DESC=$(acpi -i)
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
-FAHT_LIVE_DEV=$(mount|grep -i "on / "|sed -n 's/^\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')
+FAHT_LIVE_DEV=$(mount|grep " on / "|sed 's/^\(.*\) on \/ .*/\1/gp')
 FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
 ( set -o posix; set ) | grep FAHT > /tmp/hwinfo.txt 
-sleep 10
+
+$PAUSE
+
+compgen -v|grep FAHT|sed -rn 's/^(.*)/$\1/pg'>$FAHT_WORKING_DIR/vars1.txt
+
+$PAUSE
+
+envsubst < $FAHT_WORKING_DIR/vars1.txt
+
 #	cat ->$FAHT_WORKING_DIR/hw_summary_vars.txt
 
 #>$FAHT_WORKINGDIR/sysinfo.txt
@@ -166,6 +174,31 @@ $PAUSE
 echo
 
 curr_smart_dev=/dev/sda
+echo Beginning SMART short test on $curr_smart_dev
+
+smartctl -t force -t long $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttest.txt
+
+cat $FAHT_WORKING_DIR/smartshorttest.txt
+smart_short_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+
+echo
+echo -en "\r$smart_short_test_max_minutes mins remaining"
+j=1
+while [ $j -lt $smart_shot_test_max_minutes  ]; do
+	sleep 60
+	time_remaining=$(( $smart_short_test_max_minutes - $j ))
+	echo -en "\r$time_remaining mins remaining"
+	let j=j+1;
+done
+echo
+echo Smart test done.
+echo
+
+smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttestresult.txt
+echo
+cat $FAHT_WORKING_DIR/smartshorttestresult.txt
+echo
+
 echo Beginning SMART long test on $curr_smart_dev
 
 #smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
@@ -199,7 +232,7 @@ echo
 smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
 echo
 cat $FAHT_WORKING_DIR/smartlongtestresult.txt
-ech
+echo
 
 #| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 
