@@ -295,6 +295,9 @@ echo,
 
 	color 1f
 
+	:wshreg
+		reg export "HKLM\Software\Microsoft\Windows Script Host\Settings" "%tac_clientdir%\PreClean-WSH.reg"
+
 	:maxwindow
 		"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Prep Stage"
 
@@ -332,6 +335,9 @@ echo,
 :regchanges
 	set tac_step=regchanges
 	set tac_>%tac_workingdir%\CT-Flags.txt
+
+:wshregchange
+	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Script Host\Settings" /v Enabled /t REG_DWORD /d 1 /f
 
 :uac-reg
 	echo,
