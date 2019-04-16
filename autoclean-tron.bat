@@ -28,7 +28,7 @@ if '%errorlevel%' NEQ '0' (
 :--------------------------------------
 color 1f
 mode 100,35
-title CleanTech - Tron
+title %COMPUTERNAME%: CleanTech - Tron
 
 SETLOCAL EnableDelayedExpansion
 

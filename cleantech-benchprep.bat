@@ -28,7 +28,7 @@ if '%errorlevel%' NEQ '0' (
     SETLOCAL EnableDelayedExpansion
     color 1f
     mode 100,35
-	title TechTutors - Install Chocolatey and Utils
+	title %COMPUTERNAME%: TechTutors - Install Chocolatey and Utils
 
 
 goto wificonfig

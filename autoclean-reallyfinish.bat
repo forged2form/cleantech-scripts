@@ -31,7 +31,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 1f
 mode 100,35
-title CleanTech - Really Finish
+title %COMPUTERNAME%: CleanTech - Really Finish
 
 SETLOCAL EnableDelayedExpansion
 
@@ -80,7 +80,7 @@ if NOT !tac_step!==finishdone (
 :startreallyfinish
 	set tac_step=startreallyfinish
 	set tac_>%tac_workingdir%\CT-Flags.txt
-"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
+"%tac_workingdir%\nircmd\nircmd.exe" win max ititle %COMPUTERNAME%: "CleanTech - Really Finish"
 
 %tac_debugmode%
 
@@ -98,14 +98,14 @@ if NOT !tac_step!==finishdone (
 	%tac_debugmode%
 
 :setwindow
-	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Really Finish"
-	"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title "CleanTech - Really Finish" 1
+	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle %COMPUTERNAME%: "CleanTech - Really Finish"
+	"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title %COMPUTERNAME%: "CleanTech - Really Finish" 1
 
 :boottimer
 	set tac_step=boottimer
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	title CleanTech - BootTimer
+	title %COMPUTERNAME%: CleanTech - BootTimer
 	echo Press any key when BootTimer has reported its number.
 	echo DO NOT close the BootTimer dialog box yet!
 	:: timeout 15
@@ -114,7 +114,7 @@ if NOT !tac_step!==finishdone (
 	:: tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
 	:: if "%ERRORLEVEL%"=="0" echo Program is running
 	:: MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
-	::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
+	::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWtitle %COMPUTERNAME%: eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 
 	timeout 30
 
@@ -141,15 +141,15 @@ if NOT !tac_step!==finishdone (
 	:grabnumber
 	%tac_debugmode%
 	echo Grabbing number from dialog box...
-	echo Command running: %tac_workingdir%\sysexp.exe /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
-	"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
+	echo Command running: %tac_workingdir%\sysexp.exe /title %COMPUTERNAME%: "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
+	"%tac_workingdir%\sysexp.exe" /title %COMPUTERNAME%: "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Postclean.txt"
 	echo,
 	%tac_debugmode%
 	taskkill /im BootTimer.exe /t
 	reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
 	%tac_debugmode%
 	echo Killing BootTimer.exe's command window
-	taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
+	taskkill /FI "WINDOWtitle %COMPUTERNAME%: eq %tac_workingdir%\BootTimer.exe"
 	timeout 30
 	echo Killing BootTimer.exe's browser process
 	taskkill /im chrome.exe /f
@@ -157,7 +157,7 @@ if NOT !tac_step!==finishdone (
 	%tac_debugmode%
 	cls & color 1f
 
-title CleanTech - Really Finish
+title %COMPUTERNAME%: CleanTech - Really Finish
 
 :drivelettertest
 	set tac_step=drivelettertest
@@ -195,7 +195,7 @@ title CleanTech - Really Finish
 :files
 	set tac_step=files
 	set tac_>%tac_workingdir%\CT-Flags.txt
-	title CleanTech: Moving Log Files
+	title %COMPUTERNAME%: CleanTech: Moving Log Files
 	echo Moving Log files
 	echo,
 
@@ -222,7 +222,7 @@ title CleanTech - Really Finish
 	set tac_step=deletefiles
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	title CleanTech: Removing Cleanup Files
+	title %COMPUTERNAME%: CleanTech: Removing Cleanup Files
 	echo Removing cleanup files...
 	echo,
 

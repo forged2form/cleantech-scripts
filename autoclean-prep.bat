@@ -41,7 +41,7 @@ if '%errorlevel%' NEQ '0' (
 SETLOCAL EnableDelayedExpansion
 color 1f
 mode 100,35
-title CleanTech - Prep Stage
+title %COMPUTERNAME%: CleanTech - Prep Stage
 
 cls
 
@@ -299,7 +299,7 @@ echo,
 		reg export "HKLM\Software\Microsoft\Windows Script Host\Settings" "%tac_clientdir%\PreClean-WSH.reg"
 
 	:maxwindow
-		"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Prep Stage"
+		"%tac_workingdir%\nircmd\nircmd.exe" win max ititle %COMPUTERNAME%: "CleanTech - Prep Stage"
 
 		reg export "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" "%tac_clientdir%\PreClean-SystemRestore.reg"
 
