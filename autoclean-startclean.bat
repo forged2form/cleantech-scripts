@@ -31,7 +31,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 4f
 mode 100,35
-title CleanTech - Start Clean
+title %COMPUTERNAME%: CleanTech - Start Clean
 
 SETLOCAL EnableDelayedExpansion
 
@@ -99,15 +99,15 @@ if NOT !tac_step!==prepdone (
 ::	set "tac_clientdir=%tac_workingdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 
 :setwindow
-	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Start Clean"
-	"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title "CleanTech - Start Clean" 1
+	"%tac_workingdir%\nircmd\nircmd.exe" win max ititle %COMPUTERNAME%: "CleanTech - Start Clean"
+	"%tac_workingdir%\nircmd\nircmd.exe" win settopmost title %COMPUTERNAME%: "CleanTech - Start Clean" 1
 
 :: --- START boottimer_1-2_pre.bat
 :boottimer
 	set tac_step=boottimer
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	title CleanTech - BootTimer
+	title %COMPUTERNAME%: CleanTech - BootTimer
 	echo Press any key when BootTimer has reported its number.
 	echo DO NOT close the BootTimer dialog box yet!
 	:: timeout 15
@@ -116,7 +116,7 @@ if NOT !tac_step!==prepdone (
 	:: tasklist /FI "IMAGENAME eq BootTimer.exe" 2>NUL | find /I /N "myapp.exe">NUL
 	:: if "%ERRORLEVEL%"=="0" echo Program is running
 	:: MIGHT actually need sysexp to test this (if ERRORLEVEL==0 when testing for WindowName then kill process)
-	::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWTITLE eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
+	::	@For /f "Delims=:" %A in ('tasklist /v /fi "WINDOWtitle %COMPUTERNAME%: eq WINDOWS BOOT TIME UTILITY"') do @if %A==INFO echo Prog not running
 
 	timeout 30
 
@@ -143,15 +143,15 @@ if NOT !tac_step!==prepdone (
 	:grabnumber
 	%tac_debugmode%
 	echo Grabbing number from dialog box...
-	echo Command running: "%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Preclean.txt"
-	"%tac_workingdir%\sysexp.exe" /title "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Preclean.txt"
+	echo Command running: "%tac_workingdir%\sysexp.exe" /title %COMPUTERNAME%: "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Preclean.txt"
+	"%tac_workingdir%\sysexp.exe" /title %COMPUTERNAME%: "WINDOWS BOOT TIME UTILITY" /class Static /stext "%tac_clientdir%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%-BootTimer-Preclean.txt"
 	echo,
 	%tac_debugmode%
 	taskkill /im BootTimer.exe /t
 	reg delete HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run /v WinBooter /f
 	%tac_debugmode%
 	echo Killing BootTimer.exe's command window
-	taskkill /FI "WINDOWTITLE eq %tac_workingdir%\BootTimer.exe"
+	taskkill /FI "WINDOWtitle %COMPUTERNAME%: eq %tac_workingdir%\BootTimer.exe"
 	
 	::superfluous as we're rebooting right away anyways...
 ::	timeout 30
@@ -162,7 +162,7 @@ if NOT !tac_step!==prepdone (
 	%tac_debugmode%
 	cls & color 1f
 
-title CleanTech - Start Clean
+title %COMPUTERNAME%: CleanTech - Start Clean
 
 %tac_debugmode%
 :: !!!! What's going on here again?

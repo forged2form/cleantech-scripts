@@ -34,7 +34,7 @@ if '%errorlevel%' NEQ '0' (
 
 color 1f
 mode 100,35
-title CleanTech - Wrap Up
+title %COMPUTERNAME%: CleanTech - Wrap Up
 
 SETLOCAL EnableDelayedExpansion
 
@@ -84,7 +84,7 @@ if NOT !tac_step!==trondone (
 	set tac_step=finishstart
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-"%workingdir%\nircmd\nircmd.exe" win max ititle "CleanTech - Wrap Up"
+"%workingdir%\nircmd\nircmd.exe" win max ititle %COMPUTERNAME%: "CleanTech - Wrap Up"
 
 %tac_debugmode%
 
@@ -145,7 +145,7 @@ color 1f
 	set tac_>%tac_workingdir%\CT-Flags.txt
 	
 	color 1f
-	title CleanTech: Performance Test #2
+	title %COMPUTERNAME%: CleanTech: Performance Test #2
 
 	echo Dumping postclean system info...
 	echo Command running: msinfo32 /nfo "%tac_clientdir%\%tac_lastname%-%tac_firstname%-postclean-systeminfo-%tac_FormattedDate%.nfo"
@@ -168,7 +168,7 @@ color 1f
 	set tac_step=files
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	title CleanTech: Consolidating Log Files
+	title %COMPUTERNAME%: CleanTech: Consolidating Log Files
 
     echo Copying Performance Monitor logs...
 	
@@ -194,7 +194,7 @@ color 1f
 	echo Command running: robocopy /s C:\ADW "%tac_clientdir%\ADW"
 	robocopy /s C:\ADW\ "%tac_clientdir%\ADW"
 
-	title CleanTech: Removing Cleanup Files
+	title %COMPUTERNAME%: CleanTech: Removing Cleanup Files
 	echo Removing cleanup files...
 	echo,
 	%tac_debugmode%
@@ -237,7 +237,7 @@ color 1f
    	echo MANUAL STEP	
 	echo -------------------------------------------------------------------
 	echo Please check for any remaining startup entires using WhatInStartup.
-	echo Delete any that you are sure that are unecessary.
+	echo Delete any that you are sure that are unecessary.title
 	echo,
 	echo Press a key to continue and close the browser window when you're
 	echo finished to move on to the next step.

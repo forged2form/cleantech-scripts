@@ -47,7 +47,7 @@ if '%errorlevel%' NEQ '0' (
 SETLOCAL EnableDelayedExpansion
 color 1f
 mode 100,35
-title CleanTech - AutoClean Launcher
+title %COMPUTERNAME%: CleanTech - AutoClean Launcher
 
 cls
 

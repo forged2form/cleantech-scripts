@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# !!!!!! Need to deal with whitespace on user input for names
+
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
