@@ -134,6 +134,34 @@ for /f "skip=1 tokens=1-6 delims= " %%a in ('wmic path Win32_LocalTime Get Day^,
 :hibernateoff
 powercfg /hibernate off
 
+:offlinequestion
+	set tac_step=offlineq
+	set offlineq=
+	set /p offlineq="Start in (no network) offline mode? (y/n): "
+	if /i %offlineq%==y set tac_offline=yes && goto offlineprep
+	if /i %offlineq%==n set tac_offlice=no && goto clientinfo
+	echo Incorrect input.
+	goto offlinequestion
+
+:offlineprep
+	set tac_step=offlineprep
+	for /f %%i in ('wmic logicaldisk get deviceid^|findstr /R [a-z]:') do (
+		if exist %%i\TTCleanUp (
+			set tac_usbdir=%%i\TTCleanUp
+			set tac_offlinedir=%systemdrive%\%homepath%\Desktop\TTCleanUp
+			)
+		)
+
+	if %ERRORLEVEL% NEQ '0' (
+		color 4f
+		echo,
+		echo Cannot find USB drive. Are you sure it is inserted?
+		echo,
+		echo Please insert USB drive with TTCleanUp in it and press a key to try again.
+		pause
+		goto offlineprep
+		) else xcopy %tac_usbdir% %tac_offline_dir%
+
 :clientinfo
 set tac_step=clientinfo
 set tac_>%tac_workingdir%\CT-Flags.txt
