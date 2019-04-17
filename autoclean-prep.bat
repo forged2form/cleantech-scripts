@@ -136,6 +136,8 @@ powercfg /hibernate off
 
 :offlinequestion
 	set tac_step=offlineq
+	set tac_>%tac_workingdir%\CT-Flags.txt
+
 	set offlineq=
 	set /p offlineq="Start in (no network) offline mode? (y/n): "
 	if /i %offlineq%==y set tac_offline=yes && goto offlineprep
@@ -145,14 +147,18 @@ powercfg /hibernate off
 
 :offlineprep
 	set tac_step=offlineprep
+	set tac_>%tac_workingdir%\CT-Flags.txt
+	set tac_usbdir=
+
 	for /f %%i in ('wmic logicaldisk get deviceid^|findstr /R [a-z]:') do (
 		if exist %%i\TTCleanUp (
+			set offfiletest=
 			set tac_usbdir=%%i\TTCleanUp
 			set tac_offlinedir=%systemdrive%\%homepath%\Desktop\TTCleanUp
 			)
 		)
 
-	if %ERRORLEVEL% NEQ '0' (
+	if NOT DEFINED tac_usbdir (
 		color 4f
 		echo,
 		echo Cannot find USB drive. Are you sure it is inserted?
@@ -213,14 +219,14 @@ echo,
 
 	:passconfirm
 		echo You entered: %password%
-		set passconfirm=NULL
+		set passconfirm
 		set /p passconfirm="Is this correct? (y/n): "
 		if /i %passconfirm%==y goto passcorrect
 		if /i %passconfirm%==n goto passwordneeded
 		echo Incorrect input. & goto passconfirm
 
 :nopass
-	set password=NULL
+	set password
 
 :passcorrect
 
@@ -228,7 +234,7 @@ echo,
 	set tac_step=autoadminlogontest
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	set tac_autoadminlogonenabled=NULL
+	set tac_autoadminlogonenabled
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
 	if %ERRORLEVEL% EQU 0 (
 		set tac_autoadminlogonenabled=1
