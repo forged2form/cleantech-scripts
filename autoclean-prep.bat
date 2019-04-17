@@ -109,6 +109,9 @@ if not !tac_step!==prepdone (
 	set tac_offline=no
 	set tac_perfmondir=C:\CT-Perfmon
 	set tac_clientdir=
+	set tac_cleanup_srcdir=
+	set tac_usbdir=
+	set tac_cleanup_logs=
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
 rem	if defined %tac_lastname% (set "tac_tac_debugmode=pause" & set "tac_tac_debugmode=pause") else (goto:drivelettertest)
@@ -141,24 +144,25 @@ powercfg /hibernate off
 	set offlineq=
 	set /p offlineq="Start in (no network) offline mode? (y/n): "
 	if /i %offlineq%==y set tac_offline=yes && goto offlineprep
-	if /i %offlineq%==n set tac_offlice=no && goto clientinfo
+	if /i %offlineq%==n set tac_offline=no && goto clientinfo
 	echo Incorrect input.
 	goto offlinequestion
 
 :offlineprep
 	set tac_step=offlineprep
 	set tac_>%tac_workingdir%\CT-Flags.txt
-	set tac_usbdir=
+	set tac_usb=
 
 	for /f %%i in ('wmic logicaldisk get deviceid^|findstr /R [a-z]:') do (
 		if exist %%i\TTCleanUp (
-			set offfiletest=
-			set tac_usbdir=%%i\TTCleanUp
-			set tac_offlinedir=%systemdrive%\%homepath%\Desktop\TTCleanUp
+			set tac_cleanup_srcdir=%%i\TTCleanUp
+			set "tac_cleanup_logs=%systemdrive%\%homepath%\Desktop\CleanUpLogs\"
+			set tac_usb=%%i
+			if NOT EXIST %tac_cleanup_logs% (mkdir %tac_cleanup_logs%)
 			)
 		)
 
-	if NOT DEFINED tac_usbdir (
+	if NOT DEFINED tac_usb (
 		color 4f
 		echo,
 		echo Cannot find USB drive. Are you sure it is inserted?
@@ -166,7 +170,7 @@ powercfg /hibernate off
 		echo Please insert USB drive with TTCleanUp in it and press a key to try again.
 		pause
 		goto offlineprep
-		) else xcopy %tac_usbdir% %tac_offline_dir%
+		) else goto clientinfo
 
 :clientinfo
 set tac_step=clientinfo
@@ -247,6 +251,10 @@ echo,
 		)
 :: --- END client_info_entry.bat
 
+if tac_offline==yes (
+	goto cleanupfilesprep
+	) else (goto beastmap)
+
 :: --- START map_beast.bat
 :beastmap
 	set tac_step=beastmap
@@ -254,8 +262,6 @@ echo,
 
 	:drivelettertest
 		for %%d in (t u v w x y z) do (if not exist %%d: echo Beast Utilities folder will be mapped to: %%d: & set "tac_netletter=%%d:" & echo, & goto netmap)
-
-		if tac_offline==y goto cleanupfilesprep
 
 	:netmap
 		echo Mapping Beast Utilities folder to drive letter %tac_netletter%
@@ -276,6 +282,8 @@ echo,
 
 		color 1f
 		echo Network drive mapped to %tac_netletter%
+		set tac_cleanup_srcdir="%tac_netletter%\Clean Up"
+		echo Clean Up files source: %tac_cleanup_srcdir
 	:: --- END map_beast.bat
 
 :: --- START cleanupfilesprep.bat
@@ -296,8 +304,8 @@ echo,
 
 	echo Copying automation files to C:\CleanTechTemp
 	echo,
-	echo Command running: robocopy "%tac_netletter%\Clean Up" "%tac_workingdir%" /XD "*.sync" /s
-	robocopy "%tac_netletter%\Clean Up" "%tac_workingdir%" /XD "*.sync" /s
+	echo Command running: robocopy %tac_cleanup_srcdir% "%tac_workingdir%" /XD "*.sync" /s
+	robocopy %tac_cleanup_srcdir% "%tac_workingdir%" /XD "*.sync" /s
 
 	echo Command running: mkdir "%tac_clientdir%"
 	mkdir "%tac_clientdir%"

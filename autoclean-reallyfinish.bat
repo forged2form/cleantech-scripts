@@ -185,6 +185,7 @@ title %COMPUTERNAME%: CleanTech - Really Finish
 
 		color 1f
 	echo Network drive mapped to %netletter%
+	set tac_cleanup_logs=%netletter%
 
 :parsing
 	set tac_step=parsing
@@ -212,11 +213,33 @@ title %COMPUTERNAME%: CleanTech - Really Finish
 	goto deletefiles
 
 	:offlinecopy
-	echo Copying "%tac_clientdir%" to the Desktop
-	echo robocopy /s "%tac_clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
-	robocopy /s "%tac_clientdir%" "%HOMEPATH\Desktop\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	echo Moving "%tac_clientdir%" to the Desktop
+	echo robocopy /s "%tac_clientdir%" "%tac_cleanup_logs%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
+	robocopy /s "%tac_clientdir%" "%tac_cleanup_logs%\%tac_lastname%-%tac_firstname%-%tac_FormattedDate%"
 	echo ...Done!
 	echo,
+
+	set tac_usb=
+	echo
+	
+	for /f %%i in ('wmic logicaldisk get deviceid^|findstr /R [a-z]:') do (
+		if exist %%i\TTCleanUp (
+			set tac_cleanup_srcdir=%%i\TTCleanUp
+			set "tac_cleanup_logs=%systemdrive%\%homepath%\Desktop\CleanUpLogs\"
+			set tac_usb=%%i
+			if NOT EXIST %tac_cleanup_logs% (mkdir %tac_cleanup_logs%)
+			)
+		)
+
+	if NOT DEFINED tac_usb (
+		color 4f
+		echo,
+		echo Cannot find USB drive. Are you sure it is inserted?
+		echo,
+		echo Please insert USB drive with TTCleanUp in it and press a key to try again.
+		pause
+		goto offlineprep
+		) else goto clientinfo
 
 	:deletefiles
 	set tac_step=deletefiles
