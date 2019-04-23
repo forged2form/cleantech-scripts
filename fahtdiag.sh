@@ -216,7 +216,7 @@ echo
 echo Smart test done.
 echo
 
-smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttestresult.txt
+smartctl -x $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttestresult.txt
 echo
 cat $FAHT_WORKING_DIR/smartshorttestresult.txt
 echo
@@ -251,7 +251,7 @@ echo
 echo Smart test done.
 echo
 
-smartctl -a $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
+smartctl -x $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
 echo
 cat $FAHT_WORKING_DIR/smartlongtestresult.txt
 echo
