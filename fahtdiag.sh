@@ -5,9 +5,26 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
+CONTINUE_SCRIPT=Y
+
 pause_input () {
-	read -n 1 -s -r -p "Press any key to continue"
+	read -n1 -s -r -p "Press any key to continue"
 	echo -e "\n"
+}
+
+break_program () {
+	while true; do
+		echo -e "Continue script? [Y/n]: \c "
+		read -n1 CONTINUE_SCRIPT 
+		echo -e "\n"
+		: ${CONTINUE_SCRIPT:=y}
+
+		case ${CONTINUE_SCRIPT,,} in
+			y|Y) break;;
+			n|N) exit;;
+			*) echo -e "Please retry... \n";;
+		esac
+	done
 }
 
 ### Dump current user to tmp var and re run as root  ###
@@ -30,6 +47,7 @@ CONFIRM=n
 FAHT_AUDIO=
 FAHT_DATE=$(date +%Y-%m-%d-%Hh)
 PAUSE=pause_input
+DIAG=break_program
 
 while true; do
 	echo -e "First Name: \c "
@@ -48,6 +66,8 @@ while true; do
 		*) echo -e "Please retry... \n";;
 	esac
 done
+
+$DIAG
 
 CONFIRM=
 FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
@@ -68,7 +88,7 @@ fi
 echo -e "-----------------------------------"
 echo -e "Dumping system info. Please wait..."
 echo -e "-----------------------------------\n"
-$PAUSE
+$DIAG
 echo
 
 modprobe eeprom
@@ -99,11 +119,11 @@ FAHT_LIVE_DEV=$(mount|grep " on / "|sed 's/^\(.*\) on \/ .*/\1/gp')
 FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
 ( set -o posix; set ) | grep FAHT > /tmp/hwinfo.txt 
 
-$PAUSE
+$DIAG
 
 compgen -v|grep FAHT|sed -rn 's/^(.*)/$\1/pg'>$FAHT_WORKING_DIR/vars1.txt
 
-$PAUSE
+$DIAG
 
 envsubst < $FAHT_WORKING_DIR/vars1.txt
 
@@ -125,7 +145,7 @@ clear
 echo -------------------------------
 echo Testing Ethernet... Please wait
 echo -------------------------------
-$PAUSE
+$DIAG
 echo
 for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/ethtest.txt
 
@@ -133,7 +153,7 @@ for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; d
 echo -----------------------------
 echo Testing Wi-Fi.... Please wait
 echo -----------------------------
-$PAUSE
+$DIAG
 echo
 for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/wifitest.txt
 
@@ -143,7 +163,7 @@ clear
 echo ----------------------------
 echo Testing Audio... Please wait
 echo ----------------------------
-$PAUSE
+$DIAG
 echo
 
 amixer -D pulse sset Master 100%
@@ -172,7 +192,7 @@ clear
 echo --------------------------------
 echo Testing Hard Drives. Please wait
 echo --------------------------------
-$PAUSE
+$DIAG
 echo
 
 curr_smart_dev=/dev/sda
@@ -243,7 +263,7 @@ echo
 echo -------------------------------
 echo Testing GFX card... Please wait
 echo -------------------------------
-$PAUSE
+$DIAG
 echo
 $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 
