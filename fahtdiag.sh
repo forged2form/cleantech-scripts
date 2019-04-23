@@ -148,9 +148,9 @@ echo
 
 amixer -D pulse sset Master 100%
 
-#for i in {1..3}; do
-#	mplayer /usr/share/ttaudio/starcmd.m4a;
-#done;
+for i in {1..3}; do
+	mplayer /usr/share/ttaudio/starcmd.m4a;
+done;
 
 amixer -D pulse sset Master 40%
 
