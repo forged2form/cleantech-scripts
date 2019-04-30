@@ -34,6 +34,8 @@ if (( UID !=0 )); then
 	exec sudo -E "$0"
 fi
 
+set -x
+
 clear
 echo -e "---------------------------"
 echo -e "TechTutor's Diag Script"
@@ -105,8 +107,8 @@ smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode.txt|grep -i "Product Name:"|sed 's/.*Product Name: //')
 FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
-FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i ""|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
-FAHT_CORE_THREAD=$(dmidecode|grep -i -m 1 "Thread Count:"|sed 's/[^0-9]*//g')
+FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
+FAHT_CORE_THREAD=$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')
 FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
 FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')
 FAHT_TOTAL_THREADS=$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))
@@ -115,8 +117,60 @@ FAHT_CPU_SPEED=$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')
 FAHT_BATT_DESC=$(acpi -i)
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
-FAHT_LIVE_DEV=$(mount|grep " on / "|sed 's/^\(.*\) on \/ .*/\1/gp')
+FAHT_LIVE_DEV=$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')
 FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
+
+#  Get number of partitions from connected drives (For array size)
+# lsblk -n -r -o NAME|egrep sd[a-z]+[0-9]+|sed -r 's/.*([a-z]d[a-z][0-9])/\1/g'|wc -l
+# Get number of disks (For array size)
+# lsblk -n -r -o NAME|grep -v [0-9]|wc -l
+
+## Setting disks in array minus current OS disk
+FAHT_TEST_DISKS=()
+i=0
+j=
+for j in $(lsblk -n -r -o NAME|grep -v [0-9]); do
+	FAHT_TEST_DISKS[$i]=$j
+	((i++));
+done
+
+echo Available disks to test
+echo ${FAHT_TEST_DISKS[@]}
+echo
+
+# Set up array of partitions
+FAHT_TEST_PARTS=()
+i=0
+j=
+
+for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep "^[a-z]d[a-z][0-9]"); do
+	FAHT_TEST_PARTS[$i]=$j
+	((i++));
+done
+
+echo Potential partitions to use for benchmarking:
+echo ${FAHT_TEST_PARTS[@]}
+echo
+
+# Test partitions for r/w mount
+
+# If unable to get r/w mount set benchmark for read-only
+
+# If volume is writeable set benchamrk for read-write
+
+## Setting SMART capable drives in array for testing
+FAHT_SMART_DRIVES=()
+i=0
+j=0
+
+for j in $(smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV); do
+	FAHT_SMART_DRIVES[$i]=$j
+	((i++));
+done
+echo Drives with SMART capabilities:
+echo ${FAHT_SMART_DRIVES[@]}
+echo
+
 ( set -o posix; set ) | grep FAHT > /tmp/hwinfo.txt 
 
 $DIAG
