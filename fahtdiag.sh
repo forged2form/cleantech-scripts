@@ -94,9 +94,9 @@ $DIAG
 echo
 
 modprobe eeprom
-dmidecode>$FAHT_WORKINGDIR/demidecode.txt
+#dmidecode>$FAHT_WORKINGDIR/demidecode.txt
 lshw>$FAHT_WORKINGDIR/lshw.txt
-dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
+#dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
 lscpu>$FAHT_WORKINGDIR/lscpu.txt
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
 acpi -i>$FAHT_WORKINGDIR/battery.txt
@@ -129,7 +129,7 @@ FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a
 FAHT_TEST_DISKS=()
 i=0
 j=
-for j in $(lsblk -n -r -o NAME|grep -v [0-9]); do
+for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep -v [0-9]); do
 	FAHT_TEST_DISKS[$i]=$j
 	((i++));
 done
@@ -138,10 +138,33 @@ echo Available disks to test
 echo ${FAHT_TEST_DISKS[@]}
 echo
 
+# Set up individual disk arrays
+
+i=1
+j=
+for j in ${FAHT_TEST_DISKS[@]}; do
+	CURR_FAHT_DISK=FAHT_DISK_${i}
+	declare -A ${CURR_FAHT_DISK}
+	eval ${CURR_FAHT_DISK}[deviceid]=$j
+	echo ${CURR_FAHT_DISK}[deviceid]
+	x=0
+	eval CURR_PART=partition${x}
+	for x in /dev/$(echo ${CURR_FAHT_DISK}[deviceid])*; do
+		eval CURR_PART=${CURR_FAHT_DISK}[deviceid]
+		eval ${CURR_FAHT_DISK}[${CURR_PART}]=$x
+		echo ${CURR_FAHT_DISK}[${CURR_PART}];
+	done
+	(( i++ ));
+done
+
+$DIAG
+
 # Set up array of partitions
-FAHT_TEST_PARTS=()
+FAHT_DISK_PARTS=()
 i=0
 j=
+
+
 
 for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep "^[a-z]d[a-z][0-9]"); do
 	FAHT_TEST_PARTS[$i]=$j
@@ -152,22 +175,51 @@ echo Potential partitions to use for benchmarking:
 echo ${FAHT_TEST_PARTS[@]}
 echo
 
-# Set up mout points
+# Set up mount points
 
 i=0
 j=0
 
-for j in ${FAHT_TEST_PARTS[*]} ; do
-	if [ ! -d /mnt/${FAHT_TEST_PARTS[$j]}/ ];
-		mkdir /mnt/${FAHT_TEST_PARTS[$]};
-	fi;
-	mount /dev/${FAHT_TEST_PARTS[$j]}
+## Ensure test drives are unmounted first and mount structure is good
+
+if [ ! -d /mnt/faht ]; then mkdir /mnt/faht; fi
+for i in /mnt/faht/*; do
+	rmdir $i;
 done
 
 $DIAG
 
+for j in ${FAHT_TEST_PARTS[@]}; do
+	umount /dev/${FAHT_TEST_PARTS[$j]};
+done
+
+j=0
+for j in ${FAHT_TEST_PARTS[@]} ; do
+	if [ ! -d /mnt/faht/$j/ ]; then
+		mkdir /mnt/faht/$j;
+	fi
+	mount /dev/$j /mnt/faht/$j;
+done
+
+# Remove empty dirs (i.e. mounts that didn't work for whatever reason. We will loop through the remaining dirs to test for r/w.
+
+for i in /mnt/faht/*; do
+	rmdir $i;
+done
+
+$DIAG
 
 # Test partitions for r/w mount
+
+j=0
+
+for j in /mnt/faht/*; do
+	touch $i/test
+	$DIAG
+	rm $i/test;
+done
+
+
 
 # If unable to get r/w mount set benchmark for read-only
 
