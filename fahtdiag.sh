@@ -152,6 +152,21 @@ echo Potential partitions to use for benchmarking:
 echo ${FAHT_TEST_PARTS[@]}
 echo
 
+# Set up mout points
+
+i=0
+j=0
+
+for j in ${FAHT_TEST_PARTS[*]} ; do
+	if [ ! -d /mnt/${FAHT_TEST_PARTS[$j]}/ ];
+		mkdir /mnt/${FAHT_TEST_PARTS[$]};
+	fi;
+	mount /dev/${FAHT_TEST_PARTS[$j]}
+done
+
+$DIAG
+
+
 # Test partitions for r/w mount
 
 # If unable to get r/w mount set benchmark for read-only
