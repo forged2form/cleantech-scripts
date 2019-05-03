@@ -129,7 +129,7 @@ FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a
 FAHT_TEST_DISKS=()
 i=0
 j=
-for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep -v [0-9]); do
+for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep -v [0-9]|grep "^[a-z]d[a-z]"); do
 	FAHT_TEST_DISKS[$i]=$j
 	((i++));
 done
@@ -143,17 +143,19 @@ echo
 i=1
 j=
 for j in ${FAHT_TEST_DISKS[@]}; do
-	CURR_FAHT_DISK=FAHT_DISK_${i}
-	declare -A ${CURR_FAHT_DISK}
-	eval ${CURR_FAHT_DISK}[deviceid]=$j
-	echo ${CURR_FAHT_DISK}[deviceid]
-	x=0
-	eval CURR_PART=partition${x}
-	for x in /dev/$(echo ${CURR_FAHT_DISK}[deviceid])*; do
-		eval CURR_PART=${CURR_FAHT_DISK}[deviceid]
-		eval ${CURR_FAHT_DISK}[${CURR_PART}]=$x
-		echo ${CURR_FAHT_DISK}[${CURR_PART}];
+	declare -n CURR_FAHT_DISK=FAHT_DISK_${i}
+	#declare -A CURR_FAHT_DISK
+	CURR_FAHT_DISK[deviceid]=$j
+	echo ${CURR_FAHT_DISK[deviceid]}
+	i=0
+	CURR_PART=partition${x}
+	for x in /dev/$(echo ${CURR_FAHT_DISK[deviceid]})*; do
+		CURR_PART=part${i}
+		CURR_FAHT_DISK[${CURR_PART}]=${x}
+		echo ${CURR_FAHT_DISK[${CURR_PART}]};
 	done
+	echo ${!CURR_FAHT_DISK}
+	echo ${!CURR_FAHT_DISK[deviceid]}
 	(( i++ ));
 done
 
