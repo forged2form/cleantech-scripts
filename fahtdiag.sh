@@ -86,6 +86,8 @@ if [ ! -d $FAHT_WORKINGDIR ]; then
 	chown $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR;
 fi
 
+cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKINGDIR/faht-report.fodt
+
 ### Dump systeminfo ###
 echo -e "-----------------------------------"
 echo -e "Dumping system info. Please wait..."
@@ -144,7 +146,6 @@ i=1
 j=
 for j in ${FAHT_TEST_DISKS[@]}; do
 	declare -n CURR_FAHT_DISK=FAHT_DISK_${i}
-	#declare -A CURR_FAHT_DISK
 	CURR_FAHT_DISK[deviceid]=$j
 	echo ${CURR_FAHT_DISK[deviceid]}
 	i=0
@@ -165,8 +166,6 @@ $DIAG
 FAHT_DISK_PARTS=()
 i=0
 j=
-
-
 
 for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep "^[a-z]d[a-z][0-9]"); do
 	FAHT_TEST_PARTS[$i]=$j
@@ -221,8 +220,6 @@ for j in /mnt/faht/*; do
 	rm $i/test;
 done
 
-
-
 # If unable to get r/w mount set benchmark for read-only
 
 # If volume is writeable set benchamrk for read-write
@@ -236,6 +233,7 @@ for j in $(smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_
 	FAHT_SMART_DRIVES[$i]=$j
 	((i++));
 done
+
 echo Drives with SMART capabilities:
 echo ${FAHT_SMART_DRIVES[@]}
 echo
@@ -244,13 +242,11 @@ echo
 
 $DIAG
 
-compgen -v|grep FAHT|sed -rn 's/^(.*)/$\1/pg'>$FAHT_WORKING_DIR/vars1.txt
+cat $FAHT_WORKINGDIR/faht-report.fodt| sigil -p -f $FAHT_WORKINGDIR/faht-report.fodt $( (set -o posix; set ) | grep FAHT )
 
 $DIAG
 
-envsubst < $FAHT_WORKING_DIR/vars1.txt
-
-#	cat ->$FAHT_WORKING_DIR/hw_summary_vars.txt
+#	cat ->$FAHT_WORKINGDIR/hw_summary_vars.txt
 
 #>$FAHT_WORKINGDIR/sysinfo.txt
 
@@ -292,7 +288,7 @@ echo
 amixer -D pulse sset Master 100%
 
 for i in {1..3}; do
-	mplayer /usr/share/ttaudio/starcmd.m4a;
+	mplayer /usr/share/faht/starcmd.m4a;
 done;
 
 amixer -D pulse sset Master 40%
@@ -321,10 +317,10 @@ echo
 curr_smart_dev=/dev/sda
 echo Beginning SMART short test on $curr_smart_dev
 
-smartctl -t force -t long $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttest.txt
+smartctl -t force -t long $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest.txt
 
-cat $FAHT_WORKING_DIR/smartshorttest.txt
-smart_short_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+cat $FAHT_WORKINGDIR/smartshorttest.txt
+smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 echo
 echo -en "\r$smart_short_test_max_minutes mins remaining"
@@ -339,19 +335,19 @@ echo
 echo Smart test done.
 echo
 
-smartctl -x $curr_smart_dev>$FAHT_WORKING_DIR/smartshorttestresult.txt
+smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttestresult.txt
 echo
-cat $FAHT_WORKING_DIR/smartshorttestresult.txt
+cat $FAHT_WORKINGDIR/smartshorttestresult.txt
 echo
 
 echo Beginning SMART long test on $curr_smart_dev
 
 #smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
-smartctl -t force -t long $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtest.txt
+smartctl -t force -t long $curr_smart_dev>$FAHT_WORKINGDIR/smartlongtest.txt
 
-cat $FAHT_WORKING_DIR/smartlongtest.txt
-smart_long_test_max_minutes=$(cat $FAHT_WORKING_DIR/smartlongtest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+cat $FAHT_WORKINGDIR/smartlongtest.txt
+smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 #echo Estimated time to complete Extended SMART test: $smart_long_test_max_minutes
 #echo
@@ -374,9 +370,9 @@ echo
 echo Smart test done.
 echo
 
-smartctl -x $curr_smart_dev>$FAHT_WORKING_DIR/smartlongtestresult.txt
+smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartlongtestresult.txt
 echo
-cat $FAHT_WORKING_DIR/smartlongtestresult.txt
+cat $FAHT_WORKINGDIR/smartlongtestresult.txt
 echo
 
 #| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
