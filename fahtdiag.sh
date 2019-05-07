@@ -120,7 +120,7 @@ FAHT_BATT_DESC=$(acpi -i)
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
 FAHT_LIVE_DEV=$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')
-FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
+FAHT_SMART_DRIVES_ARRAY=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
 
 #  Get number of partitions from connected drives (For array size)
 # lsblk -n -r -o NAME|egrep sd[a-z]+[0-9]+|sed -r 's/.*([a-z]d[a-z][0-9])/\1/g'|wc -l
@@ -128,23 +128,23 @@ FAHT_SMART_DRIVES=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a
 # lsblk -n -r -o NAME|grep -v [0-9]|wc -l
 
 ## Setting disks in array minus current OS disk
-FAHT_TEST_DISKS=()
+FAHT_TEST_DISKS_ARRAY=()
 i=0
 j=
 for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep -v [0-9]|grep "^[a-z]d[a-z]"); do
-	FAHT_TEST_DISKS[$i]=$j
+	FAHT_TEST_DISKS_ARRAY[$i]=$j
 	((i++));
 done
 
 echo Available disks to test
-echo ${FAHT_TEST_DISKS[@]}
+echo ${FAHT_TEST_DISKS_ARRAY[@]}
 echo
 
 # Set up individual disk arrays
 
 i=1
 j=
-for j in ${FAHT_TEST_DISKS[@]}; do
+for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
 	declare -n CURR_FAHT_DISK=FAHT_DISK_${i}
 	CURR_FAHT_DISK[deviceid]=$j
 	echo ${CURR_FAHT_DISK[deviceid]}
@@ -168,12 +168,12 @@ i=0
 j=
 
 for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep "^[a-z]d[a-z][0-9]"); do
-	FAHT_TEST_PARTS[$i]=$j
+	FAHT_TEST_PARTS_ARRAY[$i]=$j
 	((i++));
 done
 
 echo Potential partitions to use for benchmarking:
-echo ${FAHT_TEST_PARTS[@]}
+echo ${FAHT_TEST_PARTS_ARRAY[@]}
 echo
 
 # Set up mount points
@@ -190,12 +190,12 @@ done
 
 $DIAG
 
-for j in ${FAHT_TEST_PARTS[@]}; do
-	umount /dev/${FAHT_TEST_PARTS[$j]};
+for j in ${FAHT_TEST_PARTS_ARRAY[@]}; do
+	umount /dev/${FAHT_TEST_PARTS_ARRAY[$j]};
 done
 
 j=0
-for j in ${FAHT_TEST_PARTS[@]} ; do
+for j in ${FAHT_TEST_PARTS_ARRAY[@]} ; do
 	if [ ! -d /mnt/faht/$j/ ]; then
 		mkdir /mnt/faht/$j;
 	fi
@@ -225,39 +225,54 @@ done
 # If volume is writeable set benchamrk for read-write
 
 ## Setting SMART capable drives in array for testing
-FAHT_SMART_DRIVES=()
+FAHT_SMART_DRIVES_ARRAY=()
 i=0
 j=0
 
 for j in $(smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV); do
-	FAHT_SMART_DRIVES[$i]=$j
+	FAHT_SMART_DRIVES_ARRAY[$i]=$j
 	((i++));
 done
 
 echo Drives with SMART capabilities:
-echo ${FAHT_SMART_DRIVES[@]}
+echo ${FAHT_SMART_DRIVES_ARRAY[@]}
 echo
 
-( set -o posix; set ) | grep FAHT > /tmp/hwinfo.txt 
+( set -o posix; set ) | grep FAHT > /tmp/vars.txt
+
+sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars.txt > /tmp/varsnames.txt
+sed -r 's/.*=(.*)/\1/g' /tmp/vars.txt > /tmp/varsvalues.txt
+
+
+i=0
+varsNames=()
+varsvalues=()
+
+while IFS= read line; do
+	varsNames[$i]=$line
+	echo ${varsNames[$i]}
+	(( i++ ));
+done < /tmp/varsnames.txt
+
+i=0
+
+while IFS= read line; do
+	varsValues[$i]=$line
+	echo ${varsValues[$i]}
+	(( i++ ));
+done < /tmp/varsvalues.txt
+
+i=0
+
+cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKING_DIR/faht-report.fodt
+
+for x in ${varsNames[*]}; do
+	echo "Working on $x..."
+	sed -i "s/$x/${varsValues[$i]}/g" $FAHT_WORKING_DIR/faht-report.fodt
+	(( i++ ));
+done
 
 $DIAG
-
-cat $FAHT_WORKINGDIR/faht-report.fodt| sigil -p -f $FAHT_WORKINGDIR/faht-report.fodt $( (set -o posix; set ) | grep FAHT )
-
-$DIAG
-
-#	cat ->$FAHT_WORKINGDIR/hw_summary_vars.txt
-
-#>$FAHT_WORKINGDIR/sysinfo.txt
-
-
-### Old stuff.. Keep for now...
-
-# CLIENTNAME=$LASTNAME-$FIRSTNAME
-
-# echo -e "Client: $CLIENTNAME\n"
-
-# ttdiaglog=/home/techtutors/log/diag-$CLIENTNAME-$DATE.txt
 
 ### Network test - Ethernet ###
 clear
