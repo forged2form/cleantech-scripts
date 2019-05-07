@@ -224,19 +224,29 @@ done
 
 # If volume is writeable set benchamrk for read-write
 
-## Setting SMART capable drives in array for testing
-FAHT_SMART_DRIVES_ARRAY=()
-i=0
-j=0
+### Testing for SMART-capable drives ###
 
-for j in $(smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV); do
-	FAHT_SMART_DRIVES_ARRAY[$i]=$j
-	((i++));
-done
+smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV
+if [ $? -eq 0 ]; then
+	## Setting SMART capable drives in array for testing
+	FAHT_SMART_DRIVES_ARRAY=()
+	i=0
+	j=0
 
-echo Drives with SMART capabilities:
-echo ${FAHT_SMART_DRIVES_ARRAY[@]}
-echo
+	for j in $(smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV); do
+		FAHT_SMART_DRIVES_ARRAY[$i]=$j
+		((i++));
+	done
+
+	echo Drives with SMART capabilities:
+	echo ${FAHT_SMART_DRIVES_ARRAY[@]}
+	echo;
+else
+	echo No drives are SMART capable. Skipping test...
+	echo;
+fi
+
+$DIAG
 
 ( set -o posix; set ) | grep FAHT > /tmp/vars.txt
 
