@@ -5,7 +5,13 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
-CONTINUE_SCRIPT=Y
+
+### Dump current user to tmp var and re run as root  ###
+if (( UID !=0 )); then
+	whoami>/tmp/fahtdiaguser
+	echo Re-starting as root...
+	exec sudo -E "$0" "$@"
+fi
 
 pause_input () {
 	read -n1 -s -r -p "Press any key to continue"
@@ -26,15 +32,23 @@ break_program () {
 		esac
 	done
 }
+CONTINUE_SCRIPT=Y
 
-### Dump current user to tmp var and re run as root  ###
-if (( UID !=0 )); then
-	whoami>/tmp/fahtdiaguser
-	echo Re-starting as root...
-	exec sudo -E "$0"
-fi
+diagmode=
+smartlong=
 
-set -x
+while getopts ":hdl" option; do
+	case $option in
+		h) echo "usage: $0 [-h] [-d] [-l] ..."; exit ;;
+		d) diagmode=true ;;
+		l) SMARTLONG=true ;;
+		?) echo "error: option -$OPTARG is not implemented"; exit;;
+	esac
+done
+
+shift $(( OPTIND - 1))
+
+echo $diagmode
 
 clear
 echo -e "---------------------------"
@@ -49,7 +63,13 @@ CONFIRM=n
 FAHT_AUDIO=
 FAHT_DATE=$(date +%Y-%m-%d-%Hh)
 PAUSE=pause_input
-DIAG=break_program
+
+if [ "$diagmode" == "true" ]; then
+	clear
+	set -x
+	echo DIAG MODE ACTIVATED!!!!!!!!
+	DIAG=break_program;
+fi
 
 while true; do
 	echo -e "First Name: \c "
