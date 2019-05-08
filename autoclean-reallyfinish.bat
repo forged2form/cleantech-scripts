@@ -171,8 +171,8 @@ title %COMPUTERNAME%: CleanTech - Really Finish
 	echo,
 
 	color E0
-	echo Command running: net use %netletter% "\\TechTutors-1\CleanUpLogs" /user:techtutors *
-	net use %netletter% "\\TechTutors-1\CleanUpLogs" /p:no /user:techtutors * 
+	echo Command running: net use %netletter% "\\tt1\CleanUpLogs" /user:techtutors *
+	net use %netletter% "\\tt1\CleanUpLogs" /p:no /user:techtutors * 
 		if errorlevel 1 (
 			cls
 			color 4f

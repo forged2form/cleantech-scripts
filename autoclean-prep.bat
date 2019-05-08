@@ -267,8 +267,8 @@ if tac_offline==yes (
 		echo Mapping Beast Utilities folder to drive letter %tac_netletter%
 		echo,
 
-		echo Command running: net use %tac_netletter% \\TechTutors-1\Utilities /user:techtutors *
-		net use %tac_netletter% \\TechTutors-1\Utilities /p:no /user:techtutors * 
+		echo Command running: net use %tac_netletter% \\tt1\Utilities /user:techtutors *
+		net use %tac_netletter% \\tt1\Utilities /p:no /user:techtutors * 
 		if errorlevel 1 (
 			cls
 			color 4f
