@@ -18,6 +18,57 @@ pause_input () {
 	echo -e "\n"
 }
 
+### Usage confirm_prompt "Question string" $VARIABLE
+confirm_prompt ()
+{
+	prompt_answer=
+	while [ -z "$prompt_answer" ]; do
+		if [ $2 ]
+		then
+			text_verify="You entered \e[1m$2\e[0m. "
+		else
+			text_verify=
+		fi	
+		echo -e "$text_verify$1 [Y/n] \c"
+
+		read -n1 CONFIRM
+		: ${CONFIRM:=y}
+		echo
+		
+		case ${CONFIRM,,} in
+			y|Y) prompt_answer=y;;
+			n|N) prompt_answer=n;;
+			*) echo -e "Please retry... \n";;
+		esac
+	done
+}
+### input_prompt usage: input_prompt "Question string" VARIABLE_NAME
+### OR 
+input_prompt ()
+{
+	INPUT=
+	prompt_answer=
+	if [ -z "$1" ]
+	then
+		echo "-Param #1 is zero-length"
+	fi
+	if [ -z "$2" ]
+	then
+		while [ -z "$prompt_answer" ]; do
+			echo -e "$1 \c "
+		confirm_prompt
+	done
+	else
+		while [ "$prompt_answer" != "y" ]; do
+		echo -e "$1 \c "
+		read INPUT
+		eval $2=$INPUT
+		confirm_prompt "Is this correct?" $INPUT
+	done
+	fi
+
+}
+
 break_program () {
 	while true; do
 		echo -e "Continue script? [Y/n]: \c "
@@ -59,10 +110,13 @@ echo -e "--------------------------- \n"
 FAHT_CURR_USER=$(head -n 1 /tmp/fahtdiaguser)
 FAHT_FIRSTNAME=
 FAHT_LASTNAME=
+FAHT_FULLNAME=
 CONFIRM=n
 FAHT_AUDIO=
-FAHT_DATE=$(date +%Y-%m-%d-%Hh)
+FAHT_TEST_DATE=$(date +%Y-%m-%d-%Hh)
 PAUSE=pause_input
+FAHT_PROBLEMS=
+declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
 if [ "$diagmode" == "true" ]; then
 	clear
@@ -71,29 +125,22 @@ if [ "$diagmode" == "true" ]; then
 	DIAG=break_program;
 fi
 
-while true; do
-	echo -e "First Name: \c "
-	read FAHT_FIRSTNAME
 
-	echo -e "Last Name: \c "
-	read FAHT_LASTNAME
+input_prompt "First name:" FAHT_FIRST_NAME
 
-	echo -e "You entered \e[1m$FAHT_FIRSTNAME $FAHT_LASTNAME\e[0m. Is this correct? [Y/n] \c "
-	read -n1 CONFIRM
-	: ${CONFIRM:=y}
-	echo
+input_prompt "Last name:" FAHT_LAST_NAME
 
-	case ${CONFIRM,,} in
-		y|Y) break;;
-		*) echo -e "Please retry... \n";;
-	esac
-done
+confirm_prompt "Ready to continue?"
+
+if [ "$prompt_answer" == n ]; then exit; fi
+
+echo ${!FAHT_FORM_ARRAY}
 
 $DIAG
 
 CONFIRM=
 FAHT_CLIENTNAME=$FAHT_LASTNAME-$FAHT_FIRSTNAME
-FAHT_WORKINGDIR=/home/$FAHT_CURR_USER/fahttest/$FAHT_CLIENTNAME-$FAHT_DATE
+FAHT_WORKINGDIR=/home/$FAHT_CURR_USER/fahttest/$FAHT_CLIENTNAME-$FAHT_TEST_DATE
 
 ### Prep client folder ###
 if [ ! -d /home/$FAHT_CURR_USER/fahttest ]; then
@@ -141,11 +188,6 @@ FAHT_BATT_DESC=$(acpi -i)
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
 FAHT_LIVE_DEV=$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')
 FAHT_SMART_DRIVES_ARRAY=$(smartctl --scan|grep -v $FAHT_LIVE_DEV|sed -n 's/\(\/dev\/[a-z][a-z][a-z]\).*/\1/gp')
-
-#  Get number of partitions from connected drives (For array size)
-# lsblk -n -r -o NAME|egrep sd[a-z]+[0-9]+|sed -r 's/.*([a-z]d[a-z][0-9])/\1/g'|wc -l
-# Get number of disks (For array size)
-# lsblk -n -r -o NAME|grep -v [0-9]|wc -l
 
 ## Setting disks in array minus current OS disk
 FAHT_TEST_DISKS_ARRAY=()
@@ -338,18 +380,25 @@ done;
 
 amixer -D pulse sset Master 40%
 
-while true; do
-	echo Did you hear the test tone? \(y/n\) 
-	read -n1 CONFIRM
-	: ${CONFIRM:=y}
-	echo
+input_prompt "Did you hear the test tone?"
 
-	case ${CONFIRM,,} in
-		y|Y) FAHT_AUDIO=PASSED && break;;
-		n|N) FAHT_AUDIO=FAILED && break;;
-		*) echo -e "Invalid entry. Please retry.... \n\n";;
-	esac
-done
+case ${break_prompt,,}
+	y) FAHT_AUDIO=PASSED;;
+	n) FAHT_AUDIO=FAILED;;
+esac
+
+#while true; do
+#	echo Did you hear the test tone? \(y/n\) 
+#	read -n1 CONFIRM
+#	: ${CONFIRM:=y}
+#	echo
+#
+#	case ${CONFIRM,,} in
+#		y|Y) FAHT_AUDIO=PASSED && break;;
+#		n|N) FAHT_AUDIO=FAILED && break;;
+#		*) echo -e "Invalid entry. Please retry.... \n\n";;
+#	esac
+#done
 
 ### SMART Testing ###
 clear
