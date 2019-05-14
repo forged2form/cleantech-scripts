@@ -69,6 +69,28 @@ input_prompt ()
 
 }
 
+dialog_prompt ()
+{
+	INPUT=
+	prompt_answer=
+	if [ -z "$1" ]
+	then
+		echo "-Param #1 is zero-length"
+	fi
+	if [ -z "$2" ]
+	then
+		while [ -z "$prompt_answer" ]; do
+			echo -e "$1 \c "
+		confirm_prompt
+	done
+	else
+		exec 3>&1
+		INPUT=$(dialog --inputbox "$1" 0 0 2>&1 1>&3)
+		exec 3>&-
+		eval $2=$INPUT
+	fi
+
+}
 break_program () {
 	while true; do
 		echo -e "Continue script? [Y/n]: \c "
@@ -115,6 +137,12 @@ CONFIRM=n
 FAHT_AUDIO=
 FAHT_TEST_DATE=$(date +%Y-%m-%d-%Hh)
 PAUSE=pause_input
+FAHT_NOTES=
+FAHT_PHYSICAL_GRADE=
+FAHT_PHYSICAL_NOTES=
+FAHT_COMPUTER_TYPE=
+FAHT_ASSESMENT_RESULTS=
+FAHT_NOTES=
 FAHT_PROBLEMS=
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
@@ -125,16 +153,57 @@ if [ "$diagmode" == "true" ]; then
 	DIAG=break_program;
 fi
 
+#while true; do
+#
+#	exec 3>&1
+#
+#	dialog --ok-label "Submit" \
+#		--backtitle "TechTutors Diag Form" \
+#		--title "Customer Information" \
+#		--form "Use arrow keys to navigate and Tab to select Submit/Cancel." \
+#		15 80 0 \
+#		"First Name:" 1 1 "$FAHT_FIRSTNAME" 1 20 20 0 \
+#		"Last Name:" 2 1 "$FAHT_LASTNAME" 2 20 20 0 \
+#		"Problem(s):" 3 1 "$FAHT_PROBLEMS" 3 20 60 0 \
+#		"Date:" 4 1 "$FAHT_TEST_DATE" 4 20 20 0 \
+#		2>&1 1>&3 | $(read -r FAHT_FIRSTNAME; eval FAHT_FIRSTNAME=$FAHT_FIRSTNAME; read -r FAHT_LASTNAME; read -r FAHT_PROBLEMS; read -r FAHT_TEST_DATE)
+#	exec 3>&-
+#
+#	echo $FAHT_FIRSTNAME
+#	confirm_prompt
+#
+#	if [[ "$FAHT_FIRSTNAME" == "" || "$FAHT_LASTNAME" == "" || "$FAHT_PROBLEMS" == "" || "$FAHT_TEST_DATE" == "" ]]; then
+#		echo "You missed a spot. Please fill all feilds!"
+#		echo "Problems(s): $FAHT_PROBLEMS"
+#		echo "First Name: $FAHT_FIRSTNAME"
+#		echo "Last Name: $FAHT_LASTNAME"
+#		confirm_prompt "Continue?"
+#	else
+#		break
+#	fi
+#done
 
-input_prompt "First name:" FAHT_FIRST_NAME
+while [ "$prompt_answer" != "y" ]; do 
+	dialog_prompt "First Name:" FAHT_FIRSTNAME
+	dialog_prompt "Last Name:" FAHT_LASTNAME
+	dialog_prompt "Problems Experienced:" FAHT_PROBLEMS
 
-input_prompt "Last name:" FAHT_LAST_NAME
+	clear
+	#echo "First Name: $FAHT_FIRSTNAME"
+	#echo "Last Name: $FAHT_LASTNAME"
+	echo "Problems Experienced: $FAHT_PROBLEMS"
+	confirm_prompt "Is this correct?"
 
-confirm_prompt "Ready to continue?"
+done
 
-if [ "$prompt_answer" == n ]; then exit; fi
+$DIAG
 
-echo ${!FAHT_FORM_ARRAY}
+
+#confirm_prompt "Ready to continue?"
+
+#if [ "$prompt_answer" == n ]; then exit; fi
+
+#echo ${!FAHT_FORM_ARRAY}
 
 $DIAG
 
@@ -177,6 +246,7 @@ smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode.txt|grep -i "Product Name:"|sed 's/.*Product Name: //')
 FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
 FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
+FAHT_PROC_CORES=$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))
 FAHT_CORE_THREAD=$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')
 FAHT_MAX_MEMORY_GB=$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')
 FAHT_TOTAL_MEMORY_GB=$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')
