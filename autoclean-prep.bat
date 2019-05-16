@@ -410,7 +410,7 @@ if tac_offline==yes (
 :: --- END techtutors_admin_account_create.bat
 
 :setautologon
-	if /i %tac_autoadminlogonenabled%==1 goto chocoinstall
+	IF "%tac_autoadminlogonenabled%" EQU 1 (goto chocoinstall)
 
 	echo Setting autologin for CleanTech session...
 	REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v DefaultUserName /t REG_SZ /d %USERNAME% /f
