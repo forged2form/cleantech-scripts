@@ -233,7 +233,7 @@ echo
 
 modprobe eeprom
 #dmidecode>$FAHT_WORKINGDIR/demidecode.txt
-lshw>$FAHT_WORKINGDIR/lshw.txt
+for i in system memory disk bus multimedia power display processor bridge volume network; do lshw -c $i >$FAHT_WORKINGDIR/lshw-$i.txt; done
 #dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
 lscpu>$FAHT_WORKINGDIR/lscpu.txt
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
@@ -243,8 +243,9 @@ smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 ### Grab summary info for summary sheet ###
 
-FAHT_MACHINE=$(cat $FAHT_WORKINGDIR/dmidecode.txt|grep -i "Product Name:"|sed 's/.*Product Name: //')
-FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
+FAHT_COMPUTER_DESC=$(cat $FAHT_WORKINGDIR/lshw-system.txt|grep product|sed 's/.*product: //')
+FAHT_PROC_MODEL="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep product|sed 's/.*product: //')"
+FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
 FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
 FAHT_PROC_CORES=$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))
 FAHT_CORE_THREAD=$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')
