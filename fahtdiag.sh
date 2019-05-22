@@ -232,14 +232,21 @@ $DIAG
 echo
 
 modprobe eeprom
-#dmidecode>$FAHT_WORKINGDIR/demidecode.txt
-for i in system memory disk bus multimedia power display processor bridge volume network; do lshw -c $i >$FAHT_WORKINGDIR/lshw-$i.txt; done
-#dmidecode > $FAHT_WORKINGDIR/dmidecode.txt
+for i in system memory disk bus multimedia power display processor bridge volume network; do
+	lshw -c $i >$FAHT_WORKINGDIR/lshw-$i.txt;
+done
+
+for i in bios system baseboard chassis processor memory cache connector slot; do
+	dmidecode -t $i >$FAHT_WORKINGDIR/dmidecode-$i.txt;
+done
+
 lscpu>$FAHT_WORKINGDIR/lscpu.txt
+
 smartctl -x /dev/sda>$FAHT_WORKINGDIR/smartctl-sda.txt
+
 acpi -i>$FAHT_WORKINGDIR/battery.txt
+
 #hardinfo -r -f text>$FAHT_WORKINGDIR/hardinfo.txt
-smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 ### Grab summary info for summary sheet ###
 
@@ -414,6 +421,10 @@ for x in ${varsNames[*]}; do
 	sed -i "s/$x/${varsValues[$i]}/g" $FAHT_WORKING_DIR/faht-report.fodt
 	(( i++ ));
 done
+
+$DIAG
+
+smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 $DIAG
 
