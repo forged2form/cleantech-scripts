@@ -252,7 +252,7 @@ acpi -i>$FAHT_WORKINGDIR/battery.txt
 
 FAHT_COMPUTER_DESC=$(cat $FAHT_WORKINGDIR/lshw-system.txt|grep product|sed 's/.*product: //')
 FAHT_PROC_MODEL="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep product|sed 's/.*product: //')"
-FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
+FAHT_SOCKET_COUNT=$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')
 FAHT_CORE_COUNT=$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))
 FAHT_PROC_CORES=$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))
 FAHT_CORE_THREAD=$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')
