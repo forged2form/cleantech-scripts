@@ -87,9 +87,9 @@ dialog_prompt ()
 	done
 	else
 		exec 3>&1
-		INPUT=$(dialog --inputbox "$1" 0 0 2>&1 1>&3)
+		INPUT="$(dialog --inputbox "$1" 0 0 2>&1 1>&3)"
 		exec 3>&-
-		eval $2=$INPUT
+		eval "$2"=\"$(echo $INPUT)\"
 	fi
 
 }
@@ -193,8 +193,8 @@ while [ "$prompt_answer" != "y" ]; do
 	dialog_prompt "Problems Experienced:" FAHT_PROBLEMS
 
 	clear
-	#echo "First Name: $FAHT_FIRSTNAME"
-	#echo "Last Name: $FAHT_LASTNAME"
+	echo "First Name: $FAHT_FIRSTNAME"
+	echo "Last Name: $FAHT_LASTNAME"
 	echo "Problems Experienced: $FAHT_PROBLEMS"
 	confirm_prompt "Is this correct?"
 
@@ -398,43 +398,6 @@ if [ "QUICKMODE" == "false" ]; then
 	fi
 
 	$DIAG
-
-	( set -o posix; set ) | grep FAHT > /tmp/vars.txt
-
-	sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars.txt > /tmp/varsnames.txt
-	sed -r 's/.*=(.*)/\1/g' /tmp/vars.txt > /tmp/varsvalues.txt
-
-
-	i=0
-	varsNames=()
-	varsvalues=()
-
-	while IFS= read line; do
-		varsNames[$i]=$line
-		echo ${varsNames[$i]}
-		(( i++ ));
-	done < /tmp/varsnames.txt
-
-	i=0
-
-	while IFS= read line; do
-		varsValues[$i]=$line
-		echo ${varsValues[$i]}
-		(( i++ ));
-	done < /tmp/varsvalues.txt
-
-	i=0
-
-	cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKING_DIR/faht-report.fodt
-
-	for x in ${varsNames[*]}; do
-		echo "Working on $x..."
-		sed -i "s/$x/${varsValues[$i]}/g" $FAHT_WORKING_DIR/faht-report.fodt
-		(( i++ ));
-	done
-
-	$DIAG
-
 fi
 
 smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
@@ -591,3 +554,42 @@ $FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
 chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
 
 echo -e "All Done!\n"
+
+save_vars ()
+{
+	( set -o posix; set ) | grep FAHT > /tmp/vars.txt
+
+	sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars.txt > /tmp/varsnames.txt
+	sed -r 's/.*=(.*)/\1/g' /tmp/vars.txt > /tmp/varsvalues.txt
+
+
+	i=0
+	varsNames=()
+	varsvalues=()
+
+	while IFS= read line; do
+		varsNames[$i]=$line
+		echo ${varsNames[$i]}
+		(( i++ ));
+	done < /tmp/varsnames.txt
+
+	i=0
+
+	while IFS= read line; do
+		varsValues[$i]=$line
+		echo ${varsValues[$i]}
+		(( i++ ));
+	done < /tmp/varsvalues.txt
+
+	i=0
+
+	cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKINGDIR/faht-report.fodt
+
+	for x in ${varsNames[*]}; do
+		echo "Working on $x..."
+		sed -i "s/$x/${varsValues[$i]}/g" $FAHT_WORKINGDIR/faht-report.fodt
+		(( i++ ));
+	done
+
+	cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
+}
