@@ -13,7 +13,7 @@ if (( UID !=0 )); then
 	exec sudo -E "$0" "$@"
 fi
 
-QUICKMODE=false
+FAHT_QUICKMODE=false
 
 pause_input () {
 	read -n1 -s -r -p "Press any key to continue"
@@ -109,23 +109,23 @@ break_program () {
 }
 #CONTINUE_SCRIPT=Y
 
-diagmode=
-smartlong=
-QUICKMODE=
+FAHT_DIAGMODE=
+FAHT_SHORTONLY=
+FAHT_QUICKMODE=
 
-while getopts ":hdlq" option; do
+while getopts ":hdsq" option; do
 	case $option in
-		h) echo "usage: $0 [-h] [-d] [-l] [-q]..."; exit ;;
-		d) diagmode=true ;;
-		l) SMARTLONG=true ;;
-		q) QUICKMODE=true ;;
+		h) echo "usage: $0 [-h] [-d] [-s] [-q]..."; exit ;;
+		d) FAHT_DIAGMODE=true ;;
+		s) FAHT_SHORTONLY=true ;;
+		q) FAHT_QUICKMODE=true ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
 
 shift $(( OPTIND - 1))
 
-echo $diagmode
+echo $FAHT_DIAGMODE
 
 clear
 echo -e "---------------------------"
@@ -150,7 +150,7 @@ FAHT_NOTES=
 FAHT_PROBLEMS=
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
-if [ "$diagmode" == "true" ]; then
+if [ "$FAHT_DIAGMODE" == "true" ]; then
 	clear
 	set -x
 	echo DIAG MODE ACTIVATED!!!!!!!!
@@ -292,7 +292,7 @@ echo
 
 ### Skip if using q flag
 
-if [ "QUICKMODE" == "false" ]; then
+if [ "FAHT_QUICKMODE" == "false" ]; then
 	i=1
 	j=
 	for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
@@ -478,7 +478,32 @@ echo
 curr_smart_dev=/dev/sda
 echo Beginning SMART short test on "$curr_smart_dev"
 
-if [ "$SMARTLONG" == "true" ]; then
+smartctl -t force -t short $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest.txt
+
+cat $FAHT_WORKINGDIR/smartshorttest.txt
+
+## FIXME: Seems not putting integer in here.. why no u work!?
+smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+
+echo
+echo -en "\r$smart_short_test_max_minutes mins remaining"
+j=0
+while [ "$j" -lt "$smart_short_test_max_minutes"  ]; do
+	sleep 60
+	time_remaining=$(( $smart_short_test_max_minutes - $j ))
+	echo -en "\r$time_remaining mins remaining"
+	let j=j+1;
+done
+echo
+echo Smart test done.
+echo
+
+smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttestresult.txt
+echo
+cat $FAHT_WORKINGDIR/smartshorttestresult.txt
+echo
+
+if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo Beginning SMART long test on $curr_smart_dev
 
 	#smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
@@ -498,7 +523,7 @@ if [ "$SMARTLONG" == "true" ]; then
 
 	echo
 	echo -en "\r$smart_long_test_max_minutes mins remaining"
-	j=1
+	j=0
 	while [ $j -lt $smart_long_test_max_minutes  ]; do
 		sleep 60
 		time_remaining=$(( $smart_long_test_max_minutes - $j ))
@@ -517,43 +542,21 @@ if [ "$SMARTLONG" == "true" ]; then
 	#| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 fi
 
-smartctl -t force -t long $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest.txt
-
-cat $FAHT_WORKINGDIR/smartshorttest.txt
-smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
-
-echo
-echo -en "\r$smart_short_test_max_minutes mins remaining"
-j=1
-while [ "$j" -lt "$smart_shot_test_max_minutes"  ]; do
-	sleep 60
-	time_remaining=$(( $smart_short_test_max_minutes - $j ))
-	echo -en "\r$time_remaining mins remaining"
-	let j=j+1;
-done
-echo
-echo Smart test done.
-echo
-
-smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttestresult.txt
-echo
-cat $FAHT_WORKINGDIR/smartshorttestresult.txt
-echo
+$DIAG
 
 ### GFX Benchmark ###
-#clear
+clear
 echo -------------------------------
 echo Testing GFX card... Please wait
 echo -------------------------------
 $DIAG
 echo
-$FAHT_GFX_BENCH=$(glmark2 |grep -I score:)
+
+glmark2|grep -I score>"$FAHT_WORKINGDIR/glmark2.txt"
+
+FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed 's/[^0-9]*//g')"
 
 ( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
-
-chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
-
-echo -e "All Done!\n"
 
 save_vars ()
 {
@@ -593,3 +596,9 @@ save_vars ()
 
 	cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
 }
+
+save_vars
+
+chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
+
+echo -e "All Done!\n"
