@@ -264,11 +264,24 @@ FAHT_SOCKET_COUNT="$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/
 FAHT_CORE_COUNT="$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))"
 FAHT_PROC_CORES="$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))"
 FAHT_CORE_THREAD="$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
-FAHT_MAX_MEMORY_GB="$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
-FAHT_TOTAL_MEMORY_GB="$(lshw -c memory|grep -i size|grep -m 1 GiB|sed -n 's/[^0-9]*//gp')"
-FAHT_TOTAL_THREADS="$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))"
+FAHT_MAX_MEMORY="$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
+FAHT_MEM_SIZE="$(cat $FAHT_WORKINGDIR/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
+FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|sed -r 's/.*(DDR.*)/\1/')"
+FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt )"
+
+
+### FIXME: Would like to get config (e.g. 2 x 2GB DDR3 Samsung Modules 1600Mhz)
+#FAHT_MEM_CONFIG=
+#while [ j -le "$(cat $FAHT_WORKINGDIR/lshw-memory|grep bank|sed 's/[^0-9]*//'|tail -1)" ]; do
+#
+#done
+
+FAHT_PROC_THREADS="$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))"
 FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
-FAHT_CPU_SPEED="$(lshw -c cpu|grep capacity|tail -1|sed 's/[^0-9]*//g')"
+FAHT_PROC_SPEED="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g')"
+FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|sed -r 's/design capacity ([0-9]*).*/\1/')"
+FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/')"
+FAHT_BATT_HEALTH="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
 FAHT_BATT_DESC="$(acpi -i)"
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
@@ -280,7 +293,7 @@ FAHT_TEST_DISKS_ARRAY=()
 i=0
 j=
 for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep -v [0-9]|grep "^[a-z]d[a-z]"); do
-	FAHT_TEST_DISKS_ARRAY[$i]=$j
+	FAHT_TEST_DISKS_ARRAY[$i]=$j	
 	((i++));
 done
 
@@ -411,15 +424,53 @@ echo Testing Ethernet... Please wait
 echo -------------------------------
 $DIAG
 echo
-for p in `ip -o link | grep -i -E en\d* | sed -e 's/[0-9]: \(en.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/ethtest.txt
+
+FAHT_ETH="$(ip -o link|grep -i -E ": en.* "\d*|sed -r 's/[0-9]: (en.*): .*/\1/g')"
+
+if [ $FAHT_ETH ]
+then
+	for p in $FAHT_ETH; do
+		ping -c 5 -I $p 1.1.1.1
+		FAHT_ETH_RESULTS=$?
+	done > $FAHT_WORKINGDIR/ethtest-$p.txt
+else
+	$FAHT_ETH_RESULTS="N/A"
+fi
+
+if [ "$FAHT_ETH_RESULTS" -gt 0 ]
+then
+	FAHT_ETH_RESULTS="FAILED"
+else
+	FAHT_ETH_RESULTS="PASSED"
+fi
+
 
 ### Network test - Wireless ###
+### FIXME: Doesn't fail gracefully. GET IT!
 echo -----------------------------
 echo Testing Wi-Fi.... Please wait
 echo -----------------------------
 $DIAG
 echo
-for p in `ip -o link | grep -i -E wl\d* | sed -e 's/[0-9]: \(wl.*\): .*/\1/'`; do ping -c 5 -I $p www.google.ca; done>$FAHT_WORKINGDIR/wifitest.txt
+
+FAHT_WIFI="$(ip -o link|grep -i -E ": wl.* "\d*|sed -r 's/[0-9]: (wl.*): .*/\1/g')"
+
+if [ $FAHT_WIFI ]
+then
+	for p in $FAHT_WIFI; do
+		ping -c 5 -I $p 1.1.1.1
+		FAHT_WIFI_RESULTS=$?
+	done > $FAHT_WORKINGDIR/wifitest-$p.txt
+else
+	$FAHT_WIFI_RESULTS="N/A"
+fi
+
+if [ "$FAHT_WIFI_RESULTS" -gt 0 ]
+then
+	FAHT_WIFI_RESULTS="FAILED"
+else
+	FAHT_WIFI_RESULTS="PASSED"
+fi
 
 
 ### Audio test ###
@@ -446,11 +497,11 @@ audio_test ()
 		confirm_prompt "Did you hear the test tone?"
 
 		case $prompt_answer in
-			y|Y) FAHT_AUDIO=PASSED ;;
-			n|N) FAHT_AUDIO=FAILED ;;
+			y|Y) FAHT_AUDIO_RESULTS=PASSED ;;
+			n|N) FAHT_AUDIO_RESULTS=FAILED ;;
 		esac
 
-		if [ "$FAHT_AUDIO" == "FAILED" ]
+		if [ "$FAHT_AUDIO_RESULTS" == "FAILED" ]
 		then
 			confirm_prompt "Were you even listening?"
 
@@ -478,9 +529,9 @@ echo
 curr_smart_dev=/dev/sda
 echo Beginning SMART short test on "$curr_smart_dev"
 
-smartctl -t force -t short $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest.txt
+smartctl -t force -t short $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
 
-cat $FAHT_WORKINGDIR/smartshorttest.txt
+cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
 
 ## FIXME: Seems not putting integer in here.. why no u work!?
 smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
@@ -498,9 +549,9 @@ echo
 echo Smart test done.
 echo
 
-smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttestresult.txt
+smartctl -x "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 echo
-cat $FAHT_WORKINGDIR/smartshorttestresult.txt
+cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 echo
 
 if [ "$FAHT_SHORTONLY" != "true" ]; then
@@ -508,10 +559,10 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 
 	#smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
-	smartctl -t force -t long $curr_smart_dev>$FAHT_WORKINGDIR/smartlongtest.txt
+	smartctl -t force -t long "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 
-	cat $FAHT_WORKINGDIR/smartlongtest.txt
-	smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+	cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+	smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 	#echo Estimated time to complete Extended SMART test: $smart_long_test_max_minutes
 	#echo
@@ -524,7 +575,7 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo
 	echo -en "\r$smart_long_test_max_minutes mins remaining"
 	j=0
-	while [ $j -lt $smart_long_test_max_minutes  ]; do
+	while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
 		sleep 60
 		time_remaining=$(( $smart_long_test_max_minutes - $j ))
 		echo -en "\r$time_remaining mins remaining"
@@ -534,10 +585,20 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo Smart test done.
 	echo
 
-	smartctl -x $curr_smart_dev>$FAHT_WORKINGDIR/smartlongtestresult.txt
+	smartctl -x "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
-	cat $FAHT_WORKINGDIR/smartlongtestresult.txt
+	cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
+
+	echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "Extended offline"|head -1)"
+	cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "Extended offline"|head -1|sed 's/.*(Completed without error).*/\1/'
+
+	if [ $? -gt 0 ]
+	then
+		FAHT_DISK1_ASSESSMENT_RESULTS=FAILED
+	else
+		FAHT_DISK1_ASSESSMENT_RESULTS=PASSED
+	fi
 
 	#| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 fi
@@ -556,7 +617,7 @@ glmark2|grep -I score>"$FAHT_WORKINGDIR/glmark2.txt"
 
 FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed 's/[^0-9]*//g')"
 
-( set -o posix; set ) | grep FAHT > $FAHT_WORKINGDIR/vars.txt
+( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/vars.txt
 
 save_vars ()
 {
@@ -586,11 +647,11 @@ save_vars ()
 
 	i=0
 
-	cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKINGDIR/faht-report.fodt
+	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
 
 	for x in ${varsNames[*]}; do
 		echo "Working on $x..."
-		sed -i "s/$x/${varsValues[$i]}/g" $FAHT_WORKINGDIR/faht-report.fodt
+		sed -i "s/$x/${varsValues[$i]}/g" "$FAHT_WORKINGDIR"/faht-report.fodt
 		(( i++ ));
 	done
 
@@ -599,6 +660,6 @@ save_vars ()
 
 save_vars
 
-chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER $FAHT_WORKINGDIR
+chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
 
 echo -e "All Done!\n"
