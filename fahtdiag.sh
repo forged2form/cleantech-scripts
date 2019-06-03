@@ -139,7 +139,8 @@ FAHT_LASTNAME=
 FAHT_FULLNAME=
 CONFIRM=n
 FAHT_AUDIO=
-FAHT_TEST_DATE=$(date +%Y-%m-%d-%Hh)
+FAHT_TEST_DATE=$(date +%Y-%m-%d)
+FAHT_TEST_TIME=$(date +%Hh)
 PAUSE=pause_input
 FAHT_NOTES=
 FAHT_PHYSICAL_GRADE=
@@ -187,6 +188,15 @@ fi
 #	fi
 #done
 
+### Get basic system id for faht folder ###
+
+lshw -c system>/tmp/fs.txt
+
+FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //')
+FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|sed 's/.*vendor: //')
+FAHT_COMPUTER_SERIAL=$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')
+FAHT_COMP_DESC=$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL
+
 while [ "$prompt_answer" != "y" ]; do 
 	dialog_prompt "First Name:" FAHT_FIRSTNAME
 	dialog_prompt "Last Name:" FAHT_LASTNAME
@@ -195,6 +205,7 @@ while [ "$prompt_answer" != "y" ]; do
 	clear
 	echo "First Name: $FAHT_FIRSTNAME"
 	echo "Last Name: $FAHT_LASTNAME"
+	echo "Computer: $FAHT_COMP_DESC"
 	echo "Problems Experienced: $FAHT_PROBLEMS"
 	confirm_prompt "Is this correct?"
 
@@ -213,8 +224,9 @@ $DIAG
 
 CONFIRM=
 FAHT_CLIENTNAME="$FAHT_LASTNAME-$FAHT_FIRSTNAME"
-FAHT_WORKINGDIR=/home/"$FAHT_CURR_USER"/fahttest/"$FAHT_CLIENTNAME"-"$FAHT_TEST_DATE"
+FAHT_WORKINGDIR=/home/"$FAHT_CURR_USER"/fahttest/"$FAHT_CLIENTNAME"-"$FAHT_TEST_DATE"-"$FAHT_TEST_TIME"-"$FAHT_COMP_DESC"
 
+#FAHT_TEMP="$(lshw -class system|grep product|sed -r 's/.*product: (.*) \(.*)/\1/'|sed 's/ /_/g'')"
 ### Prep client folder ###
 if [ ! -d /home/$FAHT_CURR_USER/fahttest ]; then
 	mkdir /home/$FAHT_CURR_USER/fahttest
@@ -258,7 +270,7 @@ hardinfo -r -f text>"$FAHT_WORKINGDIR"/hardinfo.txt
 
 ### Grab summary info for summary sheet ###
 
-FAHT_COMPUTER_DESC="$(cat $FAHT_WORKINGDIR/lshw-system.txt|grep product|sed 's/.*product: //')"
+FAHT_COMPUTER_DESC="$(cat $FAHT_WORKINGDIR/lshw-system.txt|grep product|sed -r 's/.*product: (.*) \(.*/\1/')"
 FAHT_PROC_MODEL="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep product|sed 's/.*product: //')"
 FAHT_SOCKET_COUNT="$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')"
 FAHT_CORE_COUNT="$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))"
@@ -266,8 +278,8 @@ FAHT_PROC_CORES="$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))"
 FAHT_CORE_THREAD="$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
 FAHT_MAX_MEMORY="$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
 FAHT_MEM_SIZE="$(cat $FAHT_WORKINGDIR/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
-FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|sed -r 's/.*(DDR.*)/\1/')"
-FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt )"
+FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|sed -r 's/.*(DDR[1-6].*).*/\1/')"
+FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
 
 
 ### FIXME: Would like to get config (e.g. 2 x 2GB DDR3 Samsung Modules 1600Mhz)
@@ -278,11 +290,11 @@ FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt )"
 
 FAHT_PROC_THREADS="$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))"
 FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
-FAHT_PROC_SPEED="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g')"
-FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|sed -r 's/design capacity ([0-9]*).*/\1/')"
+FAHT_PROC_SPEED="$(bc <<< "scale=1; $(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g') / 1000")"
+#FAHT_PROC_SPEED="$(bc <<< "scale=1; $FAHT_PROC_SPEED_MHZ/1000")"
+FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail-1|sed -r 's/.*design capacity ([0-9]*).*/\1/')"
 FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/')"
 FAHT_BATT_HEALTH="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
-FAHT_BATT_DESC="$(acpi -i)"
 
 ### Note block device where linux is currently mounted for using as an exception when listing hdds
 FAHT_LIVE_DEV="$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
@@ -638,16 +650,17 @@ echo
 
 glmark2|grep Score>"$FAHT_WORKINGDIR"/glmark2.txt
 
-FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed -r 's/.*: ([0-9]*)/\1/g')"
+FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed -r 's/.*: ([0-9]*) /\1/g')"
 
 ( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/vars.txt
 
 save_vars ()
 {
 	( set -o posix; set ) | grep FAHT > /tmp/vars.txt
+	cat /tmp/vars.txt|grep -v ARRAY > /tmp/vars_noarray.txt
 
-	sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars.txt > /tmp/varsnames.txt
-	sed -r 's/.*=(.*)/\1/g' /tmp/vars.txt > /tmp/varsvalues.txt
+	sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars_noarray.txt > /tmp/varsnames.txt
+	sed -r 's/.*=(.*)/\1/g' /tmp/vars_noarray.txt > /tmp/varsvalues.txt
 
 
 	i=0
@@ -674,7 +687,7 @@ save_vars ()
 
 	for x in ${varsNames[*]}; do
 		echo "Working on $x..."
-		sed -i "s/$x/${varsValues[$i]}/g" "$FAHT_WORKINGDIR"/faht-report.fodt
+		sed -i "s/\[\[$x\]\]/${varsValues[$i]}/g" "$FAHT_WORKINGDIR"/faht-report.fodt
 		(( i++ ));
 	done
 
