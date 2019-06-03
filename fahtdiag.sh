@@ -687,7 +687,7 @@ save_vars ()
 
 	for x in ${varsNames[*]}; do
 		echo "Working on $x..."
-		sed -i "s/\[\[$x\]\]/${varsValues[$i]}/g" "$FAHT_WORKINGDIR"/faht-report.fodt
+		sed -i "s|\[\[$x\]\]|${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
 		(( i++ ));
 	done
 
