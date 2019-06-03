@@ -613,9 +613,9 @@ echo -------------------------------
 $DIAG
 echo
 
-glmark2|grep -I score>"$FAHT_WORKINGDIR/glmark2.txt"
+glmark2|grep Score>"$FAHT_WORKINGDIR"/glmark2.txt
 
-FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed 's/[^0-9]*//g')"
+FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed -r 's/.*: ([0-9]*)/\1/g')"
 
 ( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/vars.txt
 
