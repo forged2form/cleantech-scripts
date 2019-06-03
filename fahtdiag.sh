@@ -526,30 +526,42 @@ echo --------------------------------
 $DIAG
 echo
 
-curr_smart_dev=/dev/sda
+curr_smart_dev=sda
 echo Beginning SMART short test on "$curr_smart_dev"
 
-smartctl -t force -t short $curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
+### FIXME: Need to poll SMART log after each minute so that we don't wait unnessesarily long for a FAILED result...
+# smartctl -l selftest
+
+smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
 
 cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
 
 ## FIXME: Seems not putting integer in here.. why no u work!?
-smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 echo
 echo -en "\r$smart_short_test_max_minutes mins remaining"
 j=0
-while [ "$j" -lt "$smart_short_test_max_minutes"  ]; do
+while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
+	
 	sleep 60
 	time_remaining=$(( $smart_short_test_max_minutes - $j ))
 	echo -en "\r$time_remaining mins remaining"
-	let j=j+1;
+
+		smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
+
+		if [ $? -eq 0 ]
+		then
+			j=9999
+		else
+			let j=j+1;
+		fi
 done
 echo
 echo Smart test done.
 echo
 
-smartctl -x "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 echo
 cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 echo
@@ -559,7 +571,7 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 
 	#smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
-	smartctl -t force -t long "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+	smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 
 	cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 	smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
@@ -574,18 +586,29 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 
 	echo
 	echo -en "\r$smart_long_test_max_minutes mins remaining"
+	
 	j=0
+	
 	while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
 		sleep 60
 		time_remaining=$(( $smart_long_test_max_minutes - $j ))
 		echo -en "\r$time_remaining mins remaining"
-		let j=j+1;
+
+		smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
+
+		if [ $? -eq 0 ]
+		then
+			j=9999
+		else
+			let j=j+1;
+		fi
 	done
+
 	echo
 	echo Smart test done.
 	echo
 
-	smartctl -x "$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+	smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
 	cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
