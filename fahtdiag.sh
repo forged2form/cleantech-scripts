@@ -578,6 +578,20 @@ echo
 cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 echo
 
+### Present hours on in human readable way... ###
+
+FAHT_TIME_ON_HOURS=$(sudo smartctl -a /dev/$curr_smart_dev |grep "Power_On_Hours"|awk '{print $10}')
+let FAHT_TIME_ON_DAYS=FAHT_TIME_ON_HOURS/24
+let FAHT_TIME_ON_MONTHS=FAHT_TIME_ON_DAYS/30
+let FAHT_TIME_ON_YEARS=FAHT_TIME_ON_MONTHS/12
+
+DAYH=24
+MONTHH=24*30
+YEARH=24*365
+
+for i in DAYH MONTHH YEARH; do
+	if [ -z (($DAYH %  )) ]
+
 if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo Beginning SMART long test on $curr_smart_dev
 
