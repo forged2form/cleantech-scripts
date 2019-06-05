@@ -637,24 +637,24 @@ if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo Smart test done.
 	echo
 
+fi
+
 	smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
 	cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 	echo
 
-	echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "Extended offline"|head -1)"
-	cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "Extended offline"|head -1|sed 's/.*(Completed without error).*/\1/'
+	echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+	SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
 
-	if [ $? -gt 0 ]
+	if [ "$SMART_PASSED" == "Completed without error" ]
 	then
-		FAHT_DISK1_ASSESSMENT_RESULTS=FAILED
-	else
 		FAHT_DISK1_ASSESSMENT_RESULTS=PASSED
+	else
+		FAHT_DISK1_ASSESSMENT_RESULTS=FAILED
 	fi
 
 	#| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
-fi
-
 $DIAG
 
 ### GFX Benchmark ###
