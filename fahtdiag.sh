@@ -589,8 +589,9 @@ DAYH=24
 MONTHH=24*30
 YEARH=24*365
 
-for i in DAYH MONTHH YEARH; do
-	if [ -z (($DAYH %  )) ]
+#for i in DAYH MONTHH YEARH; do
+#	if [ -z (($DAYH %  )) ]
+	
 
 if [ "$FAHT_SHORTONLY" != "true" ]; then
 	echo Beginning SMART long test on $curr_smart_dev
