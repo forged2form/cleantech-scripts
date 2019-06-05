@@ -112,13 +112,15 @@ break_program () {
 FAHT_DIAGMODE=
 FAHT_SHORTONLY=
 FAHT_QUICKMODE=
+FAHT_CLAMAV=
 
-while getopts ":hdsq" option; do
+while getopts ":hdsqc" option; do
 	case $option in
-		h) echo "usage: $0 [-h] [-d] [-s] [-q]..."; exit ;;
+		h) echo "usage: $0 [-h] [-d] [-s] [-q] [-c]..."; exit ;;
 		d) FAHT_DIAGMODE=true ;;
 		s) FAHT_SHORTONLY=true ;;
 		q) FAHT_QUICKMODE=true ;;
+		c) FAHT_CLAMAV=true ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -712,5 +714,7 @@ save_vars ()
 save_vars
 
 chown -Rfv $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
+
+cat "$FAHT_WORKINGDIR"/vars.txt
 
 echo -e "All Done!\n"
