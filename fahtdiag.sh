@@ -5,6 +5,10 @@
 ####### TechTutors Diag Script ########
 ####### For internal use only! ########
 
+### Update... ###
+
+cd /home/techtutors/Documents/cleantech-scripts
+git pull
 
 ### Dump current user to tmp var and re run as root  ###
 if (( UID !=0 )); then
