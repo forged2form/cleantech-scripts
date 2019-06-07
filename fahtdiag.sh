@@ -586,17 +586,23 @@ echo
 
 ### Present hours on in human readable way... ###
 
-FAHT_TIME_ON_HOURS=$(sudo smartctl -a /dev/$curr_smart_dev |grep "Power_On_Hours"|awk '{print $10}')
-let FAHT_TIME_ON_DAYS=FAHT_TIME_ON_HOURS/24
-let FAHT_TIME_ON_MONTHS=FAHT_TIME_ON_DAYS/30
-let FAHT_TIME_ON_YEARS=FAHT_TIME_ON_MONTHS/12
+FAHT_DISK1_TIME_ON_HOURS=$(sudo smartctl -a /dev/$curr_smart_dev |grep "Power_On_Hours"|awk '{print $10}')
 
-DAYH=24
-MONTHH=24*30
-YEARH=24*365
+if [[ "FAHT_DISK1_TIME_ON_HOURS" != "" ]]; then
 
-#for i in DAYH MONTHH YEARH; do
-#	if [ -z (($DAYH %  )) ]
+	let FAHT_DISK1_TIME_ON_DAYS=FAHT_TIME_ON_HOURS/24
+	let FAHT_DISK1_TIME_ON_MONTHS=FAHT_TIME_ON_DAYS/30
+	let FAHT_DISK1_TIME_ON_YEARS=FAHT_TIME_ON_MONTHS/12
+
+	FAHT_DISK1_DAYH=24
+	FAHT_DISK1_MONTHH=24*30
+	FAHT_DISK1_YEARH=24*365
+
+	#for i in FAHT_DISK1_DAYH FAHT_DISK1_MONTHH FAHT_DISK1_YEARH; do
+	#	if [ -z (($DAYH %  )) ]
+fi
+
+
 	
 
 if [ "$FAHT_SHORTONLY" != "true" ]; then
