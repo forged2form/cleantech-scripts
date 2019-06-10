@@ -812,10 +812,10 @@
        <text:p text:style-name="TNormal">Time on</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal">[[FAHT_DISK1_TIMEON]]</text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_TIME_ON]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_TIMEON_<text:span text:style-name="T10">RESULTS]]</text:span></text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_TIME_ON_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -904,7 +904,7 @@
      </table:table-row>
     </table:table>
     <text:p text:style-name="P12"/>
-    <text:p text:style-name="THeader">Processor: <text:span text:style-name="T9">[[FAHT_PROC_MODEL]]</text:span></text:p>
+    <text:p text:style-name="THeader">Processor: [[FAHT_PROC_MODEL]]</text:p>
     <table:table table:name="Table5" table:style-name="Table5">
      <table:table-column table:style-name="Table5.A"/>
      <table:table-column table:style-name="Table5.B"/>
@@ -914,7 +914,7 @@
        <text:p text:style-name="TNormal">Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal">[[FAHT_PROC_SPEED]]<text:span text:style-name="T15">GHz</text:span></text:p>
+       <text:p text:style-name="TNormal">[[FAHT_PROC_SPEED]] GHz</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
        <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_SPEED_RESULTS]]</text:p>
@@ -955,7 +955,7 @@
      </table:table-row>
     </table:table>
     <text:p text:style-name="P17"/>
-    <text:p text:style-name="THeader">Graphics: <text:span text:style-name="T10">[[FAHT_GFX_MODEL]]</text:span></text:p>
+    <text:p text:style-name="THeader">Graphics: [[FAHT_GFX_MODEL]]</text:p>
     <table:table table:name="Table4" table:style-name="Table4">
      <table:table-column table:style-name="Table4.A"/>
      <table:table-column table:style-name="Table4.B"/>
@@ -984,7 +984,7 @@
      </table:table-row>
     </table:table>
     <text:p text:style-name="P16"/>
-    <text:p text:style-name="THeader"><text:span text:style-name="T6">Battery </text:span><text:span text:style-name="T7">Capacity</text:span></text:p>
+    <text:p text:style-name="THeader">Battery Capacity</text:p>
     <table:table table:name="Batt" table:style-name="Batt">
      <table:table-column table:style-name="Batt.A" table:number-columns-repeated="3"/>
      <table:table-column table:style-name="Batt.D"/>
