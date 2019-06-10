@@ -283,6 +283,11 @@ temp	hardinfo -r -f text>"$FAHT_WORKINGDIR"/hardinfo.txt
 		echo
 		((j++));
 	done
+
+	echo Listing SMART capable drives...
+	echo ----
+	echo ${FAHT_SMART_DRIVES_ARRAY[@]}
+	echo
 	$DIAG
 }
 
@@ -537,42 +542,37 @@ smart_test ()
 
 	FAHT_DISK_NO=1
 
+	echo Listing SMART capable drives...
 	echo ${FAHT_SMART_DRIVES_ARRAY[1]}
+	echo
+	echo ${FAHT_SMART_DRIVES_ARRAY[@]}
 	$DIAG
 	for curr_smart_dev in ${FAHT_SMART_DRIVES_ARRAY[*]}; do
 
 		echo Beginning SMART short test on "$curr_smart_dev"
-
-		### FIXME: Need to poll SMART log after each minute so that we don't wait unnessesarily long for a FAILED result...
-		# smartctl -l selftest
-
 		smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-
 		cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-
-		## FIXME: Seems not putting integer in here.. why no u work!?
 		smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 		echo
 		echo -en "\r$smart_short_test_max_minutes mins remaining"
 		j=9999
-		while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
-			
+
+		while [ "$j" -lt "$smart_short_test_max_minutes" ]; do		
 			sleep 60
 			time_remaining=$(( $smart_short_test_max_minutes - $j ))
 			echo -en "\r$time_remaining mins remaining"
+			smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
 
-				smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
-
-				if [ $? -eq 0 ]
-				then
-					j=9999
-				else
-					let j=j+1;
-				fi
+			if [ $? -eq 0 ]; then
+				j=9999
+			else
+				let j=j+1;
+			fi
 		done
+		
 		echo
-		echo Smart test done.
+		echo Short SMART test done.
 		echo
 
 		smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
@@ -600,7 +600,6 @@ smart_test ()
 
 			let FAHT_HOURS_REMAINING=FAHT_DISK1_TIME_ON_HOURS
 
-
 			for i in YEARS MONTHS DAYS; do
 
 				let FAHT_DISK1_TIME_ON_ARRAY[$i]=$FAHT_DISK1_TIME_ON_HOURS/${FAHT_HOURS[$i]}
@@ -613,49 +612,23 @@ smart_test ()
 
 			echo
 			echo Printing TIME ON
-			FAHT_DISK1_TIME_ON=$(for i in YEARS MONTHS DAYS HOURS; do
-				if [[ "${FAHT_DISK1_TIME_ON_ARRAY[$i]}" -gt "0" ]]; then
-					printf "${FAHT_DISK1_TIME_ON_ARRAY[$i]} $i "
-				fi
-			done)
-
+			FAHT_DISK1_TIME_ON="$(for i in YEARS MONTHS DAYS HOURS; do if [[ "${FAHT_DISK1_TIME_ON_ARRAY[$i]}" -gt "0" ]]; then printf "${FAHT_DISK1_TIME_ON_ARRAY[$i]} $i "; fi; done)"
+			
 			### Trim trailing whitespace...
-
 			FAHT_DISK1_TIME_ON=$(echo $FAHT_DISK1_TIME_ON)
 			echo $FAHT_DISK1_TIME_ON
 			echo
 
 			$DIAG
-
-			#let FAHT_DISK1_TIME_ON_YEARS=FAHT_DISK1_TIME_ON_HOURS/HOURS_YEARS
-			#let FAHT_HOURS_REMAINING=FAHT_DISK1_TIME_ON_HOURS%HOURS_YEARS
-			#let FAHT_DISK1_TIME_ON_MONTHS=FAHT_DISK1_TIME_ON_HOURS/HOURS_MONTHS
-			#let FAHT_DISK1_TIME_ON_DAY=FAHT_DISK1_TIME_ON_HOURS/HOURS_DAYS
-
-			#for i in FAHT_DISK1_DAYH FAHT_DISK1_MONTHH FAHT_DISK1_YEARH; do
-			#	if [ -z (($DAYH %  )) ]
-		fi
-
-
-			
+		fi	
 
 		if [ "$FAHT_SHORTONLY" != "true" ]; then
 			echo Beginning SMART long test on $curr_smart_dev
-
-			#smartctl -a $curr_smart_dev|awk... smart_long_test_max, smart_short_test_max
 
 			smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 
 			cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 			smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
-
-			#echo Estimated time to complete Extended SMART test: $smart_long_test_max_minutes
-			#echo
-			#echo Test started on $(date). Estimated time of completion: $(date -d '+$smart_long_test_max_mins minutes')
-			#smartctl -t force long $curr_smart_dev
-
-			#smart_start_time=$((date +%s))
-			#smart_minutes_remaining=$((smart_start_time/60))
 
 			echo
 			echo -en "\r$smart_long_test_max_minutes mins remaining"
@@ -669,8 +642,7 @@ smart_test ()
 
 				smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
 
-				if [ $? -eq 0 ]
-				then
+				if [ $? -eq 0 ]; then
 					j=9999
 				else
 					let j=j+1;
@@ -678,31 +650,43 @@ smart_test ()
 			done
 
 			echo
-			echo Smart test done.
+			echo Long SMART test done.
 			echo
 
 		fi
 
-			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
-			cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
+		smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+		echo
+		cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+		echo
 
-			echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
-			SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
+		echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+		SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
 
-			if [ "$SMART_PASSED" == "Completed without error" ]
-			then
-				FAHT_DISK1_ASSESSMENT_RESULTS=PASSED
-			else
-				FAHT_DISK1_ASSESSMENT_RESULTS=FAILED
-			fi
+		if [ "$SMART_PASSED" == "Completed without error" ]; then
+			FAHT_DISK1_ASSESSMENT_RESULTS=PASSED;
+		else
+			FAHT_DISK1_ASSESSMENT_RESULTS=FAILED;
+		fi
 
-			#| dialog --gauge "Running SMART Extended test on $curr_smart_dev Please wait..." 0 60 0 
 		$DIAG
 
 	done
 }
+
+### Appears to get reset with function declaration...
+
+	declare -A FAHT_SMART_DRIVES_ARRAY
+
+	for i in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
+		FAHT_SMART_DRIVES_ARRAY[$j]="$i"
+		echo $j
+		echo FAHT_SMART_DRIVES_ARRAY[$j] = ${FAHT_SMART_DRIVES_ARRAY[$j]}
+		echo
+		((j++));
+	done
+
+
 smart_test
 
 gfx_test ()
