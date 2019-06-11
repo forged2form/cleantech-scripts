@@ -309,23 +309,36 @@ disk_array_setup ()
 	echo ${FAHT_TEST_DISKS_ARRAY[@]}
 	echo
 
+	$DIAG
+
 	# Set up individual disk arrays
 	i=1
 	j=
-	for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
+#	for j in ${FAHT_TEST_DISKS_ARRAY[*]}; do
+	for j in $(lsblk -n -r -o NAME|grep -v "$FAHT_LIVE_DEV"|grep -E -v "[0-9]"|grep -E "^[a-z]d[a-z]"); do
 		declare -n CURR_FAHT_DISK=FAHT_DISK_${i}
+		echo $CURR_FAHT_DISK
+		echo $FAHT_DISK_${i}
+		$DIAG
 		CURR_FAHT_DISK[deviceid]=$j
 		echo ${CURR_FAHT_DISK[deviceid]}
+		echo
+		$DIAG
 		i=0
 		CURR_PART=partition${x}
+		echo $CURR_PART
+		$DIAG
 		for x in /dev/$(echo ${CURR_FAHT_DISK[deviceid]})*; do
 			CURR_PART=part${i}
+			echo $CURR_PART
 			CURR_FAHT_DISK[${CURR_PART}]=${x}
-			echo ${CURR_FAHT_DISK[${CURR_PART}]};
+			echo ${CURR_FAHT_DISK[${CURR_PART}]}
+			$DIAG;
 		done
 		echo ${!CURR_FAHT_DISK}
-		echo ${!CURR_FAHT_DISK[deviceid]}
+		echo ${CURR_FAHT_DISK[deviceid]}
 		(( i++ ));
+		$DIAG
 	done
 
 	$DIAG
@@ -335,7 +348,9 @@ disk_array_setup ()
 	i=0
 	j=
 
-	for j in $(lsblk -n -r -o NAME|grep -v $FAHT_LIVE_DEV|grep "^[a-z]d[a-z][0-9]"); do
+	declare -A FAHT_TEST_PARTS_ARRAY
+
+	for j in $(lsblk -n -r -o NAME|grep -v "$FAHT_LIVE_DEV"|grep "^[a-z]d[a-z][0-9]"); do
 		FAHT_TEST_PARTS_ARRAY[$i]=$j
 		((i++));
 	done
@@ -400,6 +415,8 @@ disk_array_setup ()
 		
 	declare -A FAHT_SMART_DRIVES_ARRAY
 
+	j=0
+	
 	for i in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
 		FAHT_SMART_DRIVES_ARRAY[$j]="$i"
 		echo $j
@@ -419,9 +436,9 @@ disk_array_setup ()
 	$DIAG
 }
 
-#temp disk_array_setup
+disk_array_setup
 
-smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
+#temp smartctl --info /dev/sda>$FAHT_WORKINGDIR/sda-info.txt
 
 eth_test () {
 	### Network test - Ethernet ###
@@ -687,7 +704,7 @@ smart_test ()
 	done
 
 
-smart_test
+#TEMP smart_test
 
 gfx_test ()
 {
