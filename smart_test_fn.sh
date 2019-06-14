@@ -50,7 +50,12 @@ disk_array_setup ()
 	j=
 	for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+			
 		CURR_FAHT_DISK_ARRAY[deviceid]=$j
+		for stat in serial model vendor; do
+			CURR_FAHT_DISK_ARRAY[$stat]=$(lsblk -dno $stat /dev/$j);
+		done
+		CURR_FAHT_DISK_ARRAY[name]="${CURR_FAHT_DISK_ARRAY[vendor]} ${CURR_FAHT_DISK_ARRAY[model]}"
 
 		###TEMP echo Working on Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviceid]}
 		###TEMP echo
@@ -72,6 +77,8 @@ disk_array_setup ()
 	i=1
 	q=1
 
+	echo Searching disks for paritions...
+	echo --------------------------------
 	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 		echo From Disk $i \(${CURR_FAHT_DISK_ARRAY[deviceid]}\)
@@ -84,14 +91,13 @@ disk_array_setup ()
 		### Put array items into itemized strings
 
 		x=1
-		for x in deviceid totalparts totalsize; do
+		for x in deviceid totalparts totalsize serial; do
 			declare -n CURR_FAHT_DISK_VAR=FAHT_DISK_${i}_${x}
 			CURR_FAHT_DISK_VAR=${CURR_FAHT_DISK_ARRAY[${x}]}
 		###TEMP	echo "FAHT_DISK_${i}_${x} = ${CURR_FAHT_DISK_VAR}"
 		###TEMP	echo ${x}
 			(( x++ ))
 		done
-		$DIAG
 		(( i++ ));
 	done
 }
@@ -129,17 +135,17 @@ smart_drive_find () {
 mount_avail_volumes () {
 	### Set up mount points
 	### Ensure test drives are unmounted first and mount dir structure is good
+	echo Attempting to mount volumes....
+	echo -------------------------------
 
 	if [ ! -d /mnt/faht ]; then mkdir /mnt/faht; fi
-	if [ /mnt/faht/* ]; then
-		for i in /mnt/faht/*; do
-			umount $i
-			rmdir $i;
-		done;
-	fi
+	for i in /mnt/faht/*; do
+		umount $i
+		rmdir $i;
+	done
 
 	i=1
-	while [[ "$i" -le $"FAHT_TOTAL_TEST_DISKS" ]]; do
+	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 
 		pn=1
@@ -155,42 +161,36 @@ mount_avail_volumes () {
 				mkdir /mnt/faht/${x}
 				echo Created mountpount: /mnt/faht/${x};
 			fi
-			mount /dev/$x /mnt/faht/$x
+			mount /dev/$x /mnt/faht/$x 2>/dev/null
 			if [[ "$?" -ne "0" ]]; then
 				echo Mount of /dev/${x} failed. Removing mountpoint...
-				rmdir /mnt/faht/${x};
-			else
-				echo mounted /dev/$x /mnt/faht/$x;
+				rmdir /mnt/faht/${x}
+			else echo mounted /dev/$x /mnt/faht/$x
 			fi
-			(( pn++ ));
+
+			if [[ -z ${CURR_FAHT_DISK_ARRAY[benchvol]} ]]; then
+				touch /mnt/faht/$x/test
+				if [[ "$?" -eq "0" ]]; then
+					CURR_FAHT_DISK_ARRAY[benchvol]=/mnt/faht/$x
+					rm /mnt/faht/$x/test
+					echo Write benchmark location for Disk ${i}: ${CURR_FAHT_DISK_ARRAY[benchvol]};
+				fi
+			fi
+			(( pn++ ))
+			echo;
 		done
 		(( i++ ))
 
 		$DIAG
 
-		# Remove empty dirs (i.e. mounts that didn't work for whatever reason. We will loop through the remaining dirs to test for r/w.
-
-		for i in /mnt/faht/*; do
-			rmdir $i;
-		done
-	done
 
 	# Test partitions for r/w mount
-
-	i=
-	for i in /mnt/faht/*; do
-		touch $i/test
-		if [[ "$?" -eq "0" ]]; then
-			FAHT_DISK_BENCH_VOL=$i
-			rm $i/test;
-		fi
-	done
-
-	echo Write benchmark location: $FAHT_DISK_BENCH_VOL
 
 	# If unable to get r/w mount set benchmark for read-only
 
 	# If volume is writeable set benchamrk for read-write
+
+	done
 
 	$DIAG
 }
@@ -207,26 +207,56 @@ find_win_part () {
 		while [[ "$j" -le "${CURR_FAHT_DISK_ARRAY[totalparts]}" ]]; do
 			WIN_VOL=NO
 			#echo "Testing parition ${j}: ${CURR_FAHT_DISK_ARRAY[part${j}]}"
-			WIN_VOL=$(ntfsinfo -F "Windows" /dev/${CURR_FAHT_DISK_ARRAY[part${j}]} 2>/dev/null| grep "Windows")
-			if [[ $(echo $WIN_VOL|grep Windows) ]]; then
+			if [[ -d "/mnt/faht/${CURR_FAHT_DISK_ARRAY[part${j}]}/Windows" ]]; then
 				echo
 				echo "Found Windows partition in /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}"
 				CURR_FAHT_DISK_ARRAY[windowspart]=${CURR_FAHT_DISK_ARRAY[part${j}]}
 				FAHT_WIN_PART=${CURR_FAHT_DISK_ARRAY[part${j}]}
 				echo FAHT_WIN_PART=$FAHT_WIN_PART
 				echo
-				CURR_FAHT_DISK_ARRAY[windowspartfreespace]=$(df -hs /dev/${CURR_FAHT_DISK_ARRAY[part${j}]})
-				WIN_PART_FREE_SPACE=$(df -hs /dev/${CURR_FAHT_DISK_ARRAY[part${j}]})
+				CURR_FAHT_DISK_ARRAY[windowspartfreespace]=$(df -h --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1|sed 's/^[ \t]*//')
+				WIN_PART_FREE_SPACE=$(df -h --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1|sed 's/^[ \t]*//');
 			fi
 			(( j++ ));
 		done
 		(( i++ ));
+	done
+	echo
+}
+
+benchmark_disks () {
+	echo Benchmarking attached disks...
+	echo ------------------------------
+
+	i=1
+	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
+		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+		### Read benchmark
+		echo Testing read speed of Disk ${i}
+		echo running command: hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}
+		hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}>/tmp/logdir-disk${i}-hdparm.txt
+		#CURR_FAHT_DISK_ARRAY[readspeed]="$(cat /tmp/logdir-disk${i}-hdparm.txt|tail -1|sed -r 's/^.* \= ([0-9].*)/\1/g')"
+		echo ${CURR_FAHT_DISK_ARRAY[readspeed]}
+		#$DIAG
+
+		### Write benchmark
+		echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -s 10
+		bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
+		
+		#bench command
+		#echo Testing write speed of Disk ${2}
+		#echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=400M count=1 oflag=direct
+		#dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=1M count=100 oflag=direct
+		#rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
+		(( i++ ))
+		$DIAG;
 	done
 }
 
 echo testing... 
 echo ----------
 echo
+
 disk_array_setup
 mount_avail_volumes
 echo
@@ -245,14 +275,22 @@ i=1
 while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
 	declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 	echo Disk ${i}
-	echo -----------------------
+	echo -----------------------------------
+	echo Name: ${CURR_FAHT_DISK_ARRAY[name]}
 	echo Device ID: ${CURR_FAHT_DISK_ARRAY[deviceid]}
+	echo Serial \#: ${CURR_FAHT_DISK_ARRAY[serial]}
 	echo Total partitions: ${CURR_FAHT_DISK_ARRAY[totalparts]}
 	echo Total size: ${CURR_FAHT_DISK_ARRAY[totalsize]}
 	if [[ ${CURR_FAHT_DISK_ARRAY[windowspart]} ]]; then
 		echo Windows partition: ${CURR_FAHT_DISK_ARRAY[windowspart]}
 		echo Free space on system volume: ${CURR_FAHT_DISK_ARRAY[windowspartfreespace]};
-		fi
+	fi
+	echo Benchmark mount point: ${CURR_FAHT_DISK_ARRAY[benchvol]}
 	echo
 	(( i++ ));
 done
+
+benchmark_disks
+
+umount /mnt/faht/*
+rmdir /mnt/faht/*
