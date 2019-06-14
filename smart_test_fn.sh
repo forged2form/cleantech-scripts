@@ -253,6 +253,15 @@ benchmark_disks () {
 		### bench command
 		echo Testing write speed of Disk ${i}
 		echo
+		#declare -a CURR_BENCH_ARRAY
+		#b=0
+		#while [[ "$b" -lt "100" ]]; do
+		#	echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
+		#	dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
+		#	CURR_BENCH_ARRAY[${b}]="$(cat /tmp/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
+		#	(( b++ ));
+		#done
+		#echo ${CURR_BENCH_ARRAY[@]}
 		echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
 		dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
 		CURR_FAHT_DISK_ARRAY[writespeed]="$(cat /tmp/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
