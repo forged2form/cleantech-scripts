@@ -173,16 +173,22 @@ mount_avail_volumes () {
 				if [[ "$?" -eq "0" ]]; then
 					CURR_FAHT_DISK_ARRAY[benchvol]=/mnt/faht/$x
 					rm /mnt/faht/$x/test
+					echo
+					echo ---
+					benchvol_free_mb=$(df -h --output=avail /mnt/faht/$x|tail -1|sed -r 's/ ([0-9]+).*/\1/g')
+					echo $benchvol_free_mb MB free disk space on benchmarking volume
+					memtotal_kb=$(cat /proc/meminfo|grep MemTotal|sed -r 's/^.* ([0-9]+) .*/\1/')
+					echo $memtotal_kb KB total RAM
+					benchvol_free_kb=$(df --output=avail -B K /mnt/faht/$x|tail -1|sed 's/[^0-9]//')
+					echo $benchvol_free_kb KB free disk space on benchmarking volume
 					echo Write benchmark location for Disk ${i}: ${CURR_FAHT_DISK_ARRAY[benchvol]};
+					echo ---
 				fi
 			fi
 			(( pn++ ))
 			echo;
 		done
 		(( i++ ))
-
-		$DIAG
-
 
 	# Test partitions for r/w mount
 
@@ -191,8 +197,6 @@ mount_avail_volumes () {
 	# If volume is writeable set benchamrk for read-write
 
 	done
-
-	$DIAG
 }
 
 find_win_part () {
@@ -235,21 +239,26 @@ benchmark_disks () {
 		echo Testing read speed of Disk ${i}
 		echo running command: hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}
 		hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}>/tmp/logdir-disk${i}-hdparm.txt
-		#CURR_FAHT_DISK_ARRAY[readspeed]="$(cat /tmp/logdir-disk${i}-hdparm.txt|tail -1|sed -r 's/^.* \= ([0-9].*)/\1/g')"
+		CURR_FAHT_DISK_ARRAY[readspeed]="$(cat /tmp/logdir-disk${i}-hdparm.txt|grep "Timing buffered disk reads"|sed -r 's/.* \= (.*)/\1/g')"
 		echo ${CURR_FAHT_DISK_ARRAY[readspeed]}
 		#$DIAG
 
+# |sed -r 's/^.* \= ([0-9].*)/\1/g'
+
 		### Write benchmark
-		echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -s 10
-		bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
-		
-		#bench command
-		#echo Testing write speed of Disk ${2}
-		#echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=400M count=1 oflag=direct
-		#dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=1M count=100 oflag=direct
-		#rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
+
+		#echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
+		#bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
+
+		### bench command
+		echo Testing write speed of Disk ${i}
+		echo
+		echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
+		dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>/tmp/logdir-disk${i}-dd-write.txt
+		CURR_FAHT_DISK_ARRAY[writespeed]="$(cat /tmp/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
+		rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
 		(( i++ ))
-		$DIAG;
+		echo;
 	done
 }
 
@@ -270,6 +279,7 @@ done
 echo
 
 find_win_part
+benchmark_disks
 
 i=1
 while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
@@ -286,11 +296,11 @@ while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
 		echo Free space on system volume: ${CURR_FAHT_DISK_ARRAY[windowspartfreespace]};
 	fi
 	echo Benchmark mount point: ${CURR_FAHT_DISK_ARRAY[benchvol]}
+	echo Disk read speed: ${CURR_FAHT_DISK_ARRAY[readspeed]}
+	echo Disk write speed: ${CURR_FAHT_DISK_ARRAY[writespeed]}
 	echo
 	(( i++ ));
 done
-
-benchmark_disks
 
 umount /mnt/faht/*
 rmdir /mnt/faht/*
