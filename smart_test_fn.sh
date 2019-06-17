@@ -303,7 +303,9 @@ benchmark_disks () {
 			TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))
 			echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
 
-			c=16
+			PASSES=4
+
+			c=$PASSES
 			BLOCK_COUNT=1
 			touch /tmp/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
 			touch /tmp/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
@@ -313,28 +315,50 @@ benchmark_disks () {
 				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>/tmp/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
 				sleep 5
 				
-				SPEED="$(cat /tmp/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
-				CURR_FAHT_DISK_ARRAY[readbench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$SPEED"|bc))
+				RSPEED="$(cat /tmp/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
+				CURR_FAHT_DISK_ARRAY[readbench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$RSPEED"|bc))
+				(( c-- ));
+			done
 
+			c=$PASSES
+			while [[ "$c" -ge "1" ]]; do
+				START_PLACE=$((( $TOTAL_DATA_SIZE_IN_BLOCKS - "$c" )))
+				echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE_IN_BYTES} obs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>/tmp/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE_IN_BYTES} obs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>/tmp/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
+				sleep 5
 
-				#echo command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE_IN_BYTES} obs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>/tmp/logdir-disk${i}-dd-write.txt
-				#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE}
+				WSPEED="$(cat /tmp/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
+				CURR_FAHT_DISK_ARRAY[writebench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$WSPEED"|bc))
 				(( c-- ));
 			done
 
 			c=1
 			READ_TOTAL=0
-			while [[ "$c" -le "16" ]]; do
+			while [[ "$c" -le "$PASSES" ]]; do
 				echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[readbench_$c]}
 				READ_TOTAL=$((( $READ_TOTAL + ${CURR_FAHT_DISK_ARRAY[readbench_$c]})))
 				(( c++ ));
 			done
 
-			READ_AVERAGE=$((( $READ_TOTAL / 16 )))
+			READ_AVERAGE=$((( $READ_TOTAL / "$PASSES" )))
 
 			echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE
 
 			CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
+
+			c=1
+			WRITE_TOTAL=0
+			while [[ "$c" -le "$PASSES" ]]; do
+				echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[writebench_$c]}
+				WRITE_TOTAL=$((( $WRITE_TOTAL + ${CURR_FAHT_DISK_ARRAY[writebench_$c]})))
+				(( c++ ));
+			done
+
+			WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
+
+			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE
+
+			CURR_FAHT_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
 
 			$DIAG
 
