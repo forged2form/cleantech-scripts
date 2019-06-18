@@ -385,7 +385,7 @@ benchmark_disks () {
 			#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE}
 			#2>/tmp/logdir-disk${i}-dd-write.txt
 
-			CURR_FAHT_DISK_ARRAY[writespeed]="$(cat /tmp/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
+			#CURR_FAHT_DISK_ARRAY[writespeed]="$(cat /tmp/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
 		fi
 
 		#rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
