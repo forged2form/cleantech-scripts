@@ -24,101 +24,8 @@ FAHT_SHORTONLY=
 FAHT_QUICKMODE=
 FAHT_CLAMAV=
 
-pause_input () {
-	read -n1 -s -r -p "Press any key to continue"
-	echo -e "\n"
-}
-
-### Usage confirm_prompt "Question string" $VARIABLE_TO_PUT_ANSWER_IN
-confirm_prompt ()
-{
-	prompt_answer=
-	while [ -z "$prompt_answer" ]; do
-		if [ $2 ]
-		then
-			text_verify="You entered \e[1m$2\e[0m. "
-		else
-			text_verify=
-		fi	
-		echo -e "$text_verify$1 [Y/n] \c"
-
-		read -n1 CONFIRM
-		: ${CONFIRM:=y}
-		echo
-		
-		case ${CONFIRM,,} in
-			y|Y) prompt_answer=y;;
-			n|N) prompt_answer=n;;
-			*) echo -e "Please retry... \n";;
-		esac
-	done
-}
-### input_prompt usage: input_prompt "Question string" VARIABLE_NAME
-### OR 
-input_prompt ()
-{
-	INPUT=
-	prompt_answer=
-	if [ -z "$1" ]
-	then
-		echo "-Param #1 is zero-length"
-	fi
-	if [ -z "$2" ]
-	then
-		while [ -z "$prompt_answer" ]; do
-			echo -e "$1 \c "
-		confirm_prompt
-	done
-	else
-		while [ "$prompt_answer" != "y" ]; do
-		echo -e "$1 \c "
-		read INPUT
-		eval $2=$INPUT
-		confirm_prompt "Is this correct?" $INPUT
-	done
-	fi
-
-}
-
-### Called without args
-dialog_prompt ()
-{
-	INPUT=
-	prompt_answer=
-	if [ -z "$1" ]
-	then
-		echo "-Param #1 is zero-length"
-	fi
-	if [ -z "$2" ]
-	then
-		while [ -z "$prompt_answer" ]; do
-			echo -e "$1 \c "
-		confirm_prompt
-	done
-	else
-		exec 3>&1
-		INPUT="$(dialog --inputbox "$1" 0 0 2>&1 1>&3)"
-		exec 3>&-
-		eval "$2"=\"$(echo $INPUT)\"
-	fi
-
-}
-
-### Called without args
-break_program () {
-	while true; do
-		echo -e "Continue script? [Y/n]: \c "
-		read -n1 CONTINUE_SCRIPT 
-		echo -e "\n"
-		: ${CONTINUE_SCRIPT:=y}
-
-		case ${CONTINUE_SCRIPT,,} in
-			y|Y) break;;
-			n|N) exit;;
-			*) echo -e "Please retry... \n";;
-		esac
-	done
-}
+source io.sh
+source hw_tests.sh
 
 while getopts ":hdsqc" option; do
 	case $option in
@@ -140,7 +47,7 @@ echo -e "---------------------------"
 echo -e "TechTutor's Diag Script"
 echo -e "--------------------------- \n"
 
-### Init ###
+### Init vars
 FAHT_CURR_USER=$(head -n 1 /tmp/fahtdiaguser)
 FAHT_FIRSTNAME=
 FAHT_LASTNAME=
@@ -174,42 +81,6 @@ FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //')
 FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|sed 's/.*vendor: //')
 FAHT_COMPUTER_SERIAL=$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')
 FAHT_COMP_DESC=$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL
-
-client_details ()
-{
-
-	while [ "$prompt_answer" != "y" ]; do 
-		dialog_prompt "First Name:" FAHT_FIRSTNAME
-		dialog_prompt "Last Name:" FAHT_LASTNAME
-		dialog_prompt "Problems Experienced:" FAHT_PROBLEMS
-
-		clear
-		echo "First Name: $FAHT_FIRSTNAME"
-		echo "Last Name: $FAHT_LASTNAME"
-		echo "Computer: $FAHT_COMP_DESC"
-		echo "Problems Experienced: $FAHT_PROBLEMS"
-		confirm_prompt "Is this correct?"
-
-	done
-
-	CONFIRM=
-	FAHT_CLIENTNAME="$FAHT_LASTNAME-$FAHT_FIRSTNAME"
-	FAHT_WORKINGDIR=/home/"$FAHT_CURR_USER"/fahttest/"$FAHT_CLIENTNAME"-"$FAHT_TEST_DATE"-"$FAHT_TEST_TIME"-"$FAHT_COMP_DESC"
-
-	#FAHT_TEMP="$(lshw -class system|grep product|sed -r 's/.*product: (.*) \(.*)/\1/'|sed 's/ /_/g'')"
-	### Prep client folder ###
-	if [ ! -d /home/$FAHT_CURR_USER/fahttest ]; then
-		mkdir /home/$FAHT_CURR_USER/fahttest
-		chown "$FAHT_CURR_USER":"$FAHT_CURR_USER" /home/"$FAHT_CURR_USER"/fahttest;
-	fi
-
-	if [ ! -d "$FAHT_WORKINGDIR" ]; then
-		mkdir "$FAHT_WORKINGDIR"
-		chown "$FAHT_CURR_USER":"$FAHT_CURR_USER" "$FAHT_WORKINGDIR";
-	fi
-
-	cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKINGDIR/faht-report.fodt
-}
 
 client_details
 
@@ -282,208 +153,39 @@ sysinfo_dump
 
 source disks_fns.sh
 
-echo Setting up local disk arrays...
+: echo "Setting up local disk arrays..."
 disk_array_setup
 echo
-echo Mounting avialable volumes...
+
+: echo "Mounting avialable volumes..."
 mount_avail_volumes
 echo
-echo Searching for Windows system volumts...
+
+: echo "Searching for Windows system volumts..."
 find_win_part
 echo
-#echo Benchmarking disks
-#benchmark_disks
-echo Running SMART Assessments...
+
+### NOTE: Must run SMART Assessments first, otherwise write benchmark willbe skipped.
+: echo "Running SMART Assessments..."
 smart_test
 echo
-echo Listing disk information...
+
+: echo "Benchmarking disks"
+benchmark_disks
 echo
+
+: echo "Listing disk information..."
+echo
+
 list_disks_info
 echo
 
-eth_test () {
-	### Network test - Ethernet ###
-	clear
-	echo -------------------------------
-	echo Testing Ethernet... Please wait
-	echo -------------------------------
-	$DIAG
-	echo
-
-	FAHT_ETH="$(ip -o link|grep -i -E ": en.* "\d*|sed -r 's/[0-9]: (en.*): .*/\1/g')"
-
-	if [ $FAHT_ETH ]
-	then
-		for p in $FAHT_ETH; do
-			ping -c 5 -I $p 1.1.1.1
-			FAHT_ETH_RESULTS=$?
-		done > $FAHT_WORKINGDIR/ethtest-$p.txt
-	else
-		$FAHT_ETH_RESULTS="N/A"
-	fi
-
-	if [ "$FAHT_ETH_RESULTS" -gt 0 ]
-	then
-		FAHT_ETH_RESULTS="FAILED"
-	else
-		FAHT_ETH_RESULTS="PASSED"
-	fi
-}
-
-#temp eth_test
-
-wifi_test () {
-### Network test - Wireless ###
-### FIXME: Doesn't fail gracefully. GET IT!
-	echo -----------------------------
-	echo Testing Wi-Fi.... Please wait
-	echo -----------------------------
-	$DIAG
-	echo
-
-	FAHT_WIFI="$(ip -o link|grep -i -E ": wl.* "\d*|sed -r 's/[0-9]: (wl.*): .*/\1/g')"
-
-	if [ $FAHT_WIFI ]
-	then
-		for p in $FAHT_WIFI; do
-			ping -c 5 -I $p 1.1.1.1
-			FAHT_WIFI_RESULTS=$?
-		done > $FAHT_WORKINGDIR/wifitest-$p.txt
-	else
-		$FAHT_WIFI_RESULTS="N/A"
-	fi
-
-	if [ "$FAHT_WIFI_RESULTS" -gt 0 ]
-	then
-		FAHT_WIFI_RESULTS="FAILED"
-	else
-		FAHT_WIFI_RESULTS="PASSED"
-	fi
-}
-
-#temp wifi_test
-
-audio_test ()
-{
-	### Audio test ###
-	clear
-	echo ----------------------------
-	echo Testing Audio... Please wait
-	echo ----------------------------
-	$DIAG
-	echo
-
-	audio_test_complete=0
-
-	while [[ "$audio_test_complete" -eq 0 ]]; do
-	amixer -D pulse sset Master 100%
-
-		for i in {1..3}; do
-			mplayer /usr/share/faht/starcmd.m4a;
-		done
-
-		amixer -D pulse sset Master 40%
-
-		confirm_prompt "Did you hear the test tone?"
-
-		case $prompt_answer in
-			y|Y) FAHT_AUDIO_RESULTS=PASSED ;;
-			n|N) FAHT_AUDIO_RESULTS=FAILED ;;
-		esac
-
-		if [ "$FAHT_AUDIO_RESULTS" == "FAILED" ]
-		then
-			confirm_prompt "Were you even listening?"
-
-			case $prompt_answer in
-				y|Y) audio_test_complete=1 ;;
-				n|N) ;;
-			esac
-		else
-			audio_test_complete=1
-		fi	
-	done
-}
-
-#temp audio_test
-
-
-
-### Appears to get reset with function declaration...
-
-#	declare -A FAHT_SMART_DRIVES_ARRAY
-
-#	for i in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
-#		FAHT_SMART_DRIVES_ARRAY[$j]="$i"
-#		echo $j
-#		echo FAHT_SMART_DRIVES_ARRAY[$j] = ${FAHT_SMART_DRIVES_ARRAY[$j]}
-#		echo
-#		((j++));
-#	done
-
-gfx_test ()
-{
-### GFX Benchmark ###
-clear
-echo -------------------------------
-echo Testing GFX card... Please wait
-echo -------------------------------
-$DIAG
-echo
-
-glmark2|grep Score>"$FAHT_WORKINGDIR"/glmark2.txt
-
-FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed -r 's/.*: ([0-9]*) /\1/g')"
-}
-
 #temp gfx_test
 
-save_vars ()
-{
-	( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/vars.txt
+source parsing_fns.sh
 
-	( set -o posix; set ) | grep FAHT > /tmp/vars.txt
-	cat /tmp/vars.txt|grep -v ARRAY > /tmp/vars_noarray.txt
-
-	sed -r 's/(FAHT_.*)=.*/\1/g' /tmp/vars_noarray.txt > /tmp/varsnames.txt
-	sed -r 's/.*=(.*)/\1/g' /tmp/vars_noarray.txt > /tmp/varsvalues.txt
-
-
-	i=0
-	varsNames=()
-	varsvalues=()
-
-	while IFS= read line; do
-		varsNames[$i]=$line
-		echo ${varsNames[$i]}
-		(( i++ ));
-	done < /tmp/varsnames.txt
-
-	i=0
-
-	while IFS= read line; do
-		varsValues[$i]=$line
-		echo ${varsValues[$i]}
-		(( i++ ));
-	done < /tmp/varsvalues.txt
-
-	i=0
-
-	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
-
-	for x in ${varsNames[*]}; do
-		echo "Working on $x..."
-		sed -i "s|\[\[$x\]\]|${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
-		(( i++ ));
-	done
-
-	cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
-}
-
-#save_vars
+save_vars
 
 chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
-
-#cat "$FAHT_WORKINGDIR"/vars.txt
 
 echo -e "All Done!\n"

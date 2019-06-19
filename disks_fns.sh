@@ -18,8 +18,6 @@ for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
 	#Create arrays outside nested loops for more global (?) scope...
 	declare -A FAHT_TEST_DISK_${i}_ARRAY
 	declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
-
-	CURR_FAHT_DISK_ARRAY[testing]="A-OK"
 	(( i++ ));
 done
 FAHT_DISK_BENCH_VOL=
@@ -44,6 +42,9 @@ disk_array_setup ()
 			CURR_FAHT_DISK_ARRAY[$stat]=$(lsblk -dno $stat /dev/$j);
 		done
 		CURR_FAHT_DISK_ARRAY[name]="${CURR_FAHT_DISK_ARRAY[vendor]} ${CURR_FAHT_DISK_ARRAY[model]}"
+
+		### Trim whitespace...
+		CURR_FAHT_DISK_ARRAY[name]=$(echo ${CURR_FAHT_DISK_ARRAY[name]})
 
 		###TEMP echo Working on Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviceid]}
 		###TEMP echo
@@ -127,6 +128,167 @@ smart_drive_find () {
 		echo;
 	fi
 	$DIAG
+}
+
+smart_test ()
+{
+	### SMART Testing ###
+
+	clear
+	echo --------------------------------
+	echo Testing Hard Drives. Please wait
+	echo --------------------------------
+	$DIAG
+	echo
+
+	FAHT_DISK_NO=1
+
+	i=1
+	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
+		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+
+		echo Working on Disk ${i}...
+		echo -----------------------
+
+		if [[ "${CURR_FAHT_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
+			curr_smart_dev=${CURR_FAHT_DISK_ARRAY[deviceid]}
+
+			echo Beginning SMART short test on "$curr_smart_dev"
+			smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
+			cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
+			smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+
+			echo
+			echo -en "\r$smart_short_test_max_minutes mins remaining"
+			j=0
+
+			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do		
+				sleep 60
+				time_remaining=$(( $smart_short_test_max_minutes - $j ))
+				echo -en "\r$time_remaining mins remaining"
+
+				smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
+
+				if [ $? -eq 0 ]; then
+					j=9999
+				else
+					let j=j+1;
+				fi
+			done
+			echo
+			
+			echo
+			echo Short SMART test done.
+			echo
+
+			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+			: echo
+			: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+			: echo
+
+			### Store hours on in human readable way...
+
+			CURR_FAHT_DISK_ARRAY[hourson]="$(sudo smartctl -a /dev/$curr_smart_dev|grep -I "Power_On_Hours"|awk '{print $10}')"
+			: echo ${CURR_FAHT_DISK_ARRAY[hourson]}
+			$DIAG
+
+			declare -A FAHT_DISK_${i}_TIME_ON_ARRAY
+			declare -n CURR_FAHT_DISK_TIME_ON_ARRAY=FAHT_DISK_${i}_TIME_ON_ARRAY
+
+			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -gt 0 ]]; then
+
+				declare -A FAHT_hours
+
+				FAHT_hours[days]=24
+				FAHT_hours[months]=720
+				FAHT_hours[years]=8760
+
+				let FAHT_hours_REMAINING="${CURR_FAHT_DISK_ARRAY[hourson]}"
+
+				### Divide hours by units of time, dropping the remainder to be parsed next...
+
+				for d in years months days; do
+
+					CURR_FAHT_DISK_TIME_ON_ARRAY[${d}]=$((($FAHT_hours_REMAINING/${FAHT_hours[$d]})))
+					: echo ${CURR_FAHT_DISK_TIME_ON_ARRAY[${d}]}
+					FAHT_hours_REMAINING=$((($FAHT_hours_REMAINING%${FAHT_hours[$d]})))
+
+				done
+
+				CURR_FAHT_DISK_TIME_ON_ARRAY[hours]=$FAHT_hours_REMAINING
+
+				### Parsing time on in human-readable format
+
+				for d in years months days hours; do
+					if [[ "${CURR_FAHT_DISK_TIME_ON_ARRAY[$d]}" -gt "0" ]]; then
+						CURR_FAHT_DISK_ARRAY[timeon]="${CURR_FAHT_DISK_ARRAY[timeon]} $(printf "${CURR_FAHT_DISK_TIME_ON_ARRAY[$d]} $d ")"
+					fi;
+				done
+				
+				### Trim trailing whitespace...
+				CURR_FAHT_DISK_ARRAY[timeon]=$(echo ${CURR_FAHT_DISK_ARRAY[timeon]})
+				: echo ${CURR_FAHT_DISK_ARRAY[timeon]}
+				: echo
+			fi	
+
+			if [ "$FAHT_SHORTONLY" != "true" ]; then
+				echo Beginning SMART long test on $curr_smart_dev
+
+				smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+
+				cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+				smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+
+				echo
+				echo -en "\r$smart_long_test_max_minutes mins remaining"
+				
+				j=0
+				
+				while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
+					sleep 60
+					time_remaining=$(( $smart_long_test_max_minutes - $j ))
+					echo -en "\r$time_remaining mins remaining"
+
+					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/'
+
+					if [ $? -eq 0 ]; then
+						j=9999
+					else
+						let j=j+1;
+					fi
+				done
+
+				echo
+				echo Long SMART test done.
+				echo
+
+				smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+				echo
+				: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+				echo
+				echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+				echo
+
+			fi
+
+			SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
+
+			if [ "$SMART_PASSED" == "Completed without error" ]; then
+				CURR_FAHT_DISK_ARRAY[smart_results]="PASSED";
+			else
+				CURR_FAHT_DISK_ARRAY[smart_results]="FAILED";
+			fi
+
+			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
+				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=FAILED
+			else
+				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=PASSED
+			fi
+		fi
+		(( i++ ))
+	done
+
+			$DIAG
 }
 
 mount_avail_volumes () {
@@ -234,6 +396,9 @@ benchmark_disks () {
 
 	i=1
 	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
+		echo Testing read speed of Disk ${i}...
+		echo
+
 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 
 		### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
@@ -244,13 +409,13 @@ benchmark_disks () {
 		fi
 
 		TESTDEV_SIZE_IN_BYTES=$(lsblk -dnrbo SIZE /dev/${CURR_FAHT_DISK_ARRAY[deviceid]})
-		echo TESTDEV_SIZE_IN_BYTES = ${TESTDEV_SIZE_IN_BYTES}
+		: echo TESTDEV_SIZE_IN_BYTES = ${TESTDEV_SIZE_IN_BYTES}
 
 		#1GB Block size (1073741824 bytes)
 		BLOCK_SIZE_IN_BYTES=1073741824
 
 		TOTAL_DATA_SIZE_IN_BLOCKS="$((( "$TESTDEV_SIZE_IN_BYTES" / "$BLOCK_SIZE_IN_BYTES" )))"
-		echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
+		: echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
 
 		PASSES=5
 
@@ -259,85 +424,62 @@ benchmark_disks () {
 		# 1 GiB / 512 BLOCK size = 2,097,152
 		BLOCK_COUNT=1
 
+		echo Running ${c} passes, 1 GB each.
+
 		touch "${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
 		touch "${FAHT_WORKINGDIR}"/dd-write-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
 		
+		b=1
 		while [[ "$c" -ge "1" ]]; do
 			START_PLACE="$((( $TOTAL_DATA_SIZE_IN_BLOCKS - "$c" )))"
-			echo "dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+			echo Running pass ${b}...
+			: echo "dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
 			dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
 			sleep 5
 			
 			RSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
 			CURR_FAHT_DISK_ARRAY[readbench_"${c}"]=$(printf "%.0f" $(echo "scale=2;1024/$RSPEED"|bc))
+			(( b++ ))
 			(( c-- ));
 		done
 
 		c=1
 		READ_TOTAL=0
 		while [[ "$c" -le "$PASSES" ]]; do
-			echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[readbench_$c]}
+			: echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[readbench_$c]}
 			READ_TOTAL="$((( $READ_TOTAL + "${CURR_FAHT_DISK_ARRAY[readbench_"${c}"]}")))"
 			(( c++ ));
 		done
 
 		READ_AVERAGE=$((( $READ_TOTAL / "$PASSES" )))
-
-		echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE
+		echo
+		echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE MB/s
 
 		CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
 
 		CURR_FAHT_DISK_ARRAY[writespeed]="Write test skipped."
 
-		### Read benchmark
-		#echo Testing read speed of Disk ${i}
-		#echo running command: hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}
-		#hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}>"${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt
-		#CURR_FAHT_DISK_ARRAY[readspeed]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt|grep "disk reads"|sed -r 's/.* \= (.*)/\1/g')"
-		#echo ${CURR_FAHT_DISK_ARRAY[readspeed]}
-		#$DIAG
-
-		# |sed -r 's/^.* \= ([0-9].*)/\1/g'
-
-		### Write benchmark
-
-		#echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
-		#bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
-
-		### bench command
-
-		#declare -a CURR_BENCH_ARRAY
-		#b=0
-		#while [[ "$b" -lt "100" ]]; do
-		#	echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#	dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#	CURR_BENCH_ARRAY[${b}]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
-		#	(( b++ ));
-		#done
-		#echo ${CURR_BENCH_ARRAY[@]}
-		#echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
 		MOUNT_RESULT=""
 		CURR_DEV_UNMOUNTED="UNKNOWN"
 
-		umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}*
+		umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}* 2>/dev/null
 
 		MOUNT_RESULT="$(mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
 
 		if [[ "$MOUNT_RESULT" != "" ]]; then
 			CURR_DEV_UNMOUNTED="NO"
 			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} NOT unmounted!!!!
-			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
-			echo MOUNT_RESULT="${MOUNT_RESULT}"
+			: "echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}"
+			: echo MOUNT_RESULT="${MOUNT_RESULT}"
 			echo
 		fi
 
 		if [[ "$MOUNT_RESULT" == "" ]]; then
 			CURR_DEV_UNMOUNTED="YES"
 			echo
-			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} sucessfully unmounted!
-			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
-			echo MOUNT_RESULT="${MOUNT_RESULT}"
+			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} sucessfully unmounted.
+			: "echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}"
+			: echo MOUNT_RESULT="${MOUNT_RESULT}"
 			echo
 		fi
 
@@ -347,7 +489,7 @@ benchmark_disks () {
 		fi
 
 		if [[ "${CURR_DEV_UNMOUNTED}" == "YES" ]] && [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "PASSED" ]]; then
-			echo Testing write speed of Disk ${i}
+			echo Testing write speed of Disk ${i}...
 			echo
 			
 			### 1048576 = 1MiB in Bytes
@@ -365,239 +507,46 @@ benchmark_disks () {
 			WRITE_BLOCK_SUBDIV=$((( $TOTAL_BENCH_DATA_SIZE / $WRITE_BLOCK_SIZE )))
 			WRITE_BLOCK_COUNT=$WRITE_BLOCK_SUBDIV
 
-			echo WRITE_TOTAL_BLOCKS=${WRITE_TOTAL_BLOCKS}
-			echo WRITE_BLOCK_SIZE=${WRITE_BLOCK_SIZE}
+			: echo "WRITE_TOTAL_BLOCKS=${WRITE_TOTAL_BLOCKS}"
+			: echo "WRITE_BLOCK_SIZE=${WRITE_BLOCK_SIZE}"
 
 			c=$PASSES
+			echo Running ${c} passes, 1 GB each.
+			b=1
 			while [[ "$c" -ge "1" ]]; do
 				WRITE_COUNT=$((( "$c" * "$WRITE_BLOCK_SUBDIV" )))
 				START_PLACE=$((( $WRITE_TOTAL_BLOCKS - "$WRITE_COUNT" )))
-				echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+				echo Running pass: ${b}...
+				: echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
 				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
 				sleep 5
 
 				WSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
 				CURR_FAHT_DISK_ARRAY[writebench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$WSPEED"|bc))
+				(( b++ ))
 				(( c-- ));
 			done
 
 			c=1
 			WRITE_TOTAL=0
 			while [[ "$c" -le "$PASSES" ]]; do
-				echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[writebench_$c]}
+				: echo "Pass number $c: ${CURR_FAHT_DISK_ARRAY[writebench_$c]}"
 				WRITE_TOTAL=$((( $WRITE_TOTAL + ${CURR_FAHT_DISK_ARRAY[writebench_$c]})))
 				(( c++ ));
 			done
 
 			WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
-
-			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE
+			echo
+			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE MB/s
 
 			CURR_FAHT_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
 		else
 			echo "Skipping write test..."
 		fi
 
-			###TEMP $DIAG
-
-			###OLD Probably get rid of...
-
-			#echo BLOCK_SIZE=${BLOCK_SIZE}b
-			#echo TOTAL_DATA_SIZE=${TOTAL_DATA_SIZE}b
-			#echo BLOCK_COUNT=${BLOCK_COUNT}
-			#echo TESTDEV_SIZE_IN_BLOCKS=${TESTDEV_SIZE_IN_BLOCKS}
-			#echo TOTAL_DATA_SIZE_IN_BLOCKS=${TOTAL_DATA_SIZE_IN_BLOCKS}
-			#echo START_PLACE=${START_PLACE}
-
-			#TESTDEV_SIZE_IN_MB=$((( $TESTDEV_SIZE_IN_BYTES /  )))
-			#echo "TESTDEV_SIZE_IN_MB =	${TESTDEV_SIZE_IN_MB}"
-
-			#TESTDEV_START_MB=$((( $TESTDEV_SIZE_IN_MB - 1048 )))
-			#echo "TESTDEV_START_MB = 	${TESTDEV_START_MB}"
-
-			# oflag=direct iflag=direct
-			#$DIAG
-			#echo dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE} count=${BLOCK_COUNT} status=progress
-			#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE} count=${BLOCK_COUNT} status=progress
-			#$DIAG
-
-			#echo command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-			#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE}
-			#2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-
-			#CURR_FAHT_DISK_ARRAY[writespeed]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
-
-		#rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
 		(( i++ ))
 		echo;
 	done
-}
-
-smart_test ()
-{
-	### SMART Testing ###
-
-	clear
-	echo --------------------------------
-	echo Testing Hard Drives. Please wait
-	echo --------------------------------
-	$DIAG
-	echo
-
-	FAHT_DISK_NO=1
-
-	i=1
-	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
-		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
-
-		echo Working on Disk ${i}...
-		echo -----------------------
-
-		if [[ "${CURR_FAHT_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
-			curr_smart_dev=${CURR_FAHT_DISK_ARRAY[deviceid]}
- 
-			echo Beginning SMART short test on "$curr_smart_dev"
-			smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
-
-			echo
-			echo -en "\r$smart_short_test_max_minutes mins remaining"
-			j=0
-
-			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do		
-				sleep 60
-				time_remaining=$(( $smart_short_test_max_minutes - $j ))
-				echo -en "\r$time_remaining mins remaining"
-				smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
-
-				if [ $? -eq 0 ]; then
-					j=9999
-				else
-					let j=j+1;
-				fi
-			done
-			
-			echo
-			echo Short SMART test done.
-			echo
-
-			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
-			cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
-
-			### Present hours on in human readable way... ###
-
-			CURR_FAHT_DISK_ARRAY[hourson]="$(sudo smartctl -a /dev/$curr_smart_dev|grep -I "Power_On_Hours"|awk '{print $10}')"
-			echo ${CURR_FAHT_DISK_ARRAY[hourson]}
-			$DIAG
-
-			declare -A FAHT_DISK_${i}_TIME_ON_ARRAY
-			declare -n CURR_FAHT_DISK_TIME_ON_ARRAY=FAHT_DISK_${i}_TIME_ON_ARRAY
-
-			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -gt 0 ]]; then
-
-				declare -A FAHT_hours
-
-				FAHT_hours[days]=24
-				FAHT_hours[months]=720
-				FAHT_hours[years]=8760
-
-				echo ${FAHT_hours[days]}
-				echo ${FAHT_hours[months]}
-				echo ${FAHT_hours[years]}
-
-				let FAHT_hours_REMAINING="${CURR_FAHT_DISK_ARRAY[hourson]}"
-
-				for d in years months days; do
-
-					CURR_FAHT_DISK_TIME_ON_ARRAY[${d}]=$((($FAHT_hours_REMAINING/${FAHT_hours[$d]})))
-					echo ${CURR_FAHT_DISK_TIME_ON_ARRAY[${d}]}
-					FAHT_hours_REMAINING=$((($FAHT_hours_REMAINING%${FAHT_hours[$d]})))
-
-				done
-
-				CURR_FAHT_DISK_TIME_ON_ARRAY[hours]=$FAHT_hours_REMAINING
-				echo CURR_FAHT_DISK_TIME_ON_ARRAY[years]
-				echo CURR_FAHT_DISK_TIME_ON_ARRAY[months]
-				echo CURR_FAHT_DISK_TIME_ON_ARRAY[days]
-				echo CURR_FAHT_DISK_TIME_ON_ARRAY[hours]
-
-				echo
-				echo Printing TIME ON
-
-				for d in years months days hours; do
-					if [[ "${CURR_FAHT_DISK_TIME_ON_ARRAY[$d]}" -gt "0" ]]; then
-						CURR_FAHT_DISK_ARRAY[timeon]="${CURR_FAHT_DISK_ARRAY[timeon]} $(printf "${CURR_FAHT_DISK_TIME_ON_ARRAY[$d]} $d ")"
-					fi;
-				done
-				
-				### Trim trailing whitespace...
-				CURR_FAHT_DISK_ARRAY[timeon]=$(echo ${CURR_FAHT_DISK_ARRAY[timeon]})
-				echo ${CURR_FAHT_DISK_ARRAY[timeon]}
-				echo
-
-				$DIAG
-			fi	
-
-			if [ "$FAHT_SHORTONLY" != "true" ]; then
-				echo Beginning SMART long test on $curr_smart_dev
-
-				smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
-
-				cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
-				smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
-
-				echo
-				echo -en "\r$smart_long_test_max_minutes mins remaining"
-				
-				j=0
-				
-				while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
-					sleep 60
-					time_remaining=$(( $smart_long_test_max_minutes - $j ))
-					echo -en "\r$time_remaining mins remaining"
-
-					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
-
-					if [ $? -eq 0 ]; then
-						j=9999
-					else
-						let j=j+1;
-					fi
-				done
-
-				echo
-				echo Long SMART test done.
-				echo
-
-			fi
-
-			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
-			cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-			echo
-
-			echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
-			SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
-
-			if [ "$SMART_PASSED" == "Completed without error" ]; then
-				CURR_FAHT_DISK_ARRAY[smart_results]="PASSED";
-			else
-				CURR_FAHT_DISK_ARRAY[smart_results]="FAILED";
-			fi
-
-			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
-				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=FAILED
-			else
-				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=PASSED
-			fi
-		fi
-		(( i++ ))
-	done
-
-			$DIAG
 }
 
 list_disks_info () {

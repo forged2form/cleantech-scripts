@@ -405,36 +405,6 @@ benchmark_disks () {
 			echo "Skipping write test..."
 		fi
 
-			###TEMP $DIAG
-
-			###OLD Probably get rid of...
-
-			#echo BLOCK_SIZE=${BLOCK_SIZE}b
-			#echo TOTAL_DATA_SIZE=${TOTAL_DATA_SIZE}b
-			#echo BLOCK_COUNT=${BLOCK_COUNT}
-			#echo TESTDEV_SIZE_IN_BLOCKS=${TESTDEV_SIZE_IN_BLOCKS}
-			#echo TOTAL_DATA_SIZE_IN_BLOCKS=${TOTAL_DATA_SIZE_IN_BLOCKS}
-			#echo START_PLACE=${START_PLACE}
-
-			#TESTDEV_SIZE_IN_MB=$((( $TESTDEV_SIZE_IN_BYTES /  )))
-			#echo "TESTDEV_SIZE_IN_MB =	${TESTDEV_SIZE_IN_MB}"
-
-			#TESTDEV_START_MB=$((( $TESTDEV_SIZE_IN_MB - 1048 )))
-			#echo "TESTDEV_START_MB = 	${TESTDEV_START_MB}"
-
-			# oflag=direct iflag=direct
-			#$DIAG
-			#echo dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE} count=${BLOCK_COUNT} status=progress
-			#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE} count=${BLOCK_COUNT} status=progress
-			#$DIAG
-
-			#echo command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-			#dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${BLOCK_SIZE} obs=${BLOCK_SIZE} count=${BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE}
-			#2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-
-			#CURR_FAHT_DISK_ARRAY[writespeed]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
-
-		#rm ${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile
 		(( i++ ))
 		echo;
 	done

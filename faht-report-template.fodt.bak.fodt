@@ -686,25 +686,25 @@
     <table:table-column table:style-name="Table3.B"/>
     <table:table-row>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal">[[FAHT_FULLNAME ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_FIRSTNAME]] [[FAHT_LASTNAME]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal-Left"> [[ FAHT_TEST_DATE ]] </text:p>
+      <text:p text:style-name="TNormal-Left">[[FAHT_TEST_DATE]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_COMPUTER_DESC ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_COMPUTER_DESC]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal-Left"> [[ FAHT_COMPUTER_SERIAL ]] </text:p>
+      <text:p text:style-name="TNormal-Left">[[FAHT_COMPUTER_SERIAL]]</text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
    <text:p text:style-name="P5"/>
-   <text:p text:style-name="Normal">Problems Experienced: <text:span text:style-name="T9"> [[ FAHT_PROBLEMS ]] </text:span></text:p>
+   <text:p text:style-name="Normal">Problems Experienced: <text:span text:style-name="T9">[[FAHT_PROBLEMS]]</text:span></text:p>
    <text:p text:style-name="THeader"><text:span text:style-name="T2">Assessment result</text:span><text:span text:style-name="T3">s</text:span></text:p>
-   <text:p text:style-name="Normal"> [[ FAHT_ASSESSMENT_RESULTS ]] </text:p>
+   <text:p text:style-name="Normal">[[FAHT_ASSESSMENT_RESULTS]]</text:p>
    <text:p text:style-name="THeader"><text:span text:style-name="T8">Hardware </text:span>Component <text:span text:style-name="T4">Test Summary</text:span></text:p>
    <table:table table:name="Table6" table:style-name="Table6">
     <table:table-column table:style-name="Table6.A" table:number-columns-repeated="2"/>
@@ -719,7 +719,7 @@
       <text:p text:style-name="TNormal">Wi-Fi</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.B1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_WIFI_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_WIFI_RESULTS]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
       <text:p text:style-name="RESULTSSTYLE"/>
@@ -728,7 +728,7 @@
       <text:p text:style-name="TNormal">Ethernet</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.B1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_ETH-RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_ETH-RESULTS]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
       <text:p text:style-name="RESULTSSTYLE"/>
@@ -737,7 +737,7 @@
       <text:p text:style-name="TNormal">Bluetooth</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BLUETOOTH_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_BLUETOOTH_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -745,7 +745,7 @@
       <text:p text:style-name="TNormal">Power</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.B1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_POWER_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_POWER_RESULTS]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
       <text:p text:style-name="RESULTSSTYLE"/>
@@ -754,7 +754,7 @@
       <text:p text:style-name="TNormal">Audio</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.B1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_AUDIO_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_AUDIO_RESULTS]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
       <text:p text:style-name="RESULTSSTYLE"/>
@@ -763,13 +763,13 @@
       <text:p text:style-name="TNormal">Ports</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PORTS_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_PORTS_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
    <text:p text:style-name="P7"/>
    <text:section text:style-name="Sect1" text:name="Section1">
-    <text:p text:style-name="THeader">Disk 1: <text:span text:style-name="T9"> [[ FAHT_TEST_DISK_1_ARRAY[name] ]] </text:span></text:p>
+    <text:p text:style-name="THeader">Disk 1: <text:span text:style-name="T9">[[FAHT_DISK1_MODEL]]</text:span></text:p>
     <table:table table:name="Table1" table:style-name="Table1">
      <table:table-column table:style-name="Table1.A"/>
      <table:table-column table:style-name="Table1.B"/>
@@ -779,7 +779,7 @@
        <text:p text:style-name="TNormal">Serial Number</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[serial] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_SN]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
        <text:p text:style-name="TNormal"/>
@@ -790,10 +790,10 @@
        <text:p text:style-name="TNormal">Size</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[totalsize] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_SIZE]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[totalsize_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_SIZE_<text:span text:style-name="T10">RESULTS]]</text:span></text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -801,10 +801,10 @@
        <text:p text:style-name="TNormal">Free space</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[windowspartfreespace] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_FREESAPCE]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[freespace_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_FREESAPCE_<text:span text:style-name="T10">RESULTS]]</text:span></text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -812,10 +812,10 @@
        <text:p text:style-name="TNormal">Time on</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[timeon] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_TIMEON]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[timeon_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_TIMEON_<text:span text:style-name="T10">RESULTS]]</text:span></text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -823,10 +823,10 @@
        <text:p text:style-name="TNormal">Read Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[readspeed] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_READSPEED]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[readspeed_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_READSPEED_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -834,10 +834,10 @@
        <text:p text:style-name="TNormal">Write Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[writespeed] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_WRITESPEED]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[writespeed_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_WRITESPEED_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -845,10 +845,10 @@
        <text:p text:style-name="TNormal">Health Test</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_ARRAY[smart_results] ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_DISK1_ASSESMENT]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_TEST_DISK_1_ARRAY[smart_results] ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK1_ASSESMENT_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
     </table:table>
@@ -863,7 +863,7 @@
        <text:p text:style-name="TNormal">Configuration</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_MEM_CONFIG ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_MEM_CONFIG]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
        <text:p text:style-name="RESULTSSTYLE"/>
@@ -874,10 +874,10 @@
        <text:p text:style-name="TNormal">Total Size</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_MEM_SIZE ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_MEM_SIZE]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_MEM_SIZE_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_MEM_SIZE_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -885,10 +885,10 @@
        <text:p text:style-name="TNormal">Type</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_MEM_TYPE ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_MEM_TYPE]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_MEM_TYPE_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_MEM_TYPE_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -896,15 +896,15 @@
        <text:p text:style-name="TNormal">Stress test</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_MEM_TEST ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_MEM_TEST]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table2.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_MEM_TEST_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_MEM_TEST_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
     </table:table>
     <text:p text:style-name="P12"/>
-    <text:p text:style-name="THeader">Processor: <text:span text:style-name="T9"> [[ FAHT_PROC_MODEL ]] </text:span></text:p>
+    <text:p text:style-name="THeader">Processor: <text:span text:style-name="T9">[[FAHT_PROC_MODEL]]</text:span></text:p>
     <table:table table:name="Table5" table:style-name="Table5">
      <table:table-column table:style-name="Table5.A"/>
      <table:table-column table:style-name="Table5.B"/>
@@ -914,10 +914,10 @@
        <text:p text:style-name="TNormal">Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_PROC_SPEED ]] <text:span text:style-name="T15">GHz</text:span></text:p>
+       <text:p text:style-name="TNormal">[[FAHT_PROC_SPEED]]<text:span text:style-name="T15">GHz</text:span></text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_SPEED_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_SPEED_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -925,10 +925,10 @@
        <text:p text:style-name="TNormal">Cores</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_PROC_CORES ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_PROC_CORES]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_CORES_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_CORES_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -936,10 +936,10 @@
        <text:p text:style-name="TNormal">Threads</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_PROC_THREADS ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_PROC_THREADS]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_THREADS_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_THREADS_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -947,15 +947,15 @@
        <text:p text:style-name="TNormal">Stress test</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_PROC_STRESS_TEST ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_PROC_STRESS_TEST]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_STRESS_TEST_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_STRESS_TEST_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
     </table:table>
     <text:p text:style-name="P17"/>
-    <text:p text:style-name="THeader">Graphics: <text:span text:style-name="T10"> [[ FAHT_GFX_MODEL ]] </text:span></text:p>
+    <text:p text:style-name="THeader">Graphics: <text:span text:style-name="T10">[[FAHT_GFX_MODEL]]</text:span></text:p>
     <table:table table:name="Table4" table:style-name="Table4">
      <table:table-column table:style-name="Table4.A"/>
      <table:table-column table:style-name="Table4.B"/>
@@ -965,10 +965,10 @@
        <text:p text:style-name="P26">Display-out</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table4.A1" office:value-type="string">
-       <text:p text:style-name="P32"> [[ FAHT_DISPLAY_TEST ]] </text:p>
+       <text:p text:style-name="P32">[[FAHT_DISPLAY_TEST]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table4.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_DISPLAY_TEST_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISPLAY_TEST_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row table:style-name="Table4.2">
@@ -976,10 +976,10 @@
        <text:p text:style-name="P26">Stress test</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table4.A1" office:value-type="string">
-       <text:p text:style-name="P32"> [[ FAHT_GFX_STRESS_TEST ]] </text:p>
+       <text:p text:style-name="P32">[[FAHT_GFX_STRESS_TEST]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table4.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_GFX_STRESS_TEST_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_GFX_STRESS_TEST_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
     </table:table>
@@ -993,13 +993,13 @@
        <text:p text:style-name="TNormal">Design</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_BATT_DESIGN_CAPACITY ]] </text:p>
+       <text:p text:style-name="TNormal">[[FAHT_BATT_DESIGN_CAPACITY]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
        <text:p text:style-name="TNormal">Current </text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BATT_CURR_CAPACITY ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_BATT_CURR_CAPACITY]]</text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -1007,13 +1007,13 @@
        <text:p text:style-name="P28">Health</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
-       <text:p text:style-name="P32"> [[ FAHT_BATT_HEALTH ]] </text:p>
+       <text:p text:style-name="P32">[[FAHT_BATT_HEALTH]]</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
        <text:p text:style-name="P45"/>
       </table:table-cell>
       <table:table-cell table:style-name="Batt.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BATT_HEALTH_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[FAHT_BATT_HEALTH_RESULTS]]</text:p>
       </table:table-cell>
      </table:table-row>
     </table:table>
@@ -1029,10 +1029,10 @@
       <text:p text:style-name="TNormal">Operating System</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_OS_VERSION ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_OS_VERSION]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_OS_VERSION_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_OS_VERSION_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1040,10 +1040,10 @@
       <text:p text:style-name="TNormal">OS Updates</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_OS_UPDATES ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_OS_UPDATES]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_OS_UPDATES_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_OS_UPDATES_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1051,10 +1051,10 @@
       <text:p text:style-name="TNormal">Processor Usage</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_PROC_USAGE ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_PROC_USAGE]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_USAGE_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_PROC_USAGE_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1062,10 +1062,10 @@
       <text:p text:style-name="TNormal">Memory Usage</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_MEM_USAGE ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_MEM_USAGE]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_MEM_USAGE_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_MEM_USAGE_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1073,10 +1073,10 @@
       <text:p text:style-name="TNormal">Disk Usage</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_DISK_USAGE ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_DISK_USAGE]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_DISK_USAGE_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_DISK_USAGE_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1084,10 +1084,10 @@
       <text:p text:style-name="TNormal">Bloatware</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_BLOAT ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_BLOAT]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BLOAT_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_BLOAT_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1095,10 +1095,10 @@
       <text:p text:style-name="TNormal">Drivers and Services Health</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_DRIVER_SERVICES ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_DRIVER_SERVICES]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_DRIVER_SERVICES_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_DRIVER_SERVICES_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1106,10 +1106,10 @@
       <text:p text:style-name="TNormal">Antivirus Present</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_AV ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_AV]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_AV_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_AV_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
@@ -1117,16 +1117,16 @@
       <text:p text:style-name="TNormal">Backup Present</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_BACKUP ]] </text:p>
+      <text:p text:style-name="TNormal">[[FAHT_BACKUP]]</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BACKUP_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE">[[FAHT_BACKUP_RESULTS]]</text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
    <text:p text:style-name="P19"/>
    <text:p text:style-name="THeader">Notes</text:p>
-   <text:p text:style-name="TNormal"> [[ FAHT_NOTES ]] </text:p>
+   <text:p text:style-name="TNormal">[[FAHT_NOTES]]</text:p>
   </office:text>
  </office:body>
 </office:document>
