@@ -31,6 +31,9 @@ eth_test () {
 	else
 		FAHT_ETH_RESULTS="PASSED"
 	fi
+
+	echo "${FAHT_ETH_RESULTS}!"
+	echo
 }
 
 wifi_test () {
@@ -60,6 +63,9 @@ wifi_test () {
 	else
 		FAHT_WIFI_RESULTS="PASSED"
 	fi
+
+	echo "${FAHT_WIFI_RESULTS}!"
+	echo
 }
 
 audio_test ()
@@ -78,7 +84,7 @@ audio_test ()
 	amixer -D pulse sset Master 100%
 
 		for i in {1..3}; do
-			mplayer /usr/share/faht/starcmd.m4a;
+			mplayer /usr/share/faht/starcmd.m4a > /dev/null 2>&1
 		done
 
 		amixer -D pulse sset Master 40%
@@ -139,8 +145,8 @@ fi
 confirm_prompt "Does the internal display appear to be working?"
 
 case $prompt_answer in
-	y|Y) FAHT_DISPLAY_TEST_RESULT=PASSED ;;
-	n|N) FAHT_DISPLAY_TEST_RESULT=FAILED ;;
+	y|Y) FAHT_DISPLAY_TEST_RESULTS=PASSED ;;
+	n|N) FAHT_DISPLAY_TEST_RESULTS=FAILED ;;
 esac
 
 }

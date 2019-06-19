@@ -686,7 +686,7 @@
     <table:table-column table:style-name="Table3.B"/>
     <table:table-row>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal">[[FAHT_FULLNAME ]] </text:p>
+      <text:p text:style-name="TNormal">[[ FAHT_FULLNAME ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
       <text:p text:style-name="TNormal-Left"> [[ FAHT_TEST_DATE ]] </text:p>
@@ -914,7 +914,7 @@
        <text:p text:style-name="TNormal">Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="TNormal"> [[ FAHT_PROC_SPEED ]] <text:span text:style-name="T15">GHz</text:span></text:p>
+       <text:p text:style-name="TNormal"> [[ FAHT_PROC_SPEED ]] GHz</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
        <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PROC_SPEED_RESULTS ]] </text:p>

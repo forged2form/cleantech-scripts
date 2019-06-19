@@ -72,8 +72,9 @@ FAHT_GFX_STRESS_TEST="n/a"
 FAHT_GFX_STRESS_TEST_RESULTS="n/a"
 FAHT_PROC_STRESS_TEST="n/a"
 FAHT_PROC_STRESS_TEST_RESULTS="n/a"
-FAHT_DISPLAY_TEST_RESULT="n/a"
+FAHT_DISPLAY_TEST_RESULTS="n/a"
 FAHT_DISPLAY_TEST=""
+FAHT_POWER_RESULTS="n/a"
 
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
@@ -116,10 +117,6 @@ sysinfo_dump ()
 
 	lscpu>"$FAHT_WORKINGDIR"/lscpu.txt
 
-	### Yes, we are presuming for now the first (and presumably only) HDD for the SMART test... This is most common, so it is acceptable FOR NOW...
-
-	smartctl -x /dev/sda>"$FAHT_WORKINGDIR"/smartctl-sda.txt
-
 	acpi -i>"$FAHT_WORKINGDIR"/acpi.txt
 
 	### Not sure if we'll ever use this since it just grabs a whole bunch of info from (mostly) commands that we will run, but dumping it for potentially future use...
@@ -148,11 +145,20 @@ sysinfo_dump ()
 
 	FAHT_PROC_THREADS="$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))"
 	FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
-	FAHT_PROC_SPEED="$(bc <<< "scale=1; $(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g') / 1000")"
+	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g') / 1000")"
+	FAHT_PROC_SPEED_MHZ="$(cat $FAHT_WORKINGDIR/dmidecode-processor.txt|grep "Current Speed"|sed 's/[^0-9*]//g')"
+	FAHT_PROC_SPEED="$(echo scale=2;1000/$FAHT_PROC_SPEED_MHZ)"
 	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $FAHT_PROC_SPEED_MHZ/1000")"
-	FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/')"
-	FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/')"
+	FAHT_BATT_HEALTH_RESULTS="n/a"
+	FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
+	FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_HEALTH="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
+	if [[ "$FAHT_BATT_HEALTH" -ge "70" ]]; then
+		FAHT_BATT_HEALTH_RESULTS="PASSED"
+	else
+		FAHT_BATT_HEALTH_RESULTS="FAILED"
+	fi
+	FAHT_BATT_HEALTH="${FAHT_BATT_HEALTH} %"
 
 	### Note block device where linux is currently mounted for using as an exception when listing hdds
 	FAHT_LIVE_DEV="$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
@@ -204,6 +210,14 @@ echo
 
 list_disks_info
 echo
+
+echo !!! Almost done !!!
+confirm_prompt "Did you notice any power issues during the test?"
+
+case $prompt_answer in
+	y|Y) FAHT_POWER_RESULTS=FAILED ;;
+	n|N) FAHT_POWER_RESULTS=PASSED ;;
+esac
 
 source parsing_fns.sh
 
