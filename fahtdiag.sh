@@ -75,6 +75,7 @@ FAHT_PROC_STRESS_TEST_RESULTS="n/a"
 FAHT_DISPLAY_TEST_RESULTS="n/a"
 FAHT_DISPLAY_TEST=""
 FAHT_POWER_RESULTS="n/a"
+FAHT_ASSESSMENT_RESULTS=""
 
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
@@ -147,7 +148,7 @@ sysinfo_dump ()
 	FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
 	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g') / 1000")"
 	FAHT_PROC_SPEED_MHZ="$(cat $FAHT_WORKINGDIR/dmidecode-processor.txt|grep "Current Speed"|sed 's/[^0-9*]//g')"
-	FAHT_PROC_SPEED="$(echo scale=2;1000/$FAHT_PROC_SPEED_MHZ)"
+	FAHT_PROC_SPEED="$(echo "scale=2;$FAHT_PROC_SPEED_MHZ/1000"|bc)"
 	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $FAHT_PROC_SPEED_MHZ/1000")"
 	FAHT_BATT_HEALTH_RESULTS="n/a"
 	FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
@@ -176,7 +177,7 @@ eth_test
 wifi_test
 
 : echo "Testing Audio..."
-audio_test
+#audio_test
 
 : echo "Testing GFX..."
 gfx_test

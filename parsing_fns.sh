@@ -41,9 +41,13 @@ save_vars ()
 		(( i++ ));
 	done
 
-	for x in name serial totalsize windowspartfreespace timeon readspeed writespeed smart_results; do
+	for x in name serial totalsize windowspartfreespace timeon readspeed writespeed smart_results totalsize_results; do
 		sed -i "s| \[\[ FAHT_TEST_DISK_1_ARRAY\[$x\] \]\] |${FAHT_TEST_DISK_1_ARRAY[$x]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
 	done
+
+	### clean up any unused vars for now...
+
+	sed -i "s| \[\[ .* \]\] ||g" "$FAHT_WORKINGDIR"/faht-report.fodt
 
 	#cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
 }

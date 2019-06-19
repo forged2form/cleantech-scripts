@@ -49,8 +49,17 @@ disk_array_setup ()
 		###TEMP echo Working on Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviceid]}
 		###TEMP echo
 
+
+		CURR_FAHT_DISK_ARRAY[totalsize_results]="n/a"
+
 		CURR_FAHT_DISK_ARRAY[totalsize]=$(lsblk -drno SIZE /dev/$j)
-		
+
+		if [[ $(lsblk -drnbo /dev/$j) -ge "128000000000" ]]; then
+			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
+		else
+			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
+		fi
+
 		pn=1
 		for p in $(lsblk -n -r -o NAME|grep "${CURR_FAHT_DISK_ARRAY[deviceid]}[0-9]"); do
 			CURR_FAHT_DISK_ARRAY[part${pn}]=${p}

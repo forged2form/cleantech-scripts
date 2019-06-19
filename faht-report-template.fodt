@@ -686,7 +686,7 @@
     <table:table-column table:style-name="Table3.B"/>
     <table:table-row>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal">[[ FAHT_FULLNAME ]] </text:p>
+      <text:p text:style-name="TNormal"> [[ FAHT_FULLNAME ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
       <text:p text:style-name="TNormal-Left"> [[ FAHT_TEST_DATE ]] </text:p>
@@ -697,7 +697,7 @@
       <text:p text:style-name="TNormal"> [[ FAHT_COMPUTER_DESC ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-	     <text:p text:style-name="TNormal-Left">S/N: [[ FAHT_COMPUTER_SERIAL ]] </text:p>
+	     <text:p text:style-name="TNormal-Left">S/N:  [[ FAHT_COMPUTER_SERIAL ]] </text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
