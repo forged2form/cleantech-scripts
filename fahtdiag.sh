@@ -84,6 +84,8 @@ FAHT_COMP_DESC=$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL
 
 client_details
 
+FAHT_FULLNAME="$FAHT_FIRSTNAME $FAHT_LASTNAME"
+
 sysinfo_dump ()
 {
 	### Dump systeminfo ###

@@ -161,8 +161,10 @@ smart_test ()
 			echo
 			echo -en "\r$smart_short_test_max_minutes mins remaining"
 			j=0
+			###TEMP
+			j=999
 
-			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do		
+			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
 				sleep 60
 				time_remaining=$(( $smart_short_test_max_minutes - $j ))
 				echo -en "\r$time_remaining mins remaining"
@@ -417,7 +419,7 @@ benchmark_disks () {
 		TOTAL_DATA_SIZE_IN_BLOCKS="$((( "$TESTDEV_SIZE_IN_BYTES" / "$BLOCK_SIZE_IN_BYTES" )))"
 		: echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
 
-		PASSES=5
+		PASSES=1
 
 		c="$PASSES"
 		# Default BLOCK size = 512

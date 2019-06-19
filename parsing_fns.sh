@@ -37,8 +37,12 @@ save_vars ()
 
 	for x in ${varsNames[*]}; do
 		echo "Working on $x..."
-		sed -i "s|\[\[$x\]\]|${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
+		sed -i "s| \[\[ $x \]\] |${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
 		(( i++ ));
+	done
+
+	for x in name serial totalsize windowspartfreespace timeon readspeed writespeed smart_results; do
+		sed -i "s| \[\[ FAHT_TEST_DISK_1_ARRAY\[$x\] \]\] |${FAHT_TEST_DISK_1_ARRAY[$x]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
 	done
 
 	#cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
