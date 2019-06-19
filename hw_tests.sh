@@ -22,7 +22,7 @@ eth_test () {
 			FAHT_ETH_RESULTS=$?
 		done > $FAHT_WORKINGDIR/ethtest-$p.txt
 	else
-		$FAHT_ETH_RESULTS="N/A"
+		$FAHT_ETH_RESULTS="n/a"
 	fi
 
 	if [ "$FAHT_ETH_RESULTS" -gt 0 ]
@@ -32,8 +32,6 @@ eth_test () {
 		FAHT_ETH_RESULTS="PASSED"
 	fi
 }
-
-#temp eth_test
 
 wifi_test () {
 ### Network test - Wireless ###
@@ -53,7 +51,7 @@ wifi_test () {
 			FAHT_WIFI_RESULTS=$?
 		done > $FAHT_WORKINGDIR/wifitest-$p.txt
 	else
-		$FAHT_WIFI_RESULTS="N/A"
+		$FAHT_WIFI_RESULTS="n/a"
 	fi
 
 	if [ "$FAHT_WIFI_RESULTS" -gt 0 ]
@@ -63,8 +61,6 @@ wifi_test () {
 		FAHT_WIFI_RESULTS="PASSED"
 	fi
 }
-
-#temp wifi_test
 
 audio_test ()
 {
@@ -108,10 +104,6 @@ audio_test ()
 	done
 }
 
-#temp audio_test
-
-
-
 ### Appears to get reset with function declaration...
 
 #	declare -A FAHT_SMART_DRIVES_ARRAY
@@ -137,4 +129,18 @@ echo
 glmark2|grep Score>"$FAHT_WORKINGDIR"/glmark2.txt
 
 FAHT_GFX_BENCH="$(cat "$FAHT_WORKINGDIR"/glmark2.txt|sed -r 's/.*: ([0-9]*) /\1/g')"
+
+if [[ "$FAHT_GFX_BENCH" -gt "100" ]]; then
+	FAHT_GFX_STRESS_TEST_RESULTS=PASSED
+else
+	FAHT_GFX_STRESS_TETS_RESULTS=FAILED
+fi
+
+confirm_prompt "Does the internal display appear to be working?"
+
+case $prompt_answer in
+	y|Y) FAHT_DISPLAY_TEST_RESULT=PASSED ;;
+	n|N) FAHT_DISPLAY_TEST_RESULT=FAILED ;;
+esac
+
 }

@@ -728,7 +728,7 @@
       <text:p text:style-name="TNormal">Ethernet</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.B1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_ETH-RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_ETH_RESULTS ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table6.A1" office:value-type="string">
       <text:p text:style-name="RESULTSSTYLE"/>

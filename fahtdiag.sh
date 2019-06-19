@@ -65,6 +65,16 @@ FAHT_ASSESMENT_RESULTS=
 FAHT_NOTES=
 FAHT_PROBLEMS=
 FAHT_TIMEON_THRESHOLD=26280
+FAHT_GFX_STRESS_TETS_RESULTS="n/a"
+FAHT_BLUETOOTH_RESULTS="n/a"
+FAHT_PORTS_RESULTS="n/a"
+FAHT_GFX_STRESS_TEST="n/a"
+FAHT_GFX_STRESS_TEST_RESULTS="n/a"
+FAHT_PROC_STRESS_TEST="n/a"
+FAHT_PROC_STRESS_TEST_RESULTS="n/a"
+FAHT_DISPLAY_TEST_RESULT="n/a"
+FAHT_DISPLAY_TEST=""
+
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
 if [ "$FAHT_DIAGMODE" == "true" ]; then
@@ -153,6 +163,19 @@ sysinfo_dump ()
 
 sysinfo_dump
 
+: echo "Testing ethernet connection..."
+eth_test
+
+: echo "Testing Wi-Fi connection..."
+wifi_test
+
+: echo "Testing Audio..."
+audio_test
+
+: echo "Testing GFX..."
+gfx_test
+echo
+
 source disks_fns.sh
 
 : echo "Setting up local disk arrays..."
@@ -181,8 +204,6 @@ echo
 
 list_disks_info
 echo
-
-#temp gfx_test
 
 source parsing_fns.sh
 
