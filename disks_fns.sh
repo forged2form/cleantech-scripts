@@ -54,7 +54,9 @@ disk_array_setup ()
 
 		CURR_FAHT_DISK_ARRAY[totalsize]=$(lsblk -drno SIZE /dev/$j)
 
-		if [[ $(lsblk -drnbo /dev/$j) -ge "128000000000" ]]; then
+		CURR_FAHT_DISK_ARRAY[totalsize_bytes]="$(lsblk -drnbo SIZE /dev/$j)"
+
+		if [[ "${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}" -ge "12800000000" ]]; then
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
 		else
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
@@ -143,7 +145,6 @@ smart_test ()
 {
 	### SMART Testing ###
 
-	clear
 	echo --------------------------------
 	echo Testing Hard Drives. Please wait
 	echo --------------------------------
@@ -170,8 +171,6 @@ smart_test ()
 			echo
 			echo -en "\r$smart_short_test_max_minutes mins remaining"
 			j=0
-			###TEMP
-			j=999
 
 			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
 				sleep 60
@@ -291,9 +290,9 @@ smart_test ()
 			fi
 
 			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
-				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=FAILED
+				CURR_FAHT_DISK_ARRAY[timeone_results]=FAILED
 			else
-				CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]=PASSED
+				CURR_FAHT_DISK_ARRAY[timeon_results]=PASSED
 			fi
 		fi
 		(( i++ ))
@@ -389,7 +388,24 @@ find_win_part () {
 				echo FAHT_WIN_PART=$FAHT_WIN_PART
 				echo
 				CURR_FAHT_DISK_ARRAY[windowspartfreespace]=$(df -h --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1|sed 's/^[ \t]*//')
-				WIN_PART_FREE_SPACE=$(df -h --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1|sed 's/^[ \t]*//');
+				#WIN_PART_FREE_SPACE=$(df -h --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1|sed 's/^[ \t]*//');
+				CURR_FAHT_DISK_ARRAY[windowspartfreespace_bytes]=$((($(df --output=avail /dev/${CURR_FAHT_DISK_ARRAY[part${j}]}|tail -1)*1000)))
+
+				CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="n/a"
+
+				CURR_FAHT_DISK_ARRAY[freespace_percent]="$(echo "scale=2;${CURR_FAHT_DISK_ARRAY[windowspartfreespace_bytes]}/${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}"|bc|sed 's/\.//')"
+
+				if [[ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -le "10" ]]; then
+					CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="FAILED"
+				fi
+
+				if [ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -gt "10" ] && [ "$CURR_FAHT_DISK_ARRAY[freespace_percent]" -le "25" ]; then
+					CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="WARNING"
+				fi
+
+				if [[ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -gt "25" ]]; then
+					CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="PASSED"
+				fi
 			fi
 			(( j++ ));
 		done
@@ -428,7 +444,7 @@ benchmark_disks () {
 		TOTAL_DATA_SIZE_IN_BLOCKS="$((( "$TESTDEV_SIZE_IN_BYTES" / "$BLOCK_SIZE_IN_BYTES" )))"
 		: echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
 
-		PASSES=1
+		PASSES=5
 
 		c="$PASSES"
 		# Default BLOCK size = 512
@@ -446,7 +462,7 @@ benchmark_disks () {
 			echo Running pass ${b}...
 			: echo "dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
 			dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
-			sleep 5
+			sleep 2
 			
 			RSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
 			CURR_FAHT_DISK_ARRAY[readbench_"${c}"]=$(printf "%.0f" $(echo "scale=2;1024/$RSPEED"|bc))
@@ -465,6 +481,16 @@ benchmark_disks () {
 		READ_AVERAGE=$((( $READ_TOTAL / "$PASSES" )))
 		echo
 		echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE MB/s
+
+		if [[ "$READ_AVERAGE" -le "75" ]]; then
+			CURR_FAHT_DISK_ARRAY[readspeed_results]="FAILED"
+		fi
+		if [[ "$READ_AVERAGE" -ge "90" ]]; then
+			CURR_FAHT_DISK_ARRAY[readspeed_results]="PASSED"
+		fi
+		if [ "$READ_AVERAGE" -gt "75" ] && [ "$READ_AVERAGE" -lt "90" ]; then
+			CURR_FAHT_DISK_ARRAY[readspeed_results]="WARNING"
+		fi
 
 		CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
 
@@ -530,7 +556,7 @@ benchmark_disks () {
 				echo Running pass: ${b}...
 				: echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
 				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
-				sleep 5
+				sleep 2
 
 				WSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
 				CURR_FAHT_DISK_ARRAY[writebench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$WSPEED"|bc))
@@ -547,6 +573,17 @@ benchmark_disks () {
 			done
 
 			WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
+
+			if [[ "$WRITE_AVERAGE" -le "50" ]]; then
+				CURR_FAHT_DISK_ARRAY[writespeed_results]="FAILED"
+			fi
+			if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
+				CURR_FAHT_DISK_ARRAY[writespeed_results]="PASSED"
+			fi
+			if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
+				CURR_FAHT_DISK_ARRAY[writespeed_results]="WARNING"
+			fi
+
 			echo
 			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE MB/s
 
@@ -572,12 +609,12 @@ list_disks_info () {
 		if [[ "${CURR_FAHT_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
 			echo Smart Capable: Yes
 			echo SMART Status: ${CURR_FAHT_DISK_ARRAY[smart_results]}
-			echo "Time On: ${CURR_FAHT_DISK_ARRAY[timeon]} (${CURR_FAHT_DISK_ARRAY[TIMEON_RESULTS]})"
+			echo "Time On: ${CURR_FAHT_DISK_ARRAY[timeon]} (${CURR_FAHT_DISK_ARRAY[timeon_results]})"
 		else
 			echo Smart capable: No
 		fi
 		echo Total partitions: ${CURR_FAHT_DISK_ARRAY[totalparts]}
-		echo Total size: ${CURR_FAHT_DISK_ARRAY[totalsize]}
+		echo "Total size: ${CURR_FAHT_DISK_ARRAY[totalsize]} (${CURR_FAHT_DISK_ARRAY[totalsize_results]})"
 		if [[ ${CURR_FAHT_DISK_ARRAY[windowspart]} ]]; then
 			echo Windows partition: ${CURR_FAHT_DISK_ARRAY[windowspart]}
 			echo Free space on system volume: ${CURR_FAHT_DISK_ARRAY[windowspartfreespace]};

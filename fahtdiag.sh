@@ -54,6 +54,7 @@ FAHT_LASTNAME=
 FAHT_FULLNAME=
 CONFIRM=n
 FAHT_AUDIO=
+FAHT_AUDIO_RESULTS="n/a"
 FAHT_TEST_DATE=$(date +%Y-%m-%d)
 FAHT_TEST_TIME=$(date +%Hh)
 PAUSE=pause_input
@@ -131,12 +132,35 @@ sysinfo_dump ()
 	FAHT_SOCKET_COUNT="$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')"
 	FAHT_CORE_COUNT="$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))"
 	FAHT_PROC_CORES="$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))"
+	if [[ "${FAHT_PROC_CORES}" -le "2" ]]; then
+		FAHT_PROC_CORES_RESULTS="FAILED"
+	fi
+	if [[ "${FAHT_PROC_CORES}" -ge "2" ]]; then
+		FAHT_PROC_CORES_RESULTS="PASSED"
+	fi
+	FAHT_MEM_CONFIG="n/a"
+	FAHT_MEM_TEST="n/a"
+	FAHT_MEM_TEST_RESULTS="n/a"
 	FAHT_CORE_THREAD="$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
-	FAHT_MAX_MEMORY="$(dmidecode|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
+	FAHT_MAX_MEMORY="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
 	FAHT_MEM_SIZE="$(cat $FAHT_WORKINGDIR/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
-	FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|sed -r 's/.*(DDR[1-6].*).*/\1/')"
-	FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
 
+	if [[ "${FAHT_MEM_SIZE}" -le "4" ]]; then
+		FAHT_MEM_SIZE_RESULTS="FAILED"
+	fi
+	if [[ "${FAHT_MEM_SIZE}" -ge "8" ]]; then
+		FAHT_MEM_SIZE_RESULTS="PASSED"
+	fi
+	if [ "${FAHT_MEM_SIZE}" -ge "6" ] && [ "${FAHT_MEM_SIZE}" -lt "8" ]; then
+		FAHT_MEM_SIZE_RESULTS="WARNING"
+	fi
+
+	FAHT_MEM_SIZE="${FAHT_MEM_SIZE} GB"
+
+	FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|tail -1|sed -r 's/.*(DDR[1-6].*).*/\1/')"
+	###FIXME: Cheating on fixing the whitespace for now...
+	FAHT_MEM_TYPE="$(echo $FAHT_MEM_TYPE)"
+	FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
 
 	### FIXME: Would like to get config (e.g. 2 x 2GB DDR3 Samsung Modules 1600Mhz)
 	#FAHT_MEM_CONFIG=
@@ -145,11 +169,22 @@ sysinfo_dump ()
 	#done
 
 	FAHT_PROC_THREADS="$(( $FAHT_CORE_COUNT * $FAHT_CORE_THREAD ))"
+	if [[ "${FAHT_PROC_THREADS}" -le "2" ]]; then
+		FAHT_PROC_THREADS_RESULTS="FAILED"
+	fi
+	if [[ "${FAHT_PROC_THREADS}" -ge "2" ]]; then
+		FAHT_PROC_THREADS_RESULTS="PASSED"
+	fi
 	FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
-	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep capacity|tail -1|sed 's/[^0-9]*//g') / 1000")"
 	FAHT_PROC_SPEED_MHZ="$(cat $FAHT_WORKINGDIR/dmidecode-processor.txt|grep "Current Speed"|sed 's/[^0-9*]//g')"
+	if [[ "${FAHT_PROC_SPEED_MHZ}" -lt "1600" ]]; then
+		FAHT_PROC_SPEED_RESULTS="FAILED"
+	fi
+	if [[ "${FAHT_PROC_SPEED_MHZ}" -ge "1600" ]]; then
+		FAHT_PROC_SPEED_RESULTS="PASSED"
+	fi
+
 	FAHT_PROC_SPEED="$(echo "scale=2;$FAHT_PROC_SPEED_MHZ/1000"|bc)"
-	#FAHT_PROC_SPEED="$(bc <<< "scale=1; $FAHT_PROC_SPEED_MHZ/1000")"
 	FAHT_BATT_HEALTH_RESULTS="n/a"
 	FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
@@ -177,7 +212,7 @@ eth_test
 wifi_test
 
 : echo "Testing Audio..."
-#audio_test
+audio_test
 
 : echo "Testing GFX..."
 gfx_test
@@ -227,3 +262,6 @@ save_vars
 chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
 
 echo -e "All Done!\n"
+echo
+echo Opening faht-report.fodt
+soffice "${FAHT_WORKINGDIR}/faht-report.fodt"

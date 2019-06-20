@@ -4,8 +4,26 @@
 ###
 ### Functions related to parsing results for FAHT test + outputting to file
 
+diskarray_to_flatvars () {
+	i=1
+	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
+		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+
+		for index in "${!CURR_FAHT_DISK_ARRAY[@]}"; do
+			: echo "current index name: ${index}"
+			declare index_name=${index}
+			declare -n curr_index=FAHT_TEST_DISK_${i}_${index_name}
+			curr_index=${CURR_FAHT_DISK_ARRAY[${index}]}
+			: echo "current index value: ${curr_index}"
+		done
+		(( i++ ))
+	done
+}
+
 save_vars ()
 {
+	diskarray_to_flatvars
+
 	( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/raw_vars.txt
 	cat "$FAHT_WORKINGDIR"/raw_vars.txt|grep -v ARRAY > "$FAHT_WORKINGDIR"/vars_noarray.txt
 
@@ -35,19 +53,20 @@ save_vars ()
 
 	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
 
-	for x in ${varsNames[*]}; do
-		echo "Working on $x..."
-		sed -i "s| \[\[ $x \]\] |${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
-		(( i++ ));
+	### Remove single quotes from values...
+
+	for index in ${!varsValues[@]}; do
+		varsValues[$index]=$(echo ${varsValues[$index]//\'/})
 	done
 
-	for x in name serial totalsize windowspartfreespace timeon readspeed writespeed smart_results totalsize_results; do
-		sed -i "s| \[\[ FAHT_TEST_DISK_1_ARRAY\[$x\] \]\] |${FAHT_TEST_DISK_1_ARRAY[$x]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
+	for x in ${varsNames[@]}; do
+		echo "Working on $x..."
+		sed -i "s| \[\[ ${x} \]\] |${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
+		(( i++ ));
 	done
 
 	### clean up any unused vars for now...
 
 	sed -i "s| \[\[ .* \]\] ||g" "$FAHT_WORKINGDIR"/faht-report.fodt
 
-	#cp /tmp/vars*.txt "$FAHT_WORKINGDIR"/
 }

@@ -108,6 +108,8 @@ audio_test ()
 			audio_test_complete=1
 		fi	
 	done
+
+	echo "${FAHT_AUDIO_RESULTS}!"
 }
 
 ### Appears to get reset with function declaration...
@@ -125,7 +127,6 @@ audio_test ()
 gfx_test ()
 {
 ### GFX Benchmark ###
-clear
 echo -------------------------------
 echo Testing GFX card... Please wait
 echo -------------------------------
