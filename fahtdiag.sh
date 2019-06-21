@@ -93,7 +93,7 @@ lshw -c system>/tmp/fs.txt
 FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //')
 FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|sed 's/.*vendor: //')
 FAHT_COMPUTER_SERIAL=$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')
-FAHT_COMP_DESC=$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL
+FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL"
 
 client_details
 
@@ -114,7 +114,7 @@ sysinfo_dump ()
 	done
 
 	for i in bios system baseboard chassis processor memory cache connector slot; do
-		dmidecode -t $i >$FAHT_WORKINGDIR/dmidecode-$i.txt;
+		dmidecode -t $i >"$FAHT_WORKINGDIR"/dmidecode-$i.txt;
 	done
 
 	lscpu>"$FAHT_WORKINGDIR"/lscpu.txt
@@ -127,10 +127,11 @@ sysinfo_dump ()
 
 	### Grab summary info for summary sheet ###
 
-	FAHT_COMPUTER_DESC="$(cat $FAHT_WORKINGDIR/lshw-system.txt|grep product|sed -r 's/.*product: (.*) \(.*/\1/')"
-	FAHT_PROC_MODEL="$(cat $FAHT_WORKINGDIR/lshw-processor.txt|grep product|sed 's/.*product: //')"
-	FAHT_SOCKET_COUNT="$(cat $FAHT_WORKINGDIR/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')"
-	FAHT_CORE_COUNT="$(( $(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))"
+	FAHT_COMPUTER_DESC="$(cat "$FAHT_WORKINGDIR"/lshw-system.txt|grep product|sed -r 's/.*product: (.*) \(.*/\1/')"
+	FAHT_COMPUTER_DESC="$(echo $FAHT_COMPUTER_DESC)"
+	FAHT_PROC_MODEL="$(cat "$FAHT_WORKINGDIR"/lshw-processor.txt|grep product|sed 's/.*product: //')"
+	FAHT_SOCKET_COUNT="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')"
+	FAHT_CORE_COUNT="$(( $(cat "$FAHT_WORKINGDIR"/lscpu.txt|egrep -i -m 1 ".*core.*socket*"|sed 's/[^0-9]*//g') * $FAHT_SOCKET_COUNT ))"
 	FAHT_PROC_CORES="$(( $FAHT_CORE_COUNT * FAHT_SOCKET_COUNT ))"
 	if [[ "${FAHT_PROC_CORES}" -le "2" ]]; then
 		FAHT_PROC_CORES_RESULTS="FAILED"
@@ -141,9 +142,9 @@ sysinfo_dump ()
 	FAHT_MEM_CONFIG="n/a"
 	FAHT_MEM_TEST="n/a"
 	FAHT_MEM_TEST_RESULTS="n/a"
-	FAHT_CORE_THREAD="$(cat $FAHT_WORKINGDIR/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
-	FAHT_MAX_MEMORY="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
-	FAHT_MEM_SIZE="$(cat $FAHT_WORKINGDIR/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
+	FAHT_CORE_THREAD="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
+	FAHT_MAX_MEMORY="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
+	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
 
 	if [[ "${FAHT_MEM_SIZE}" -le "4" ]]; then
 		FAHT_MEM_SIZE_RESULTS="FAILED"
@@ -157,10 +158,10 @@ sysinfo_dump ()
 
 	FAHT_MEM_SIZE="${FAHT_MEM_SIZE} GB"
 
-	FAHT_MEM_TYPE="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep DDR|tail -1|sed -r 's/.*(DDR[1-6].*).*/\1/')"
+	FAHT_MEM_TYPE="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep DDR|tail -1|sed -r 's/.*(DDR[1-6].*).*/\1/')"
 	###FIXME: Cheating on fixing the whitespace for now...
 	FAHT_MEM_TYPE="$(echo $FAHT_MEM_TYPE)"
-	FAHT_MEM_SPEED="$(cat $FAHT_WORKINGDIR/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
+	FAHT_MEM_SPEED="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
 
 	### FIXME: Would like to get config (e.g. 2 x 2GB DDR3 Samsung Modules 1600Mhz)
 	#FAHT_MEM_CONFIG=
@@ -186,9 +187,9 @@ sysinfo_dump ()
 
 	FAHT_PROC_SPEED="$(echo "scale=2;$FAHT_PROC_SPEED_MHZ/1000"|bc)"
 	FAHT_BATT_HEALTH_RESULTS="n/a"
-	FAHT_BATT_DESIGN_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
-	FAHT_BATT_CURR_CAPACITY="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
-	FAHT_BATT_HEALTH="$(cat $FAHT_WORKINGDIR/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
+	FAHT_BATT_DESIGN_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
+	FAHT_BATT_CURR_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
+	FAHT_BATT_HEALTH="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
 	if [[ "$FAHT_BATT_HEALTH" -ge "70" ]]; then
 		FAHT_BATT_HEALTH_RESULTS="PASSED"
 	else

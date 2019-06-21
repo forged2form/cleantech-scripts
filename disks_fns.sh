@@ -164,9 +164,9 @@ smart_test ()
 			curr_smart_dev=${CURR_FAHT_DISK_ARRAY[deviceid]}
 
 			echo Beginning SMART short test on "$curr_smart_dev"
-			smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+			smartctl -t force -t short /dev/$curr_smart_dev>"$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt
+			cat "$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt
+			smart_short_test_max_minutes=$(cat "$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 			echo
 			echo -en "\r$smart_short_test_max_minutes mins remaining"
@@ -191,9 +191,9 @@ smart_test ()
 			echo Short SMART test done.
 			echo
 
-			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+			smartctl -x /dev/"$curr_smart_dev">""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt
 			: echo
-			: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+			: cat ""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt
 			: echo
 
 			### Store hours on in human readable way...
@@ -244,10 +244,10 @@ smart_test ()
 			if [ "$FAHT_SHORTONLY" != "true" ]; then
 				echo Beginning SMART long test on $curr_smart_dev
 
-				smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+				smartctl -t force -t long /dev/"$curr_smart_dev">""$FAHT_WORKINGDIR""/smartlongtest-"$curr_smart_dev".txt
 
-				cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
-				smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+				cat ""$FAHT_WORKINGDIR""/smartlongtest-"$curr_smart_dev".txt
+				smart_long_test_max_minutes=$(cat "$FAHT_WORKINGDIR"/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 				echo
 				echo -en "\r$smart_long_test_max_minutes mins remaining"
@@ -272,16 +272,16 @@ smart_test ()
 				echo Long SMART test done.
 				echo
 
-				smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+				smartctl -x /dev/"$curr_smart_dev">""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt
 				echo
-				: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+				: cat ""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt
 				echo
-				echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+				echo Long test result: "$(cat ""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt|grep "# 1")"
 				echo
 
 			fi
 
-			SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
+			SMART_PASSED=$(cat ""$FAHT_WORKINGDIR""/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
 
 			if [ "$SMART_PASSED" == "Completed without error" ]; then
 				CURR_FAHT_DISK_ARRAY[smart_results]="PASSED";
