@@ -15,21 +15,21 @@ eth_test () {
 
 	FAHT_ETH="$(ip -o link|grep -i -E ": en.* "\d*|sed -r 's/[0-9]: (en.*): .*/\1/g')"
 
-	if [ $FAHT_ETH ]
-	then
-		for p in $FAHT_ETH; do
-			ping -c 5 -I $p 1.1.1.1
-			FAHT_ETH_RESULTS=$?
-		done > $FAHT_WORKINGDIR/ethtest-$p.txt
-	else
-		$FAHT_ETH_RESULTS="n/a"
+	if [ ! "$FAHT_ETH" ]; then	
+		FAHT_ETH_RESULTS="n/a"
 	fi
 
-	if [ "$FAHT_ETH_RESULTS" -gt 0 ]
-	then
-		FAHT_ETH_RESULTS="FAILED"
-	else
-		FAHT_ETH_RESULTS="PASSED"
+	if [ "$FAHT_ETH" ]; then
+		for p in "$FAHT_ETH"; do
+			ping -c 5 -I $p 1.1.1.1
+			FAHT_ETH_TEST=$?
+		done > "$FAHT_WORKINGDIR"/ethtest-$p.txt
+		
+		if [ "$FAHT_ETH_TEST" -eq 0 ]; then
+			FAHT_ETH_RESULTS="PASSED"
+		else
+			FAHT_ETH_RESULTS="FAILED"
+		fi
 	fi
 
 	echo "${FAHT_ETH_RESULTS}!"
@@ -46,23 +46,40 @@ wifi_test () {
 	echo
 
 	FAHT_WIFI="$(ip -o link|grep -i -E ": wl.* "\d*|sed -r 's/[0-9]: (wl.*): .*/\1/g')"
+	
+	if [ ! "$FAHT_WIFI"]; then	
+		FAHT_WIFI_RESULTS="n/a"
+	fi
 
-	if [ $FAHT_WIFI ]
-	then
-		for p in $FAHT_WIFI; do
+	if [ "$FAHT_WIFI" ]; then
+		for p in "$FAHT_WIFI"; do
 			ping -c 5 -I $p 1.1.1.1
-			FAHT_WIFI_RESULTS=$?
-		done > $FAHT_WORKINGDIR/wifitest-$p.txt
-	else
-		$FAHT_WIFI_RESULTS="n/a"
+			FAHT_WIFI_TEST=$?
+		done > "$FAHT_WORKINGDIR"/ethtest-$p.txt
+		
+		if [ "$FAHT_WIFI_TEST" -eq 0 ]; then
+			FAHT_WIFI_RESULTS="PASSED"
+		else
+			FAHT_WIFI_RESULTS="FAILED"
+		fi
 	fi
 
-	if [ "$FAHT_WIFI_RESULTS" -gt 0 ]
-	then
-		FAHT_WIFI_RESULTS="FAILED"
-	else
-		FAHT_WIFI_RESULTS="PASSED"
-	fi
+	#if [ $FAHT_WIFI ]; then
+	#	for p in $FAHT_WIFI; do
+	#		ping -c 5 -I $p 1.1.1.1
+	#		FAHT_WIFI_RESULTS=$?
+	#	done > $FAHT_WORKINGDIR/wifitest-$p.txt
+	#fi
+	#if [ ! $FAHT_WIFI ]; then
+	#	$FAHT_WIFI_RESULTS="n/a"
+	#fi
+
+	#if [ ! "$FAHT_WIFI" ] || [ "$FAHT_WIFI_RESULTS" -gt 0 ]
+	#then
+	#	FAHT_WIFI_RESULTS="FAILED"
+	#else
+	#	FAHT_WIFI_RESULTS="PASSED"
+	#fi
 
 	echo "${FAHT_WIFI_RESULTS}!"
 	echo
