@@ -202,10 +202,10 @@
    <style:paragraph-properties fo:margin-top="0.0598in" fo:margin-bottom="0.0598in" loext:contextual-spacing="false" fo:padding-left="0in" fo:padding-right="0in" fo:padding-top="0in" fo:padding-bottom="0.0291in" fo:border-left="none" fo:border-right="none" fo:border-top="none" fo:border-bottom="0.06pt solid #000000" style:join-border="false"/>
    <style:text-properties style:font-name="Liberation Mono" fo:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed" fo:font-size="10pt" fo:font-weight="bold" style:font-size-asian="10pt" style:font-weight-asian="bold" style:font-size-complex="10pt" style:font-weight-complex="bold"/>
   </style:style>
-  <style:style style:name="PASS" style:family="paragraph" style:parent-style-name="TNormal-Left">
+  <style:style style:name="PASSED" style:family="paragraph" style:parent-style-name="TNormal-Left">
    <style:text-properties style:font-name="Liberation Mono" fo:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed" fo:font-size="10pt" officeooo:rsid="000f073c" style:font-size-asian="10pt" style:font-size-complex="10pt"/>
   </style:style>
-  <style:style style:name="FAIL" style:family="paragraph" style:parent-style-name="TNormal-Left">
+  <style:style style:name="FAILED" style:family="paragraph" style:parent-style-name="TNormal-Left">
    <style:paragraph-properties fo:text-align="end" style:justify-single-word="false"/>
    <style:text-properties style:font-name="Liberation Mono" fo:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed" fo:font-size="10pt" fo:font-weight="bold" officeooo:rsid="000f073c" style:font-size-asian="10pt" style:font-weight-asian="bold" style:font-size-complex="10pt" style:font-weight-complex="bold"/>
   </style:style>

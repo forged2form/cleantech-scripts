@@ -69,4 +69,9 @@ save_vars ()
 
 	sed -i "s| \[\[ .* \]\] ||g" "$FAHT_WORKINGDIR"/faht-report.fodt
 
+
+	sed -i 's|style-name="RESULTSSTYLE">PASSED|style-name="PASSED">PASSED|g' "$FAHT_WORKINGDIR"/faht-report.fodt
+	sed -i 's|style-name="RESULTSSTYLE">FAILED|style-name="FAILED">FAILED|g' "$FAHT_WORKINGDIR"/faht-report.fodt
+	sed -i 's|style-name="RESULTSSTYLE">WARNING|style-name="WARNING">WARNING|g' "$FAHT_WORKINGDIR"/faht-report.fodt
+
 }
