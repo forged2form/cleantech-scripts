@@ -202,7 +202,7 @@ sysinfo_dump ()
 		FAHT_BATT_HEALTH_RESULTS="n/a"
 		FAHT_BATT_DESIGN_CAPACITY="n/a"
 		FAHT_BATT_CURR_CAPACITY="n/a"
-		FAHT_BATT_HEALTH_RESULTS="n/a"
+		FAHT_BATT_HEALTH="n/a"
 	fi
 
 	### Note block device where linux is currently mounted for using as an exception when listing hdds
