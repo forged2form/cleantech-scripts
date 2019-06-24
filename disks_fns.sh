@@ -255,7 +255,7 @@ smart_test ()
 				echo Short SMART test done.
 				echo
 
-				if [ "$FAHT_SHORTONLY" != "true" ]; then
+				if [ "$FAHT_SHORTONLY" != "true" ] && []; then
 					echo Beginning SMART long test on $curr_smart_dev
 
 					smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
@@ -274,7 +274,7 @@ smart_test ()
 						time_remaining=$(( $smart_long_test_max_minutes - $j ))
 						echo -en "\r$time_remaining mins remaining"
 
-						FAHT_st_failure_test"$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/')"
+						FAHT_st_failure_test="$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1")"
 
 						if [ "$FAHT_st_failure_test" != "" ]; then
 							j=9999
