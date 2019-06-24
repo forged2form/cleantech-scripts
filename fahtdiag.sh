@@ -119,8 +119,6 @@ sysinfo_dump ()
 
 	lscpu>"$FAHT_WORKINGDIR"/lscpu.txt
 
-	acpi -i>"$FAHT_WORKINGDIR"/acpi.txt
-
 	### Not sure if we'll ever use this since it just grabs a whole bunch of info from (mostly) commands that we will run, but dumping it for potentially future use...
 
     ### temp	hardinfo -r -f text>"$FAHT_WORKINGDIR"/hardinfo.txt
@@ -186,16 +184,26 @@ sysinfo_dump ()
 	fi
 
 	FAHT_PROC_SPEED="$(echo "scale=2;$FAHT_PROC_SPEED_MHZ/1000"|bc)"
-	FAHT_BATT_HEALTH_RESULTS="n/a"
+
+	acpi -i>"$FAHT_WORKINGDIR"/acpi.txt
+
 	FAHT_BATT_DESIGN_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_CURR_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_HEALTH="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
+	
 	if [[ "$FAHT_BATT_HEALTH" -ge "70" ]]; then
 		FAHT_BATT_HEALTH_RESULTS="PASSED"
 	else
 		FAHT_BATT_HEALTH_RESULTS="FAILED"
 	fi
 	FAHT_BATT_HEALTH="${FAHT_BATT_HEALTH} %"
+
+	if [ "$(cat "$FAHT_WORKINGDIR"/acpi.txt)" == "" ]; then
+		FAHT_BATT_HEALTH_RESULTS="n/a"
+		FAHT_BATT_DESIGN_CAPACITY="n/a"
+		FAHT_BATT_CURR_CAPACITY="n/a"
+		FAHT_BATT_HEALTH_RESULTS="n/a"
+	fi
 
 	### Note block device where linux is currently mounted for using as an exception when listing hdds
 	FAHT_LIVE_DEV="$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
