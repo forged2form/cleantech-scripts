@@ -259,7 +259,8 @@ smart_test ()
 					time_remaining=$(( $smart_long_test_max_minutes - $j ))
 					echo -en "\r$time_remaining mins remaining"
 
-					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/'
+					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
+					#|sed 's/.*\(failure\).*/\1/'
 
 					if [ $? -eq 0 ]; then
 						j=9999
