@@ -98,7 +98,7 @@ audio_test ()
 	audio_test_complete=0
 
 	while [[ "$audio_test_complete" -eq 0 ]]; do
-	amixer -D pulse sset Master 100%
+	amixer -D pulse sset Master 80% unmute
 
 		for i in {1..3}; do
 			mplayer /usr/share/faht/starcmd.m4a > /dev/null 2>&1
@@ -128,18 +128,6 @@ audio_test ()
 
 	echo "${FAHT_AUDIO_RESULTS}!"
 }
-
-### Appears to get reset with function declaration...
-
-#	declare -A FAHT_SMART_DRIVES_ARRAY
-
-#	for i in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
-#		FAHT_SMART_DRIVES_ARRAY[$j]="$i"
-#		echo $j
-#		echo FAHT_SMART_DRIVES_ARRAY[$j] = ${FAHT_SMART_DRIVES_ARRAY[$j]}
-#		echo
-#		((j++));
-#	done
 
 gfx_test ()
 {

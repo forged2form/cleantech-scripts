@@ -237,12 +237,13 @@ smart_test ()
 
 				while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
 					sleep 60
+					FAHT_st_failure_test=""
 					time_remaining=$(( $smart_short_test_max_minutes - $j ))
 					echo -en "\r$time_remaining mins remaining"
 
-					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
+					FAHT_st_failure_test="$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure")"
 
-					if [ $? -eq 0 ]; then
+					if [ "$FAHT_st_failure_test" ]; then
 						j=9999
 					else
 						let j=j+1;
@@ -268,13 +269,14 @@ smart_test ()
 					j=0
 					
 					while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
+						FAHT_st_failure_test=""
 						sleep 60
 						time_remaining=$(( $smart_long_test_max_minutes - $j ))
 						echo -en "\r$time_remaining mins remaining"
 
-						smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/'
+						FAHT_st_failure_test"$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/')"
 
-						if [ $? -eq 0 ]; then
+						if [ "$FAHT_st_failure_test" ]; then
 							j=9999
 						else
 							let j=j+1;
