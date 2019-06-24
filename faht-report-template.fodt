@@ -842,7 +842,7 @@
      </table:table-row>
      <table:table-row>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal">Health Test</text:p>
+       <text:p text:style-name="TNormal">Self-Test</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
        <text:p text:style-name="TNormal"> [[ FAHT_TEST_DISK_1_selftest_results ]] </text:p>

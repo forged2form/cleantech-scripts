@@ -105,7 +105,7 @@ disk_array_setup ()
 
 		for s in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
 			if [[ "${CURR_FAHT_DISK_ARRAY[deviceid]}" == "$s" ]]; then
-				CURR_FAHT_DISK_ARRAY[smartcapable]="YES"
+				CURR_FAHT_DISK_ARRAY[smart_capable]="YES"
 				if [ "$(sudo smartctl -a /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}|grep "Self-tests/Logging not supported")" ]; then
 					CURR_FAHT_DISK_ARRAY[selftest_capable]="NO"
 				else
@@ -165,7 +165,7 @@ smart_test ()
 		echo Working on Disk ${i}...
 		echo -----------------------
 
-		if [ "${CURR_FAHT_DISK_ARRAY[smarttest_capable]}" == "YES" ]; then
+		if [ "${CURR_FAHT_DISK_ARRAY[smart_capable]}" == "YES" ]; then
 			curr_smart_dev="${CURR_FAHT_DISK_ARRAY[deviceid]}"
 
 			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
@@ -293,15 +293,16 @@ smart_test ()
 					echo
 
 				fi
+				CURR_FAHT_DISK_ARRAY[selftest_results]="n/a"
+				SELFTEST_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
 
-				SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
-
-				if [ "$SMART_PASSED" == "Completed without error" ]; then
+				if [ "$SELFTEST_PASSED" == "Completed without error" ]; then
 					CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
 				else
 					CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED";
 				fi
-			fi	
+			fi
+		fi
 		(( i++ ))
 	done
 
