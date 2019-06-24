@@ -47,7 +47,7 @@ wifi_test () {
 
 	FAHT_WIFI="$(ip -o link|grep -i -E ": wl.* "\d*|sed -r 's/[0-9]: (wl.*): .*/\1/g')"
 	
-	if [ ! "$FAHT_WIFI"]; then	
+	if [ ! "$FAHT_WIFI" ]; then	
 		FAHT_WIFI_RESULTS="n/a"
 	fi
 
