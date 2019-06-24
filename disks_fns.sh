@@ -60,7 +60,7 @@ disk_array_setup ()
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
 		else
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
-			FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Has low free disk space."
+			FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} Has low free disk space.
 		fi
 
 		pn=1
@@ -220,7 +220,7 @@ smart_test ()
 
 				if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
 					CURR_FAHT_DISK_ARRAY[timeon_results]=FAILED
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Has been running for over 3 years."
+					FAHT_ASSESSMENT_RESULTS=${FAHT_ASSESMENT_RESULTS}\nDisk ${i} Has been running for over 3 years.
 				else
 					CURR_FAHT_DISK_ARRAY[timeon_results]=PASSED
 				fi
@@ -304,7 +304,7 @@ smart_test ()
 					CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
 				else
 					CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED"
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i SMART Self-Test failed.";
+					FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} SMART Self-Test failed.;
 				fi
 			fi
 		fi
@@ -497,14 +497,14 @@ benchmark_disks () {
 
 		if [[ "$READ_AVERAGE" -le "75" ]]; then
 			CURR_FAHT_DISK_ARRAY[readspeed_results]="FAILED"
-			FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Read speed is low."
+			FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} Read speed is low.
 		fi
 		if [[ "$READ_AVERAGE" -ge "90" ]]; then
 			CURR_FAHT_DISK_ARRAY[readspeed_results]="PASSED"
 		fi
 		if [ "$READ_AVERAGE" -gt "75" ] && [ "$READ_AVERAGE" -lt "90" ]; then
 			CURR_FAHT_DISK_ARRAY[readspeed_results]="WARNING"
-			FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Read speed is low."
+			FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} Read speed is low.
 		fi
 
 		CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
@@ -591,14 +591,14 @@ benchmark_disks () {
 
 			if [[ "$WRITE_AVERAGE" -le "50" ]]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="FAILED"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Write speed is low."
+				FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} Write speed is low.
 			fi
 			if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="PASSED"
 			fi
 			if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="WARNING"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESMENT_RESULTS\nDisk %i Write speed is low."
+				FAHT_ASSESSMENT_RESULTS=$FAHT_ASSESMENT_RESULTS\nDisk ${i} Write speed is low.
 			fi
 
 			echo
