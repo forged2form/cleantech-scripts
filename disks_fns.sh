@@ -412,7 +412,7 @@ find_win_part () {
 					CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="FAILED"
 				fi
 
-				if [ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -gt "10" ] && [ "$CURR_FAHT_DISK_ARRAY[freespace_percent]" -le "25" ]; then
+				if [ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -gt "10" ] && [ "${CURR_FAHT_DISK_ARRAY[freespace_percent]}" -le "25" ]; then
 					CURR_FAHT_DISK_ARRAY[windowspartfreespace_results]="WARNING"
 				fi
 
