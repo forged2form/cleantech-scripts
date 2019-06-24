@@ -106,6 +106,11 @@ disk_array_setup ()
 		for s in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
 			if [[ "${CURR_FAHT_DISK_ARRAY[deviceid]}" == "$s" ]]; then
 				CURR_FAHT_DISK_ARRAY[smartcapable]="YES"
+				if [ "$(sudo smartctl -a /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}|grep "Self-tests/Logging not supported")" ]; then
+					CURR_FAHT_DISK_ARRAY[selftest_capable]="NO"
+				else
+					CURR_FAHT_DISK_ARRAY[selftest_capable]="YES"
+				fi	
 			fi
 		done
 	done
@@ -160,36 +165,8 @@ smart_test ()
 		echo Working on Disk ${i}...
 		echo -----------------------
 
-		if [[ "${CURR_FAHT_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
-			curr_smart_dev=${CURR_FAHT_DISK_ARRAY[deviceid]}
-
-			echo Beginning SMART short test on "$curr_smart_dev"
-			smartctl -t force -t short /dev/$curr_smart_dev>$FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt
-			smart_short_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
-
-			echo
-			echo -en "\r$smart_short_test_max_minutes mins remaining"
-			j=0
-
-			while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
-				sleep 60
-				time_remaining=$(( $smart_short_test_max_minutes - $j ))
-				echo -en "\r$time_remaining mins remaining"
-
-				smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
-
-				if [ $? -eq 0 ]; then
-					j=9999
-				else
-					let j=j+1;
-				fi
-			done
-			echo
-			
-			echo
-			echo Short SMART test done.
-			echo
+		if [ "${CURR_FAHT_DISK_ARRAY[smarttest_capable]}" == "YES" ]; then
+			curr_smart_dev="${CURR_FAHT_DISK_ARRAY[deviceid]}"
 
 			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 			: echo
@@ -239,28 +216,31 @@ smart_test ()
 				CURR_FAHT_DISK_ARRAY[timeon]=$(echo ${CURR_FAHT_DISK_ARRAY[timeon]})
 				: echo ${CURR_FAHT_DISK_ARRAY[timeon]}
 				: echo
+
+				if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
+					CURR_FAHT_DISK_ARRAY[timeon_results]=FAILED
+				else
+					CURR_FAHT_DISK_ARRAY[timeon_results]=PASSED
+				fi
 			fi	
 
-			if [ "$FAHT_SHORTONLY" != "true" ]; then
-				echo Beginning SMART long test on $curr_smart_dev
+			if [[ "${CURR_FAHT_DISK_ARRAY[selftest_capable]}" == "YES" ]]; then
 
-				smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
-
-				cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
-				smart_long_test_max_minutes=$(cat $FAHT_WORKINGDIR/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
+				echo Beginning SMART short test on "$curr_smart_dev"
+				smartctl -t force -t short /dev/$curr_smart_dev>"$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt
+				cat "$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt
+				smart_short_test_max_minutes=$(cat "$FAHT_WORKINGDIR"/smartshorttest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
 				echo
-				echo -en "\r$smart_long_test_max_minutes mins remaining"
-				
+				echo -en "\r$smart_short_test_max_minutes mins remaining"
 				j=0
-				
-				while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
+
+				while [ "$j" -lt "$smart_short_test_max_minutes" ]; do
 					sleep 60
-					time_remaining=$(( $smart_long_test_max_minutes - $j ))
+					time_remaining=$(( $smart_short_test_max_minutes - $j ))
 					echo -en "\r$time_remaining mins remaining"
 
 					smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"
-					#|sed 's/.*\(failure\).*/\1/'
 
 					if [ $? -eq 0 ]; then
 						j=9999
@@ -268,34 +248,60 @@ smart_test ()
 						let j=j+1;
 					fi
 				done
-
 				echo
-				echo Long SMART test done.
+				
 				echo
-
-				smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-				echo
-				: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
-				echo
-				echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+				echo Short SMART test done.
 				echo
 
-			fi
+				if [ "$FAHT_SHORTONLY" != "true" ]; then
+					echo Beginning SMART long test on $curr_smart_dev
 
-			SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
+					smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
 
-			if [ "$SMART_PASSED" == "Completed without error" ]; then
-				CURR_FAHT_DISK_ARRAY[smart_results]="PASSED";
-			else
-				CURR_FAHT_DISK_ARRAY[smart_results]="FAILED";
-			fi
+					cat "$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
+					smart_long_test_max_minutes=$(cat "$FAHT_WORKINGDIR"/smartlongtest-$curr_smart_dev.txt|grep "Please wait"|sed 's/[^0-9]*//g')
 
-			if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
-				CURR_FAHT_DISK_ARRAY[timeone_results]=FAILED
-			else
-				CURR_FAHT_DISK_ARRAY[timeon_results]=PASSED
-			fi
-		fi
+					echo
+					echo -en "\r$smart_long_test_max_minutes mins remaining"
+					
+					j=0
+					
+					while [ "$j" -lt "$smart_long_test_max_minutes"  ]; do
+						sleep 60
+						time_remaining=$(( $smart_long_test_max_minutes - $j ))
+						echo -en "\r$time_remaining mins remaining"
+
+						smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/'
+
+						if [ $? -eq 0 ]; then
+							j=9999
+						else
+							let j=j+1;
+						fi
+					done
+
+					echo
+					echo Long SMART test done.
+					echo
+
+					smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+					echo
+					: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+					echo
+					echo Long test result: "$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1")"
+					echo
+
+				fi
+
+				SMART_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sed -r 's/.*(Completed without error).*/\1/')
+
+				if [ "$SMART_PASSED" == "Completed without error" ]; then
+					CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
+				else
+					CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED";
+				fi
+			fi	
 		(( i++ ))
 	done
 
@@ -432,7 +438,7 @@ benchmark_disks () {
 		### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
 		WRITE_TEST="NO"
 
-		if [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "FAILED" ]]; then
+		if [[ "${CURR_FAHT_DISK_ARRAY[selftest_results]}" == "FAILED" ]]; then
 			WRITE_TEST="NO";
 		fi
 
@@ -526,7 +532,7 @@ benchmark_disks () {
 			echo
 		fi
 
-		if [[ "${CURR_DEV_UNMOUNTED}" == "YES" ]] && [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "PASSED" ]]; then
+		if [[ "${CURR_DEV_UNMOUNTED}" == "YES" ]] && [[ "${CURR_FAHT_DISK_ARRAY[selftest_results]}" == "PASSED" ]]; then
 			echo Testing write speed of Disk ${i}...
 			echo
 			
@@ -609,7 +615,9 @@ list_disks_info () {
 		echo Serial \#: ${CURR_FAHT_DISK_ARRAY[serial]}
 		if [[ "${CURR_FAHT_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
 			echo Smart Capable: Yes
-			echo SMART Status: ${CURR_FAHT_DISK_ARRAY[smart_results]}
+			if [ "${CURR_FAHT_DISK_ARRAY[selftest_capable]}" ]; then
+				echo "Self Test Result: ${CURR_FAHT_DISK_ARRAY[selftest_results]}"
+			fi
 			echo "Time On: ${CURR_FAHT_DISK_ARRAY[timeon]} (${CURR_FAHT_DISK_ARRAY[timeon_results]})"
 		else
 			echo Smart capable: No

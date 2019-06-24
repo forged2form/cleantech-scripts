@@ -122,6 +122,7 @@ client_details ()
 	CONFIRM=
 	FAHT_CLIENTNAME="$FAHT_LASTNAME-$FAHT_FIRSTNAME"
 	FAHT_WORKINGDIR=/home/"$FAHT_CURR_USER"/fahttest/"$FAHT_CLIENTNAME"-"$FAHT_TEST_DATE"-"$FAHT_TEST_TIME"-"$FAHT_COMP_DESC"
+	FAHT_WORKINGDIR=$(echo $FAHT_WORKINGDIR|sed 's/ //g'|sed 's/\.//g')
 
 	#FAHT_TEMP="$(lshw -class system|grep product|sed -r 's/.*product: (.*) \(.*)/\1/'|sed 's/ /_/g'')"
 	### Prep client folder ###
@@ -135,5 +136,5 @@ client_details ()
 		chown "$FAHT_CURR_USER":"$FAHT_CURR_USER" "$FAHT_WORKINGDIR";
 	fi
 
-	cp /usr/share/faht/faht-report-template.fodt $FAHT_WORKINGDIR/faht-report.fodt
+	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
 }
