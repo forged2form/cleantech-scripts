@@ -60,7 +60,7 @@ disk_array_setup ()
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
 		else
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
-			FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS"$'\n'"Disk ${i} Has low free disk space."
+			FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Has low free disk space."
 		fi
 
 		pn=1
@@ -220,7 +220,7 @@ smart_test ()
 
 				if [[ "${CURR_FAHT_DISK_ARRAY[hourson]}" -ge "26280" ]]; then
 					CURR_FAHT_DISK_ARRAY[timeon_results]=FAILED
-					FAHT_ASSESSMENT_RESULTS="${FAHT_ASSESSMENT_RESULTS}"$'\nDisk' "${i} Has been running for over 3 years."
+					FAHT_ASSESSMENT_RESULTS="${FAHT_ASSESSMENT_RESULTS} Disk ${i} Has been running for over 3 years."
 				else
 					CURR_FAHT_DISK_ARRAY[timeon_results]=PASSED
 				fi
@@ -304,7 +304,7 @@ smart_test ()
 					CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
 				else
 					CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED"
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS"$'\n'"Disk ${i} SMART Self-Test failed."
+					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} SMART Self-Test failed."
 				fi
 			fi
 		fi
@@ -591,14 +591,14 @@ benchmark_disks () {
 
 			if [[ "$WRITE_AVERAGE" -le "50" ]]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="FAILED"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS"$'\n'"Disk ${i} Write speed is low."
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
 			fi
 			if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="PASSED"
 			fi
 			if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
 				CURR_FAHT_DISK_ARRAY[writespeed_results]="WARNING"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS"$'\n'"Disk ${i} Write speed is low."
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
 			fi
 
 			echo
