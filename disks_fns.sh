@@ -243,7 +243,7 @@ smart_test ()
 
 					FAHT_st_failure_test="$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure")"
 
-					if [ "$FAHT_st_failure_test" ]; then
+					if [ "$FAHT_st_failure_test" != "" ]; then
 						j=9999
 					else
 						let j=j+1;
@@ -276,7 +276,7 @@ smart_test ()
 
 						FAHT_st_failure_test"$(smartctl -l selftest /dev/"$curr_smart_dev"|grep "# 1"|grep "failure"|sed 's/.*\(failure\).*/\1/')"
 
-						if [ "$FAHT_st_failure_test" ]; then
+						if [ "$FAHT_st_failure_test" != "" ]; then
 							j=9999
 						else
 							let j=j+1;
