@@ -142,7 +142,7 @@ sysinfo_dump ()
 	FAHT_MEM_TEST_RESULTS="n/a"
 	FAHT_CORE_THREAD="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
 	FAHT_MAX_MEMORY="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
-	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*([0-9]+).*/\1/')"
+	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*size: ([0-9]+).*/\1/g')"
 
 	if [[ "${FAHT_MEM_SIZE}" -le "4" ]]; then
 		FAHT_MEM_SIZE_RESULTS="FAILED"
