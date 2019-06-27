@@ -90,7 +90,7 @@ fi
 
 lshw -c system>/tmp/fs.txt
 
-FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: \([A-z]+\)/\1/')
+FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')
 FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')
 FAHT_COMPUTER_SERIAL=$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')
 FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL"
