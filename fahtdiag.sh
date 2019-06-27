@@ -142,7 +142,7 @@ sysinfo_dump ()
 	FAHT_MEM_TEST_RESULTS="n/a"
 	FAHT_CORE_THREAD="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
 	FAHT_MAX_MEMORY="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
-	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank:0/'|grep size|sed -r 's/.*size: ([0-9]+).*/\1/g')"
+	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank/'|grep size|sed -r 's/.*size: ([0-9]+).*/\1/g')"
 
 	if [[ "${FAHT_MEM_SIZE}" -le "4" ]]; then
 		FAHT_MEM_SIZE_RESULTS="FAILED"
@@ -189,14 +189,14 @@ sysinfo_dump ()
 
 	FAHT_BATT_DESIGN_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_CURR_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
-	FAHT_BATT_HEALTH="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
+	FAHT_BATT_HEALTH_RAW="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*= ([0-9]*).*/\1/')"
 	
-	if [[ "$FAHT_BATT_HEALTH" -ge "70" ]]; then
+	if [[ "$FAHT_BATT_HEALTH_RAW" -ge "70" ]]; then
 		FAHT_BATT_HEALTH_RESULTS="PASSED"
 	else
 		FAHT_BATT_HEALTH_RESULTS="FAILED"
 	fi
-	FAHT_BATT_HEALTH="${FAHT_BATT_HEALTH} %"
+	FAHT_BATT_HEALTH="${FAHT_BATT_HEALTH_RAW} %"
 
 	if [ "$(cat "$FAHT_WORKINGDIR"/acpi.txt)" == "" ]; then
 		FAHT_BATT_HEALTH_RESULTS="n/a"

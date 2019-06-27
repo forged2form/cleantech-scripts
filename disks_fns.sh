@@ -6,7 +6,7 @@ FAHT_TOTAL_TEST_DISKS=0
 declare -A FAHT_TEST_DISKS_ARRAY
 i=1
 j=
-for j in $(lsblk -n -r -o NAME|grep -v "$FAHT_LIVE_DEV"|grep -E -v "[0-9]"|grep -E "^[a-z]d[a-z]"); do
+for j in $(lsblk -drno NAME|grep -v "$FAHT_LIVE_DEV"); do
 	DISKNO=Disk${i}
 	FAHT_TOTAL_TEST_DISKS=$i
 	FAHT_TEST_DISKS_ARRAY[$i]=$j	
@@ -56,7 +56,7 @@ disk_array_setup ()
 
 		CURR_FAHT_DISK_ARRAY[totalsize_bytes]="$(lsblk -drnbo SIZE /dev/$j)"
 
-		if [[ "${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}" -ge "12800000000" ]]; then
+		if [[ "${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}" -ge "12800000000000" ]]; then
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
 		else
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
@@ -64,7 +64,7 @@ disk_array_setup ()
 		fi
 
 		pn=1
-		for p in $(lsblk -n -r -o NAME|grep "${CURR_FAHT_DISK_ARRAY[deviceid]}[0-9]"); do
+		for p in $(lsblk -nro NAME "/dev/${CURR_FAHT_DISK_ARRAY[deviceid]}"|sed "/${CURR_FAHT_DISK_ARRAY[deviceid]}$/d"); do
 			CURR_FAHT_DISK_ARRAY[part${pn}]=${p}
 			CURR_FAHT_DISK_ARRAY[totalparts]=${pn}
 			###TEMP echo Partition detected: ${CURR_FAHT_DISK_ARRAY[part${pn}]}
