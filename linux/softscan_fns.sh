@@ -7,7 +7,7 @@ virus_scan () {
 
 	if [ "${FAHT_CLAMAV}" == "true" ] ; then
 
-		if [ "${FAHT_QUICKMODE}" =="true" ]; then
+		if [ "${FAHT_QUICKMODE}" != "true" ]; then
 
 			echo "------------------------------------------------------"
 			echo "Scanning for viruses, malware, and PUPs (QUICKMODE)..."
@@ -37,7 +37,7 @@ virus_scan () {
 			fi
 		fi
 		
-		if [ "${FAHT_QUICKMODE}" != "true" ] ; then
+		if [ "${FAHT_QUICKMODE}" == "true" ] ; then
 
 			echo "------------------------------------------"
 			echo "Scanning for viruses, malware, and PUPs..."
@@ -48,9 +48,9 @@ virus_scan () {
 			echo
 			mount_avail_volumes
 
-			for curr_dir in "Windows Users" ; do
+			for curr_dir in Windows Users ; do
 				echo
-				echo Beginning scani of ${curr_dir}...
+				echo Beginning scan of ${curr_dir}...
 				clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan-${curr_dir}.txt" /mnt/faht/${FAHT_WIN_PART}/${curr_dir}/
 				FAHT_CLAMSCAN_RESULTS="$(echo $?)"
 
