@@ -56,7 +56,7 @@ disk_array_setup ()
 
 		CURR_FAHT_DISK_ARRAY[totalsize_bytes]="$(lsblk -drnbo SIZE /dev/$j)"
 
-		if [[ "${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}" -ge "12800000000000" ]]; then
+		if [[ "${CURR_FAHT_DISK_ARRAY[totalsize_bytes]}" -ge "127000000000" ]]; then
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=PASSED
 		else
 			CURR_FAHT_DISK_ARRAY[totalsize_results]=FAILED
