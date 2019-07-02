@@ -237,13 +237,17 @@ echo
 mount_avail_volumes
 echo
 
-: echo "Searching for Windows system volumts..."
+: echo "Searching for Windows system volumes..."
 find_win_part
 echo
 
-### NOTE: Must run SMART Assessments first, otherwise write benchmark willbe skipped.
+### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
 : echo "Running SMART Assessments..."
 smart_test
+echo
+
+: echo "Scanning filesystems..."
+virus_scan
 echo
 
 : echo "Benchmarking disks"
