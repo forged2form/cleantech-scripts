@@ -26,6 +26,7 @@ FAHT_DIAGMODE=
 FAHT_SHORTONLY=
 FAHT_QUICKMODE=
 FAHT_CLAMAV=
+FAHT_WIN_PART=
 
 source io.sh
 source hw_tests.sh
