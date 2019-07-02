@@ -1,0 +1,132 @@
+#!/bin/bash -xe
+clear
+echo -------------------------
+echo CleanTech - macOS Edition
+echo -------------------------
+
+DATE=`date +%Y-%m-%d`
+REMMINADIR=/home/techtutors/.local/share/remmina
+CWD="${HOME}"/Desktop/SERVER
+SHARE=
+MOUNTDIR=
+NETPASS=
+NETPASSOK=1
+SUDOTEST=1
+WIFIDEV=
+SUDOPASS=
+SERVER=techtutors-1.local
+
+echo Please enter client Details...
+read -p "First Name: " FIRSTNAME
+read -p "Last Name: " LASTNAME
+
+while [ $SUDOTEST -ne 0 ] ; do
+	echo Testing sudo password... If you can\'t get this to work, you might need to close the script and create a user password.
+	echo -n "Please enter user password: "
+	read -s SUDOPASS
+	echo $SUDOPASS|sudo -S echo "Password works!"
+	SUDOTEST=$(echo $?);
+done
+
+echo Installing TT Wifi Access...
+WIFIDEV="$(networksetup -listallhardwareports|grep -I -A2 Wi-Fi|sed -n 's/.*\(en[0-9]\).*/\1/p')"
+read -p "Please enter the current TechTutors Wi-Fi Password: " WIFIPASS
+echo $SUDOPASS| sudo -S networksetup -addpreferredwirelessnetworkatindex $WIFIDEV TechTutors-5G 0 WPA2 $WIFIPASS
+
+if [ ! -d "$CWD" ] ; then
+	echo Creating working directory on Desktop
+	mkdir "$CWD";
+fi
+
+cd "$CWD"
+
+echo Mounting TechTutors-1 Network Shares...
+
+while [ $NETPASSOK -ne 0 ] ; do
+	read -p "Please enter TechTutors network share password: " NETPASS
+	smbutil view //techtutors:$NETPASS@techtutors-1.local
+	NETPASSOK=$(echo $?);
+done
+
+for SHARE in "Public" "SysInfo" "CleanUpLogs" "Utilities" ; do
+	MOUNTDIR="$CWD"/"$SHARE"
+
+if [ ! -d "$MOUNTDIR" ] ; then
+	mkdir "$MOUNTDIR";
+fi
+
+mount -t smbfs //techtutors:$NETPASS@TechTutors-1.local/"$SHARE" "$MOUNTDIR"
+
+if [ $? -gt 0 ] ; then
+	echo ERROR with mounting. Attempting unmounting any existing mounts...
+	sudo umount //techtutors-1.local/"$SHARE";
+fi
+
+if [ $? -eq 0 ] ; then
+	# Need to add test that this worked correctly and loop back around. (In case of multiple password failures.)
+	echo Mapped TechTutors-1 Network Share \""$SHARE"\" to "$MOUNTDIR";
+fi
+done
+
+echo Turning on Remote Desktop temporarily...
+echo
+echo $SUDOPASS|sudo -S systemsetup -setremotelogin on
+dseditgroup com.apple.access_ssh
+dseditgroup -o create -q com.apple.access_ssh
+echo $SUDOPASS|sudo -S dseditgroup -o edit -a admin -t group com.apple.access_ssh
+echo $SUDOPASS|sudo -S /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent
+echo $SUDOPASS|sudo -S /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -allowAccessFor -specifiedUsers
+echo $SUDOPASS|sudo -S /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -users `whoami` -access -on -privs -all
+
+echo Install easy SSH access...
+cat $CWD/Public/AUTOBENCH/tim_id_rsa.pub >> ~/.ssh/authorized_keys
+
+## Not currently using REMMINA... Maybe will use for other stuff later...
+
+#echo Configuring Remmina on the server-side
+#REMMINACONF=$FIRSTNAME-$LASTNAME.remmina
+#scp -i $CWD/Utilities/tim_id_rsa techtutors@$SERVER:$REMMINADIR/defaultconfig $CWD/$REMMINACONF
+
+#HOSTNAME=$(hostname)
+#USERNAME=$(whoami)
+#CLIENTNAME="$FIRSTNAME $LASTNAME"
+
+#sed -i -e "s/HOSTNAME/$HOSTNAME/g" $REMMINACONF
+#sed -i -e "s/USERNAME/$USERNAME/g" $REMMINACONF
+#sed -i -e "s/CLIENTNAME/$CLIENTNAME/g" $REMMINACONF
+
+#scp -i $CWD/Utilities/tim_id_rsa $CWD/$REMMINACONF techtutors@$SERVER:$REMMINADIR/
+
+echo Listing current config...
+networksetup -getcomputername
+networksetup -listallhardwareports
+
+echo
+echo Dumping Pre-clean System Info... This might take a little while...
+system_profiler -detaillevel full -xml > "$CWD/SysInfo/$LASTNAME-$FIRSTNAME-preclean-$DATE.spx"
+echo
+
+echo Installing HomeBrew...
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+echo Installing Onyx, appcleaner, adobe flash player, TeamViewer 13
+brew cask install onyx appcleaner flash-player
+
+cp $CWD/Utilities/Installers/"Install TeamViewer 13.pkg" $CWD
+echo $SUDOPASS|sudo -S installer -pkg $CWD/"Install TeamViewer 13.pkg" -target /
+
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/TeamViewer.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"; killall Dock
+
+#### Reversal
+# echo $SUDOPASS|sudo systemsetup -setremotelogin off
+# echo $SUDOPASS|sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -configure -access -off
+# networksetup -removepreferredwirelessnetwork en0 TechTutors
+# networksetup -removepreferredwirelessnetwork en0 TechTutors-Guest
+# 
+#for SHARE in "Public" "SysInfo" "CleanUpLogs" ; do
+#	MOUNTDIR="$CWD"/"$SHARE"
+#	sudo unmount "$MOUNTDIR"
+#	rmdir "$MOUNTDIR"
+#done
+# rmdir "$CWD"
+# 

@@ -1,0 +1,59 @@
+What Tron is doing...
+
+AT PREP STAGE
+
+1. Gather client info (First/Last Name, password for autologin, if need a/v or not.)
+
+2. Map Beast to drive (a: ? t: ?)
+
+3. Copy files from \\BEAST\Documents\Clean Up to Desktop of current user in the folder "CleanTechTemp"
+
+4. Makes a sub-directory of CleanTechTemp labelled lastname-firstname-yyyy-mm-dd (further known as CLIENTDIR)
+
+5. Launches SecuritySoftView to allow user to manually look for active A/V that could cause problems with registry imports/edits
+
+6. Backs up registry keys that may get overwritten to CLIENTDIR .reg files
+
+7. Creates a pre-clean restore point
+
+8. Turns off UAC temporarily to make automatically launching elevated progs quicker (no prompt) via registry edits
+
+9. Sets autologon on temporarily via registry edits
+
+10. Dumps pre-clean system info to CLIENTDIR in dated .nfo files (viewable in Windows)
+
+11. Pre-emptively rebuilds performance counters to utilize for perfmoance metrics
+
+12. Runs a perfmon preset, saving logs temporarily to C:\CleanTech\
+
+13. Prepares next stage by setting next batch file to run at startup with client details passed as options
+
+14. Starts BootTimer to grab bootup time metric
+
+AT STARTCLEAN STAGE
+
+1. Waits for BootTimer to display bootup time, then grabs displayed time and places it in dated file in CLIENTDIR
+
+2. Force closes BootTimer's annoying extra cmd window and webpage
+
+3. Launches ADWCleaner, needs user input to scan (Will do this automatically in the future)
+
+4. Launces PC-Decrapifer, needs user input to observe and handle removal of bloatware.
+
+5. Sets PC to reboot into safe mode and next batch file to auto start with Windows shell (Be not afraid, this is reset early in the next batch file)
+
+6. Reboots into safemode for TRON stage.
+
+AT TRON STAGE
+
+1. Resets shell registry entry (no more lack of taskbar, et. al)
+
+2. Starts Tron in non-interactive mode (flags set -a -str -sdb -sdc)
+
+3. Sets next boot back to normal, with yet another batch file, and reboots
+
+AT FINISH STAGE
+
+1. Lies to end-user, this isn't the end.
+
+2. 
