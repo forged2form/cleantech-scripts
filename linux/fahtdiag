@@ -12,6 +12,7 @@ git pull
 rsync -avhP faht-report-template.fodt /usr/share/faht/
 rsync -avhP /usr/share/cleantech-scripts/win/ /mnt/usbdata/cleantech-win/
 rsync -avhP /usr/share/cleantech-scripts/macos/ /mnt/usbdata/cleantech-macos/
+cd /usr/share/cleantech-scripts/linux
 
 ### Dump current user to tmp var and re run as root  ###
 if (( UID !=0 )); then
