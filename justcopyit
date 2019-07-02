@@ -1,5 +1,0 @@
-justcopyit
-xcopy SOURCE DEST /c /f /s /t /k /r /h /o /x /y
-
-mirror it
-robocopy SRC DEST /e /zb /xj /copyall
