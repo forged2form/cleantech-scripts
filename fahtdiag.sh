@@ -7,7 +7,7 @@
 
 ### Update... ###
 
-cd /home/techtutors/Documents/cleantech-scripts
+cd /usr/share/cleantech-scripts
 git pull
 rsync -avhP faht-report-template.fodt /usr/share/faht/
 
