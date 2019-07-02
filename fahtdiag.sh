@@ -26,7 +26,7 @@ FAHT_CLAMAV=
 
 source io.sh
 source hw_tests.sh
-source softscan_fs.sh
+source softscan_fns.sh
 
 while getopts ":hdsqc" option; do
 	case $option in
