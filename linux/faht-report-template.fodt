@@ -1070,13 +1070,13 @@
     </table:table-row>
     <table:table-row>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal">Bloatware</text:p>
+	     <text:p text:style-name="TNormal">PUPs/Malicious Software</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="TNormal"> [[ FAHT_BLOAT ]] </text:p>
+      <text:p text:style-name="TNormal"> [[ FAHT_PUPS ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Software.A1" office:value-type="string">
-      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_BLOAT_RESULTS ]] </text:p>
+      <text:p text:style-name="RESULTSSTYLE"> [[ FAHT_PUPS_RESULTS ]] </text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row>
