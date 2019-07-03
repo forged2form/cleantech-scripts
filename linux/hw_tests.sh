@@ -6,7 +6,7 @@
 
 eth_test () {
 	### Network test - Ethernet ###
-	clear
+	echo
 	echo -------------------------------
 	echo Testing Ethernet... Please wait
 	echo -------------------------------
@@ -88,7 +88,7 @@ wifi_test () {
 audio_test ()
 {
 	### Audio test ###
-	clear
+	echo	
 	echo ----------------------------
 	echo Testing Audio... Please wait
 	echo ----------------------------

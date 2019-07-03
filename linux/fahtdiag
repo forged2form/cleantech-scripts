@@ -25,7 +25,7 @@ FAHT_QUICKMODE=false
 FAHT_DIAGMODE=
 FAHT_SHORTONLY=
 FAHT_QUICKMODE=true
-FAHT_CLAMAV=true
+FAHT_CLAMAV=false
 FAHT_WIN_PART=
 FAHT_PUPS=
 FAHT_PUPS_RESULTS=
@@ -221,47 +221,58 @@ sysinfo_dump ()
 }
 
 sysinfo_dump
+save_vars
 
 : echo "Testing ethernet connection..."
 eth_test
+save_vars
 
 : echo "Testing Wi-Fi connection..."
 wifi_test
+save_vars
 
 : echo "Testing Audio..."
 audio_test
+save_vars
 
 : echo "Testing GFX..."
 gfx_test
 echo
+save_vars
 
 source disks_fns.sh
 
 : echo "Setting up local disk arrays..."
 disk_array_setup
 echo
+save_vars
 
 : echo "Mounting avialable volumes..."
 mount_avail_volumes
 echo
+save_vars
 
 : echo "Searching for Windows system volumes..."
 find_win_part
 echo
+save_vars
 
 ### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
 : echo "Running SMART Assessments..."
 smart_test
 echo
+save_vars
 
 : echo "Scanning filesystems..."
 virus_scan
 echo
 
+save_vars
 : echo "Benchmarking disks"
 benchmark_disks
 echo
 
+save_vars
 : echo "Listing disk information..."
 echo
 
@@ -279,6 +290,8 @@ esac
 source parsing_fns.sh
 
 save_vars
+
+results_check
 
 #chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
 

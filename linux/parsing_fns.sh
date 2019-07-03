@@ -24,7 +24,7 @@ save_vars ()
 {
 	diskarray_to_flatvars
 
-	( set -o posix; set ) | grep FAHT > "$FAHT_WORKINGDIR"/raw_vars.txt
+	( set -o posix; set ) | grep FAHT_ > "$FAHT_WORKINGDIR"/raw_vars.txt
 	cat "$FAHT_WORKINGDIR"/raw_vars.txt|grep -v ARRAY > "$FAHT_WORKINGDIR"/vars_noarray.txt
 
 	sed -r 's/(FAHT_.*)=.*/\1/g' "$FAHT_WORKINGDIR"/vars_noarray.txt > "$FAHT_WORKINGDIR"/varsnames.txt
@@ -74,4 +74,24 @@ save_vars ()
 	sed -i 's|style-name="RESULTSSTYLE">FAILED|style-name="FAILED">FAILED|g' "$FAHT_WORKINGDIR"/faht-report.fodt
 	sed -i 's|style-name="RESULTSSTYLE">WARNING|style-name="WARNING">WARNING|g' "$FAHT_WORKINGDIR"/faht-report.fodt
 
+}
+
+results_check () {
+	### Iterate through tests run, check for failures, give option to check connection and re-test.
+
+	for x in wifi eth audio bluetooth ; do
+
+		declare -n faht_result=FAHT_$(echo ${x^^})_RESULTS
+
+		if [ "${faht_result}" == "FAILED" ] ; then
+			confirm_prompt "${x^} test failed. Would you like to re-run the ${x} test again?"
+			
+			case $prompt_answer in
+				y|Y) ${x}_test ;;
+				n|N) ;;
+			esac
+		fi
+	done
+	
+	save_vars
 }
