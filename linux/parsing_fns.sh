@@ -37,7 +37,7 @@ save_vars ()
 
 	while IFS= read line; do
 		varsNames[$i]=$line
-		echo ${varsNames[$i]}
+		: echo ${varsNames[$i]}
 		(( i++ ));
 	done < "$FAHT_WORKINGDIR"/varsnames.txt
 
@@ -45,7 +45,7 @@ save_vars ()
 
 	while IFS= read line; do
 		varsValues[$i]=$line
-		echo ${varsValues[$i]}
+		: echo ${varsValues[$i]}
 		(( i++ ));
 	done < "$FAHT_WORKINGDIR"/varsvalues.txt
 
@@ -60,7 +60,7 @@ save_vars ()
 	done
 
 	for x in ${varsNames[@]}; do
-		echo "Working on $x..."
+		: echo "Working on $x..."
 		sed -i "s| \[\[ ${x} \]\] |${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
 		(( i++ ));
 	done
