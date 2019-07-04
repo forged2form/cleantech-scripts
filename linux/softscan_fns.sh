@@ -48,7 +48,7 @@ virus_scan () {
 			echo
 			mount_avail_volumes
 
-			for curr_dir in Windows Users ; do
+			for curr_dir in Users ; do
 				echo
 				echo Beginning scan of ${curr_dir}...
 				clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan-${curr_dir}.txt" /mnt/faht/${FAHT_WIN_PART}/${curr_dir}/
