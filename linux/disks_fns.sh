@@ -6,7 +6,7 @@ FAHT_TOTAL_TEST_DISKS=0
 declare -A FAHT_TEST_DISKS_ARRAY
 i=1
 j=
-for j in $(lsblk -drno NAME|grep -v "$FAHT_LIVE_DEV"); do
+for j in $(lsblk -drno NAME|grep -v "$FAHT_LIVE_DEV"|grep -v sr0); do
 	DISKNO=Disk${i}
 	FAHT_TOTAL_TEST_DISKS=$i
 	FAHT_TEST_DISKS_ARRAY[$i]=$j	

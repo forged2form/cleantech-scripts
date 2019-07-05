@@ -1,0 +1,4 @@
+#!/bin/bash
+WINDOWS_BOOT=`grep -i "windows" /boot/grub/grub.cfg|head -n 1|cut -d"'" -f2`
+sudo /usr/sbin/grub-reboot "$WINDOWS_BOOT"
+sudo /sbin/reboot
