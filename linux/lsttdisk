@@ -3,18 +3,19 @@ echo
 echo "Listing attached disks"
 echo
 echo -e "DVD Drive:\t\t/dev/disk/by-id/data-HL-DT-ST_DVD-RW_GH41N_K9ZA7H93152"
-echo -e "Boot Drive:\t\t/dev/disk/by-id/ata-SAMSUNG_HD502HJ_S26EJ9AB201025"
+echo -e "Boot Drive:\t\t/dev/disk/by-id/ata-ST1000DL002-9TT153_W1V0R2RT"
 echo -e "Data Drive:\t\t/dev/disk/by-id/ata-ST4000DM004-2CV104_ZFN0D6XP"
-echo -e "Old Beast Drive:\t/dev/disk/by-id/ata-WDC_WD6400AAKS-22A7B2_WD-WCASY5758938" 
+echo -e "Scratch Disk:\t\t/dev/disk/by-id/ata-Samsung_SSD_850_EVO_1TB_S21CNWAG205449N"
+echo -e "Mac Drive:\t\t/dev/disk/by-id/ata-ST500DM002-1BD142_Z3TEDS5Q"
 echo 
 
-LSVARS="--color -x -C --ignore=*-part* --ignore=wwn* --ignore=*DVD* --ignore=*S26EJ9AB201025* --ignore=*ZFN0D6XP* --ignore=*WD-WCASY5758938*"
-FINDEXCLUDES="! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*S26EJ9AB201025*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' \)"
+LSVARS="--color -x -C --ignore=*-part* --ignore=wwn* --ignore=*DVD* --ignore=*ST1000DL002-9TT153_W1V0R2RT* --ignore=*Samsung_SSD_850_EVO_1TB_S21CNWAG205449N* --ignore=*ZFN0D6XP* --ignore=*WD-WCASY5758938* --ignore=*dm-name-fedora* --ignore=*ST500DM002-1BD142_Z3TEDS5Q*"
+#FINDEXCLUDES="! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*ST1000DL002-9TT153_W1V0R2RT*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' \)"
 
 ls $LSVARS /dev/disk/by-id
 echo
 ls $LSVARS /dev/disk/by-id|grep --color -i usb
 echo
-find /dev/disk/by-id -type l ! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*S26EJ9AB201025*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' \)
+find /dev/disk/by-id -type l ! \( -iname '*part*' -o -iname '*wwn*' -o -iname '*DVD*' -o -iname '*ST1000DL002-9TT153_W1V0R2RT*' -o -iname '*ZFN0D6XP*' -o -iname '*WD-WCASY5758938*' -o -iname '*dm-name-fedora*' -o -iname '*lvm-pv-uuid-GN8bze-IvbD-3aWF-GARQ-eBd5-CENT-0u1HVJ*' -o -iname '*dm-uuid-LVM-JNiypEqUpEE2EdQ61lBuJtcthwZBbPyN*' -o -iname '*Samsung_SSD_850_EVO_1TB_S21CNWAG205449N*' -o -iname '*ST500DM002-1BD142_Z3TEDS5Q*' \)
 echo
 

@@ -9,6 +9,12 @@ CONFIRM=n
 CLIENTNAME=
 DATE=`date +%Y-%m-%d-%H`
 
+### Dump current user to tmp var and re run as root  ###
+if (( UID !=0 )); then
+	echo Re-starting as root...
+	exec sudo -E "$0";
+fi
+
 clear
 echo -e "---------------------------"
 echo -e "TechTutor's DDRescue Script"
@@ -74,8 +80,8 @@ echo -e "\n\n-------------------------------------------------------------------
 echo -e "Client Name: \e[1m$CLIENTNAME\e[0m"
 echo -e "Disk to be recovered: \e[1m$DISKNAME\e[0m\n"
 echo -e "Going to run the following commands: \n"
-echo -e "\e[1msudo ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log\e[0m"
-echo -e "\e[1msudo ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log\e[0m"
+echo -e "\e[1m ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log\e[0m"
+echo -e "\e[1m ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log\e[0m"
 echo ""
 
 while true; do
@@ -94,10 +100,10 @@ done
 echo -e "Okay. Running.\n"
 
 echo
-echo "sudo ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log"
-sudo ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log
+echo "ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log"
+ddrescue -n $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log
 echo
-echo "sudo ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log"
-sudo ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log
+echo "ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log"
+ddrescue -r3 $DISKNAME /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.img /mnt/Data/ClientBackups/DiskImages/$CLIENTNAME-$DATE.log
 echo -e "\n\n-------------------------------------------------------------------------------\n"
 echo -e "All Done!\n"
