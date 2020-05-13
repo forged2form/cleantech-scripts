@@ -37,7 +37,7 @@ source softscan_fns.sh
 
 while getopts ":hdsqc" option; do
 	case $option in
-		h) echo "usage: $0 [-h] [-d] [-s] [-q] [-c]..."; exit ;;
+		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan..."; exit ;;
 		d) FAHT_DIAGMODE=true ;;
 		s) FAHT_SHORTONLY=true ;;
 		q) FAHT_QUICKMODE=true ;;
