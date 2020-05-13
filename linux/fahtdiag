@@ -299,3 +299,5 @@ echo -e "All Done!\n"
 echo
 echo Opening faht-report.fodt
 soffice "${FAHT_WORKINGDIR}/faht-report.fodt"
+
+rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
