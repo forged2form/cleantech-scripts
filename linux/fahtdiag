@@ -34,6 +34,8 @@ FAHT_CLAMSCAN_RESULTS=
 source io.sh
 source hw_tests.sh
 source softscan_fns.sh
+source parsing_fns.sh
+source disks_fns.sh
 
 while getopts ":hdsqc" option; do
 	case $option in
@@ -240,7 +242,6 @@ gfx_test
 echo
 save_vars
 
-source disks_fns.sh
 
 : echo "Setting up local disk arrays..."
 disk_array_setup
@@ -287,7 +288,6 @@ case $prompt_answer in
 	n|N) FAHT_POWER_RESULTS=PASSED ;;
 esac
 
-source parsing_fns.sh
 
 save_vars
 
