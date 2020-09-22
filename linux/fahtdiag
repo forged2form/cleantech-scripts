@@ -34,8 +34,6 @@ FAHT_CLAMSCAN_RESULTS=
 source io.sh
 source hw_tests.sh
 source softscan_fns.sh
-source parsing_fns.sh
-source disks_fns.sh
 
 while getopts ":hdsqc" option; do
 	case $option in
@@ -94,7 +92,7 @@ if [ "$FAHT_DIAGMODE" == "true" ]; then
 	clear
 	set -x
 	echo DIAG MODE ACTIVATED!!!!!!!!
-	###TEMP DIAG=break_program;
+	DIAG=break_program;
 fi
 ### Get basic system id for faht folder ###
 
@@ -222,41 +220,38 @@ sysinfo_dump ()
 	$DIAG
 }
 
+source parsing_fns.sh
+source disks_fns.sh
 sysinfo_dump
-save_vars
 
 : echo "Testing ethernet connection..."
 eth_test
-save_vars
 
 : echo "Testing Wi-Fi connection..."
 wifi_test
-save_vars
 
 : echo "Testing Audio..."
 audio_test
-save_vars
 
 : echo "Testing GFX..."
 gfx_test
 echo
+
+source disks_fns.sh
 save_vars
-
-
 : echo "Setting up local disk arrays..."
 disk_array_setup
 echo
-save_vars
+$DIAG
 
-: echo "Mounting avialable volumes..."
+: echo "Mounting available volumes..."
 mount_avail_volumes
 echo
-save_vars
+$DIAG
 
 : echo "Searching for Windows system volumes..."
 find_win_part
 echo
-save_vars
 
 ### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
 : echo "Running SMART Assessments..."
@@ -268,7 +263,6 @@ save_vars
 virus_scan
 echo
 
-save_vars
 : echo "Benchmarking disks"
 benchmark_disks
 echo

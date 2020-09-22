@@ -46,7 +46,7 @@ disk_array_setup ()
 		### Trim whitespace...
 		CURR_FAHT_DISK_ARRAY[name]=$(echo ${CURR_FAHT_DISK_ARRAY[name]})
 
-		###TEMP echo Working on Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviceid]}
+		echo Working on Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviceid]}
 		###TEMP echo
 
 
@@ -67,7 +67,7 @@ disk_array_setup ()
 		for p in $(lsblk -nro NAME "/dev/${CURR_FAHT_DISK_ARRAY[deviceid]}"|sed "/${CURR_FAHT_DISK_ARRAY[deviceid]}$/d"); do
 			CURR_FAHT_DISK_ARRAY[part${pn}]=${p}
 			CURR_FAHT_DISK_ARRAY[totalparts]=${pn}
-			###TEMP echo Partition detected: ${CURR_FAHT_DISK_ARRAY[part${pn}]}
+			echo Partition detected: ${CURR_FAHT_DISK_ARRAY[part${pn}]}
 			(( pn++ ));
 		done
 		(( i++ ));
@@ -78,7 +78,7 @@ disk_array_setup ()
 	i=1
 	q=1
 
-	echo Searching disks for paritions...
+	echo Searching disks for partitions...
 	echo --------------------------------
 	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
