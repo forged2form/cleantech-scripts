@@ -98,13 +98,13 @@ audio_test ()
 	audio_test_complete=0
 
 	while [[ "$audio_test_complete" -eq 0 ]]; do
-	amixer -D pulse sset Master 80% unmute
+	su techtutors -c "amixer -D pulse sset Master 80% unmute" -s /bin/bash
 
 		for i in {1..3}; do
-			mplayer /usr/share/faht/starcmd.m4a > /dev/null 2>&1
+			su techtutors -c "mplayer /usr/share/faht/starcmd.m4a > /dev/null 2>&1" -s /bin/bash
 		done
 
-		amixer -D pulse sset Master 40%
+		su techtutors -c "amixer -D pulse sset Master 40%" -s /bin/bash
 
 		confirm_prompt "Did you hear the test tone?"
 
