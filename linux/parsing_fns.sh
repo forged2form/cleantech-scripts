@@ -3,7 +3,7 @@
 ### parsing_fns.sh
 ###
 ### Functions related to parsing results for FAHT test + outputting to file
-
+index=
 diskarray_to_flatvars () {
 	i=1
 	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
@@ -51,23 +51,28 @@ save_vars ()
 
 	i=0
 
-	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
+	#cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
 
 	### Remove single quotes from values...
+
+	index=
 
 	for index in ${!varsValues[@]}; do
 		varsValues[$index]=$(echo ${varsValues[$index]//\'/})
 	done
 
+	j=0
+
 	for x in ${varsNames[@]}; do
 		: echo "Working on $x..."
-		sed -i "s| \[\[ ${x} \]\] |${varsValues[$i]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
-		(( i++ ));
+		: echo "Var number: $j"
+		sed -i "s|\[\[ ${x} \]\] |${varsValues[$j]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
+		(( j++ ));
 	done
 
 	### clean up any unused vars for now...
 
-	sed -i "s| \[\[ .* \]\] ||g" "$FAHT_WORKINGDIR"/faht-report.fodt
+	sed -i "s|\[\[ .* \]\] ||g" "$FAHT_WORKINGDIR"/faht-report.fodt
 
 
 	sed -i 's|style-name="RESULTSSTYLE">PASSED|style-name="PASSED">PASSED|g' "$FAHT_WORKINGDIR"/faht-report.fodt

@@ -9,17 +9,18 @@
 
 cd /usr/share/cleantech-scripts
 git pull
-rsync -avhP faht-report-template.fodt /usr/share/faht/
+rsync -avhP linux/faht-report-template.fodt /usr/share/faht/
 rsync -vP /usr/share/cleantech-scripts/win/ /mnt/usbdata/cleantech-win/
 rsync -vP /usr/share/cleantech-scripts/macos/ /mnt/usbdata/cleantech-macos/
 cd /usr/share/cleantech-scripts/linux
 
 ### Dump current user to tmp var and re run as root  ###
-if (( UID !=0 )); then
+### No good. Can't run, and shouldn't run everything as root. Using visudo to allow promptless sudo now...
+#if (( UID !=0 )); then
 	whoami>/tmp/fahtdiaguser
-	echo Re-starting as root...
-	exec sudo -E "$0" "$@"
-fi
+#	echo Re-starting as root...
+#	exec sudo -E "$0" "$@"
+#fi
 
 FAHT_QUICKMODE=false
 FAHT_DIAGMODE=
@@ -30,18 +31,21 @@ FAHT_WIN_PART=
 FAHT_PUPS=
 FAHT_PUPS_RESULTS=
 FAHT_CLAMSCAN_RESULTS=
+TESTONLY=
 
 source io.sh
 source hw_tests.sh
 source softscan_fns.sh
 
-while getopts ":hdsqc" option; do
+while getopts ":hdsqcto" option; do
 	case $option in
-		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan..."; exit ;;
+		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan [-t] testmode [-o] only "TEST"..."; exit ;;
 		d) FAHT_DIAGMODE=true ;;
 		s) FAHT_SHORTONLY=true ;;
 		q) FAHT_QUICKMODE=true ;;
 		c) FAHT_CLAMAV=true ;;
+		t) TESTONLY=true ;;
+		o) ONETEST=$OPTARG ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -96,7 +100,7 @@ if [ "$FAHT_DIAGMODE" == "true" ]; then
 fi
 ### Get basic system id for faht folder ###
 
-lshw -c system>/tmp/fs.txt
+sudo lshw -c system>/tmp/fs.txt
 
 FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')
 FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')
@@ -116,16 +120,16 @@ sysinfo_dump ()
 	$DIAG
 	echo
 
-	modprobe eeprom
+	sudo modprobe eeprom
 	for i in system memory disk bus multimedia power display processor bridge volume network; do
-		lshw -c "$i" >"$FAHT_WORKINGDIR"/lshw-"$i".txt;
+		sudo lshw -c "$i" >"$FAHT_WORKINGDIR"/lshw-"$i".txt;
 	done
 
 	for i in bios system baseboard chassis processor memory cache connector slot; do
-		dmidecode -t $i >"$FAHT_WORKINGDIR"/dmidecode-$i.txt;
+		sudo dmidecode -t $i >"$FAHT_WORKINGDIR"/dmidecode-$i.txt;
 	done
 
-	lscpu>"$FAHT_WORKINGDIR"/lscpu.txt
+	sudo lscpu>"$FAHT_WORKINGDIR"/lscpu.txt
 
 	### Not sure if we'll ever use this since it just grabs a whole bunch of info from (mostly) commands that we will run, but dumping it for potentially future use...
 
@@ -133,7 +137,7 @@ sysinfo_dump ()
 
 	### Grab summary info for summary sheet ###
 
-	FAHT_COMPUTER_DESC="$(cat "$FAHT_WORKINGDIR"/lshw-system.txt|grep product|sed -r 's/.*product: (.*) \(.*/\1/')"
+	FAHT_COMPUTER_DESC="$(cat "$FAHT_WORKINGDIR"/lshw-system.txt|grep product|head -n 1|sed -r 's/.*product: (.*) \(.*/\1/')"
 	FAHT_COMPUTER_DESC="$(echo $FAHT_COMPUTER_DESC)"
 	FAHT_PROC_MODEL="$(cat "$FAHT_WORKINGDIR"/lshw-processor.txt|grep product|sed 's/.*product: //')"
 	FAHT_SOCKET_COUNT="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|grep -i "Socket(s):"|sed 's/[^0-9]*//g')"
@@ -183,7 +187,7 @@ sysinfo_dump ()
 		FAHT_PROC_THREADS_RESULTS="PASSED"
 	fi
 	FAHT_CPU_MODEL="$(cat /proc/cpuinfo|grep -i -m 1 "model name"|sed -r 's/model name.*: (.*)/\1/g'|sed -n 's/  */ /gp')"
-	FAHT_PROC_SPEED_MHZ="$(cat $FAHT_WORKINGDIR/dmidecode-processor.txt|grep "Current Speed"|sed 's/[^0-9*]//g')"
+	FAHT_PROC_SPEED_MHZ="$(cat $FAHT_WORKINGDIR/dmidecode-processor.txt|grep "Current Speed"|tail -1|sed 's/[^0-9*]//g')"
 	if [[ "${FAHT_PROC_SPEED_MHZ}" -lt "1600" ]]; then
 		FAHT_PROC_SPEED_RESULTS="FAILED"
 	fi
@@ -193,7 +197,7 @@ sysinfo_dump ()
 
 	FAHT_PROC_SPEED="$(echo "scale=2;$FAHT_PROC_SPEED_MHZ/1000"|bc)"
 
-	acpi -i>"$FAHT_WORKINGDIR"/acpi.txt
+	sudo acpi -i>"$FAHT_WORKINGDIR"/acpi.txt
 
 	FAHT_BATT_DESIGN_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*design capacity ([0-9]*).*/\1/') mAh"
 	FAHT_BATT_CURR_CAPACITY="$(cat "$FAHT_WORKINGDIR"/acpi.txt|tail -1|sed -r 's/.*full capacity ([0-9]*).*/\1/') mAh"
@@ -214,15 +218,51 @@ sysinfo_dump ()
 	fi
 
 	### Note block device where linux is currently mounted for using as an exception when listing hdds
-	FAHT_LIVE_DEV="$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
+	FAHT_LIVE_DEV="$(sudo mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
 	j=1
 
 	$DIAG
 }
 
 source parsing_fns.sh
-source disks_fns.sh
 sysinfo_dump
+
+#save_vars
+source disks_fns.sh
+echo "Setting up local disk arrays..."
+disk_array_setup
+echo
+$DIAG
+
+echo "Mounting available volumes..."
+mount_avail_volumes
+echo
+$DIAG
+
+echo "Searching for Windows system volumes..."
+find_win_part
+echo
+
+### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
+echo "Running SMART Assessments..."
+smart_test
+echo
+#save_vars
+
+echo "Scanning filesystems..."
+virus_scan
+echo
+
+echo "Benchmarking disks"
+benchmark_disks
+echo
+
+#save_vars
+echo "Listing disk information..."
+echo
+
+list_disks_info
+echo
 
 : echo "Testing ethernet connection..."
 eth_test
@@ -237,43 +277,6 @@ audio_test
 gfx_test
 echo
 
-source disks_fns.sh
-save_vars
-: echo "Setting up local disk arrays..."
-disk_array_setup
-echo
-$DIAG
-
-: echo "Mounting available volumes..."
-mount_avail_volumes
-echo
-$DIAG
-
-: echo "Searching for Windows system volumes..."
-find_win_part
-echo
-
-### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
-: echo "Running SMART Assessments..."
-smart_test
-echo
-save_vars
-
-: echo "Scanning filesystems..."
-virus_scan
-echo
-
-: echo "Benchmarking disks"
-benchmark_disks
-echo
-
-save_vars
-: echo "Listing disk information..."
-echo
-
-list_disks_info
-echo
-
 echo !!! Almost done !!!
 confirm_prompt "Did you notice any power issues during the test?"
 
@@ -281,7 +284,6 @@ case $prompt_answer in
 	y|Y) FAHT_POWER_RESULTS=FAILED ;;
 	n|N) FAHT_POWER_RESULTS=PASSED ;;
 esac
-
 
 save_vars
 
@@ -294,4 +296,7 @@ echo
 echo Opening faht-report.fodt
 soffice "${FAHT_WORKINGDIR}/faht-report.fodt"
 
-rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
+if [[ $TESTONLY != "true" ]]; then
+	rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
+	ssh tt1.local chown -Rfv techtutors:ttdata /home/PublicShare/FAHT-Reports/
+fi

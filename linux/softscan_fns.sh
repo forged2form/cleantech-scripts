@@ -20,7 +20,7 @@ virus_scan () {
 
 			echo
 			echo Beginning scan...
-			clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan.txt" /mnt/faht/*
+			sudo clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan.txt" /mnt/faht/*
 
 			FAHT_CLAMSCAN_RESULTS="$(echo $?)"
 
@@ -51,7 +51,7 @@ virus_scan () {
 			for curr_dir in Users ; do
 				echo
 				echo Beginning scan of ${curr_dir}...
-				clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan-${curr_dir}.txt" /mnt/faht/${FAHT_WIN_PART}/${curr_dir}/
+				sudo clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan-${curr_dir}.txt" /mnt/faht/${FAHT_WIN_PART}/${curr_dir}/
 				FAHT_CLAMSCAN_RESULTS="$(echo $?)"
 
 				if [ "$FAHT_CLAMSCAN_RESULTS" eq "1" ] ; then

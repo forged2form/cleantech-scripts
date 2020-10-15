@@ -4,7 +4,7 @@
 
 DIAG=pause_input
 
-FAHT_LIVE_DEV="$(mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
+FAHT_LIVE_DEV="$(sudo mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
 
 FAHT_WORKINGDIR=/tmp
 
@@ -19,7 +19,7 @@ FAHT_TOTAL_TEST_DISKS=0
 declare -A FAHT_TEST_DISKS_ARRAY
 i=1
 j=
-for j in $(lsblk -n -r -o NAME|grep -v "$FAHT_LIVE_DEV"|grep -E -v "[0-9]"|grep -E "^[a-z]d[a-z]"); do
+for j in $(sudo lsblk -n -r -o NAME|grep -v "$FAHT_LIVE_DEV"|grep -E -v "[0-9]"|grep -E "^[a-z]d[a-z]"); do
 	DISKNO=Disk${i}
 	FAHT_TOTAL_TEST_DISKS=$i
 	FAHT_TEST_DISKS_ARRAY[$i]=$j	
@@ -65,7 +65,7 @@ disk_array_setup ()
 		CURR_FAHT_DISK_ARRAY[totalsize]=$(lsblk -drno SIZE /dev/$j)
 		
 		pn=1
-		for p in $(lsblk -n -r -o NAME|grep "${CURR_FAHT_DISK_ARRAY[deviceid]}[0-9]"); do
+		for p in $(sudo lsblk -n -r -o NAME|grep "${CURR_FAHT_DISK_ARRAY[deviceid]}[0-9]"); do
 			CURR_FAHT_DISK_ARRAY[part${pn}]=${p}
 			CURR_FAHT_DISK_ARRAY[totalparts]=${pn}
 			###TEMP echo Partition detected: ${CURR_FAHT_DISK_ARRAY[part${pn}]}
@@ -107,7 +107,7 @@ disk_array_setup ()
 smart_drive_find () {
 
 	### Testing for SMART-capable drives ###
-	smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV
+	sudo smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV
 
 	if [ $? -eq 0 ]; then
 		## Setting SMART capable drives in array for testing
@@ -116,7 +116,7 @@ smart_drive_find () {
 
 	j=0
 
-	for i in $(echo "$(smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
+	for i in $(echo "$(sudo smartctl --scan| grep -v $FAHT_LIVE_DEV| sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
 		FAHT_SMART_DRIVES_ARRAY[$j]="$i"
 		echo $j
 		echo FAHT_SMART_DRIVES_ARRAY[$j] = ${FAHT_SMART_DRIVES_ARRAY[$j]}
@@ -140,9 +140,9 @@ mount_avail_volumes () {
 	echo Attempting to mount volumes....
 	echo -------------------------------
 
-	if [ ! -d /mnt/faht ]; then mkdir /mnt/faht; fi
+	if [ ! -d /mnt/faht ]; then sudo mkdir /mnt/faht; fi
 	for i in /mnt/faht/*; do
-		umount $i
+		sudo umount $i
 		rmdir $i;
 	done
 
@@ -152,7 +152,7 @@ mount_avail_volumes () {
 
 		pn=1
 		while [[ "$pn" -le ${CURR_FAHT_DISK_ARRAY[totalparts]} ]]; do
-			umount /dev/${FAHT_TEST_PARTS_ARRAY[$pn]} 2>/dev/null
+			sudo umount /dev/${FAHT_TEST_PARTS_ARRAY[$pn]} 2>/dev/null
 			(( pn++ ));
 		done
 
@@ -160,21 +160,21 @@ mount_avail_volumes () {
 		while [[ "$pn" -le ${CURR_FAHT_DISK_ARRAY[totalparts]} ]]; do
 			x=${CURR_FAHT_DISK_ARRAY[part${pn}]}
 			if [ ! -d /mnt/faht/${x} ]; then
-				mkdir /mnt/faht/${x}
+				sudo mkdir /mnt/faht/${x}
 				echo Created mountpount: /mnt/faht/${x};
 			fi
-			mount /dev/$x /mnt/faht/$x 2>/dev/null
+			sudo mount /dev/$x /mnt/faht/$x 2>/dev/null
 			if [[ "$?" -ne "0" ]]; then
 				echo Mount of /dev/${x} failed. Removing mountpoint...
-				rmdir /mnt/faht/${x}
+				sudo rmdir /mnt/faht/${x}
 			else echo mounted /dev/$x /mnt/faht/$x
 			fi
 
 			if [[ -z ${CURR_FAHT_DISK_ARRAY[benchvol]} ]]; then
-				touch /mnt/faht/$x/test
+				sudo touch /mnt/faht/$x/test
 				if [[ "$?" -eq "0" ]]; then
 					CURR_FAHT_DISK_ARRAY[benchvol]=/mnt/faht/$x
-					rm /mnt/faht/$x/test
+					sudo rm /mnt/faht/$x/test
 					echo
 					echo ---
 					benchvol_free_mb=$(df -h --output=avail /mnt/faht/$x|tail -1|sed -r 's/ ([0-9]+).*/\1/g')
@@ -248,7 +248,7 @@ benchmark_disks () {
 			WRITE_TEST="NO";
 		fi
 
-		TESTDEV_SIZE_IN_BYTES=$(lsblk -dnrbo SIZE /dev/${CURR_FAHT_DISK_ARRAY[deviceid]})
+		TESTDEV_SIZE_IN_BYTES=$(sudo lsblk -dnrbo SIZE /dev/${CURR_FAHT_DISK_ARRAY[deviceid]})
 		echo TESTDEV_SIZE_IN_BYTES = ${TESTDEV_SIZE_IN_BYTES}
 
 		#1GB Block size (1073741824 bytes)
@@ -269,8 +269,8 @@ benchmark_disks () {
 		
 		while [[ "$c" -ge "1" ]]; do
 			START_PLACE="$((( $TOTAL_DATA_SIZE_IN_BLOCKS - "$c" )))"
-			echo "dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
-			dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
+			echo "sudo dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+			sudo dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
 			sleep 5
 			
 			RSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
@@ -325,9 +325,9 @@ benchmark_disks () {
 		MOUNT_RESULT=""
 		CURR_DEV_UNMOUNTED="UNKNOWN"
 
-		umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}*
+		sudo umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}*
 
-		MOUNT_RESULT="$(mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
+		MOUNT_RESULT="$(sudo mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
 
 		if [[ "$MOUNT_RESULT" != "" ]]; then
 			CURR_DEV_UNMOUNTED="NO"
@@ -426,7 +426,7 @@ for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
 done
 echo
 
-umount /mnt/faht/*
-rmdir /mnt/faht/*
+sudo umount /mnt/faht/*
+sudo rmdir /mnt/faht/*
 benchmark_disks
 
