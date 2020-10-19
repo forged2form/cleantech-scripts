@@ -5,12 +5,16 @@ FAHT_TOTAL_TEST_DISKS=0
 ### Put disks in array minus current OS disk
 declare -A FAHT_TEST_DISKS_ARRAY
 i=1
+n=0
 j=
+
+### Ignore optical drive - Presuming only one at this point...
+
 for j in $(sudo lsblk -drno NAME|grep -v "$FAHT_LIVE_DEV"|grep -v sr0); do
 	DISKNO=Disk${i}
 	FAHT_TOTAL_TEST_DISKS=$i
 	FAHT_TEST_DISKS_ARRAY[$i]=$j	
-	((i++));
+	truenumber=$((i++));
 done
 
 if [[ "$FAHT_DIAGMODE" ]]; then
@@ -28,6 +32,13 @@ FAHT_DISK_BENCH_VOL=
 
 disk_array_setup ()
 {
+
+	local FAHT_disknum=$truenumber
+
+	if [ "$FAHT_TOTAL_TEST_DISKS" -le 0 ]; then
+		return 1;
+	fi
+
 	###TEMP echo Number of Disks to test: $FAHT_TOTAL_TEST_DISKS
 	i=1
 	for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
@@ -119,6 +130,7 @@ disk_array_setup ()
 			fi
 		done
 	done
+	return $FAHT_disknum
 }
 
 smart_drive_find () {
@@ -302,15 +314,15 @@ smart_test ()
 					echo
 
 				fi
-				CURR_FAHT_DISK_ARRAY[selftest_results]="n/a"
-				SELFTEST_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sudo sed 's/.*Completed without error.*/PASSED/g')
+			fi
+			CURR_FAHT_DISK_ARRAY[selftest_results]="n/a"
+			SELFTEST_PASSED=$(cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt|grep "# 1"|sudo sed 's/.*Completed without error.*/PASSED/g')
 
-				if [ "$SELFTEST_PASSED" == "PASSED" ]; then
-					CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
-				else
-					CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED"
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} SMART Self-Test failed."
-				fi
+			if [ "$SELFTEST_PASSED" == "PASSED" ]; then
+				CURR_FAHT_DISK_ARRAY[selftest_results]="PASSED";
+			else
+				CURR_FAHT_DISK_ARRAY[selftest_results]="FAILED"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} SMART Self-Test failed."
 			fi
 		fi
 		(( i++ ))
@@ -554,7 +566,7 @@ benchmark_disks () {
 		MOUNT_RESULT=""
 		CURR_DEV_UNMOUNTED="UNKNOWN"
 
-		umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}* 2>/dev/null
+		sudo umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}* 2>/dev/null
 
 		MOUNT_RESULT="$(sudo mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
 

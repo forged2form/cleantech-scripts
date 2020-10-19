@@ -8,7 +8,7 @@
 ### Update... ###
 
 cd /usr/share/cleantech-scripts
-git pull
+git fetch
 rsync -avhP linux/faht-report-template.fodt /usr/share/faht/
 rsync -vP /usr/share/cleantech-scripts/win/ /mnt/usbdata/cleantech-win/
 rsync -vP /usr/share/cleantech-scripts/macos/ /mnt/usbdata/cleantech-macos/
@@ -154,7 +154,7 @@ sysinfo_dump ()
 	FAHT_MEM_TEST_RESULTS="n/a"
 	FAHT_CORE_THREAD="$(cat "$FAHT_WORKINGDIR"/lscpu.txt|egrep -i -m 1 ".*Thread.*core*"|sed 's/[^0-9]*//g')"
 	FAHT_MAX_MEMORY="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep -i -m 1 "Maximum Capacity:"|sed 's/[^0-9]*//g')"
-	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |awk '/*-memory/,/*-bank/'|grep size|sed -r 's/.*size: ([0-9]+).*/\1/g')"
+	FAHT_MEM_SIZE="$(cat "$FAHT_WORKINGDIR"/lshw-memory.txt |sed -n '/*-memory/,/*-bank/p'|grep size|sed -r 's/.*size: ([0-9]+).*/\1/g')"
 
 	if [[ "${FAHT_MEM_SIZE}" -le "4" ]]; then
 		FAHT_MEM_SIZE_RESULTS="FAILED"
@@ -229,40 +229,41 @@ sysinfo_dump
 
 #save_vars
 source disks_fns.sh
-echo "Setting up local disk arrays..."
 disk_array_setup
-echo
 $DIAG
 
-echo "Mounting available volumes..."
-mount_avail_volumes
-echo
-$DIAG
+if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ]; then
 
-echo "Searching for Windows system volumes..."
-find_win_part
-echo
+	echo "Mounting available volumes..."
+	mount_avail_volumes
+	echo
+	$DIAG
 
-### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
-echo "Running SMART Assessments..."
-smart_test
-echo
-#save_vars
+	echo "Searching for Windows system volumes..."
+	find_win_part
+	echo
 
-echo "Scanning filesystems..."
-virus_scan
-echo
+	### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
+	echo "Running SMART Assessments..."
+	smart_test
+	echo
+	#save_vars
 
-echo "Benchmarking disks"
-benchmark_disks
-echo
+	echo "Scanning filesystems..."
+	virus_scan
+	echo
 
-#save_vars
-echo "Listing disk information..."
-echo
+	echo "Benchmarking disks"
+	benchmark_disks
+	echo
 
-list_disks_info
-echo
+	#save_vars
+	echo "Listing disk information..."
+	echo
+
+	list_disks_info
+	echo
+fi
 
 : echo "Testing ethernet connection..."
 eth_test
@@ -270,12 +271,12 @@ eth_test
 : echo "Testing Wi-Fi connection..."
 wifi_test
 
-: echo "Testing Audio..."
-audio_test
-
 : echo "Testing GFX..."
 gfx_test
 echo
+
+: echo "Testing Audio..."
+audio_test
 
 echo !!! Almost done !!!
 confirm_prompt "Did you notice any power issues during the test?"
