@@ -121,7 +121,8 @@ client_details ()
 
 	CONFIRM=
 	FAHT_CLIENTNAME="$FAHT_LASTNAME-$FAHT_FIRSTNAME"
-	FAHT_WORKINGDIR=/mnt/usbdata/faht-tests/"$FAHT_CLIENTNAME"-"$FAHT_TEST_DATE"-"$FAHT_TEST_TIME"-"$FAHT_COMP_DESC"
+	FAHT_CLIENTDIR=/mnt/usbdata/faht-tests/"$FAHT_CLIENTNAME"
+	FAHT_WORKINGDIR="$FAHT_CLIENTDIR"/"$FAHT_TEST_DATE"-"$FAHT_TEST_TIME"-"$FAHT_COMP_DESC"
 	FAHT_WORKINGDIR=$(echo $FAHT_WORKINGDIR|sed 's/ //g'|sed 's/\.//g')
 
 	#FAHT_TEMP="$(lshw -class system|grep product|sed -r 's/.*product: (.*) \(.*)/\1/'|sed 's/ /_/g'')"
@@ -129,6 +130,10 @@ client_details ()
 	if [ ! -d /mnt/usbdata/faht-tests ]; then
 		mkdir /mnt/usbdata/faht-tests
 		#chown "$FAHT_CURR_USER":"$FAHT_CURR_USER" /home/"$FAHT_CURR_USER"/fahttest;
+	fi
+
+	if [ ! -d "$FAHT_CLIENTDIR" ]; then
+		mkdir "$FAHT_CLIENTDIR"
 	fi
 
 	if [ ! -d "$FAHT_WORKINGDIR" ]; then

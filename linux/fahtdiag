@@ -293,6 +293,9 @@ results_check
 
 #chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
 
+mkdir "${FAHT_WORKINGDIR}"/logfiles
+mv "${FAHT_WORKINGDIR}"/*.txt "${FAHT_WORKINGDIR}"/logfiles/
+
 echo -e "All Done!\n"
 echo
 echo Opening faht-report.fodt
