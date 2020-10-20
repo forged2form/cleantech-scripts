@@ -36,6 +36,7 @@ TESTONLY=
 source io.sh
 source hw_tests.sh
 source softscan_fns.sh
+source sequence_fns.sh
 
 while getopts ":hdsqcto" option; do
 	case $option in

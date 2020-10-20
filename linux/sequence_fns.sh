@@ -4,6 +4,10 @@
 
 ### in_stage $VAR
 
-in_stage () {
+if [ ! -d /home/"$(whoami)/.fahtdiag" ]; then
+	mkdir /home/"$(whoami)/.fahtdiag"
+fi
+
+curr_stage () {
         
 }  
