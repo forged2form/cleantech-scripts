@@ -6,16 +6,29 @@
 ### Pseudo code for now.
 ### Should be run elevated, and called by fahtdiag.
 
-## launch_kvm $VAR (disk to set as first HDD in vm)
+## launch_kvm $VAR (disk to set as SECOND HDD in vm)
+
+KVM=$(kvm-ok|grep exists)
 
 launch_kvm () {
 
-	kvm -m 2048 -drive if=ide,media=disk,format=raw,file=${CHANGEME_DETECTED_WIN_DISK} -drive if=ide,media=cdrom,file=/usr/share/faht/WinPE_amd64.iso -boot order=dc
+	sudo kvm -m 2048 -drive if=ide,media=disk,format=raw,file=/usr/share/faht/lsusb.img -drive if=ide,media=disk,format=raw,file=${CHANGEME_DETECTED_WIN_DISK} -display gtk,zoom-to-fit=on
+
+	#kvm -m 2048 -drive if=ide,media=disk,format=raw,file=${CHANGEME_DETECTED_WIN_DISK} -drive if=ide,media=cdrom,file=/usr/share/faht/WinPE_amd64.iso -boot order=dc
 }
 
-## launch_qmeu $VAR (disk to set as first HDD)
+## launch_qmeu $VAR (disk to set as SECOND HDD)
 
 launch_qemu () {
-	qemu-system-x86_64 -m 1024 -drive if=ide,media=disk,format=raw,file=${CHANGEME_DETECTED_WIN_DISK} -drive if=ide,media=cdrom,file=/usr/share/faht/WinPE_amd64.iso -boot order=dc
 
+	sudo qemu-system-x86_64 -m 1024 -drive if=ide,media=disk,format=raw,file=/usr/share/faht/lsusb.img -drive if=ide,media=disk,format=raw,file=${CHANGEME_DETECTED_WIN_DISK} -display gtk,zoom-to-fit=on
+
+}
+
+run_windows_fs_checks () {
+	if [ "$KVM" ]; then
+		launch_kvm
+	else
+		launch_qemu
+	fi
 }
