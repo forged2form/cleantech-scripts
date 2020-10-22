@@ -186,7 +186,7 @@ smart_test ()
 		if [ "${CURR_FAHT_DISK_ARRAY[smart_capable]}" == "YES" ]; then
 			curr_smart_dev="${CURR_FAHT_DISK_ARRAY[deviceid]}"
 
-			smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
+			sudo smartctl -x /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 			: echo
 			: cat "$FAHT_WORKINGDIR"/smartlog-"$curr_smart_dev".txt
 			: echo
