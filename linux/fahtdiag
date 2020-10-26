@@ -259,16 +259,6 @@ if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ] && [ "$FAHT_DISK_TESTS" == "incomplete" ] 
 	set_stage mount_volumes
 	FAHT_NEXT_STAGE=smart_test
 
-	if [ "$FAHT_NEXT_STAGE" == "smart_test" ]; then
-		### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
-		echo "Running SMART Assessments..."
-		set_stage smart_test
-		smart_test
-		save_vars
-		FAHT_NEXT_STAGE=virus_scan
-	fi
-	echo
-
 	if [ ! $"FAHT_WIN_PART" ]; then
 
 		echo "Mounting available volumes..."
@@ -281,6 +271,16 @@ if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ] && [ "$FAHT_DISK_TESTS" == "incomplete" ] 
 		save_vars
 		echo
 	fi
+
+	if [ "$FAHT_NEXT_STAGE" == "smart_test" ]; then
+		### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
+		echo "Running SMART Assessments..."
+		set_stage smart_test
+		smart_test
+		save_vars
+		FAHT_NEXT_STAGE=virus_scan
+	fi
+	echo
 
 	if [ "$FAHT_NEXT_STAGE" == "virus_scan" ]; then
 		set_stage virus_scan
