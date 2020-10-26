@@ -122,7 +122,7 @@ disk_array_setup ()
 		for s in $(echo "$(sudo smartctl --scan| grep -v $FAHT_LIVE_DEV| sudo sed -n 's/\/dev\/\([a-z][a-z][a-z]\).*/\1/gp')"); do
 			if [[ "${CURR_DISK_ARRAY[deviceid]}" == "$s" ]]; then
 				CURR_DISK_ARRAY[smart_capable]="YES"
-				FIXME: Hacked fix... Need to ensure self tests SPEFICIALLY are supported...
+				#FIXME: Hacked fix... Need to ensure self tests SPEFICIALLY are supported...
 				if [ "$(sudo smartctl -a /dev/${CURR_DISK_ARRAY[deviceid]}|grep "SMART support is: Available")" ]; then
 					CURR_DISK_ARRAY[selftest_capable]="YES"
 				else
