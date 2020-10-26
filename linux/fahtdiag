@@ -15,12 +15,7 @@ rsync -vP /usr/share/cleantech-scripts/macos/ /mnt/usbdata/cleantech-macos/
 cd /usr/share/cleantech-scripts/linux
 
 ### Dump current user to tmp var and re run as root  ###
-### No good. Can't run, and shouldn't run everything as root. Using visudo to allow promptless sudo now...
-#if (( UID !=0 )); then
-	whoami>/tmp/fahtdiaguser
-#	echo Re-starting as root...
-#	exec sudo -E "$0" "$@"
-#fi
+whoami>/tmp/fahtdiaguser
 
 FAHT_QUICKMODE=false
 FAHT_DIAGMODE=
@@ -37,6 +32,9 @@ source io.sh
 source hw_tests.sh
 source softscan_fns.sh
 source sequence_fns.sh
+source parsing_fns.sh
+
+config_file_build
 
 while getopts ":hdsqcto" option; do
 	case $option in
@@ -75,7 +73,7 @@ FAHT_NOTES=
 FAHT_PHYSICAL_GRADE=
 FAHT_PHYSICAL_NOTES=
 FAHT_COMPUTER_TYPE=
-FAHT_ASSESMENT_RESULTS=
+FAHT_ASSESSMENT_RESULTS=
 FAHT_NOTES=
 FAHT_PROBLEMS=
 FAHT_TIMEON_THRESHOLD=26280
@@ -99,16 +97,28 @@ if [ "$FAHT_DIAGMODE" == "true" ]; then
 	echo DIAG MODE ACTIVATED!!!!!!!!
 	DIAG=break_program;
 fi
-### Get basic system id for faht folder ###
 
-sudo lshw -c system>/tmp/fs.txt
+check_stagefile
 
-FAHT_COMP_TYPE=$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')
-FAHT_COMP_VENDOR=$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')
-FAHT_COMPUTER_SERIAL=$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')
-FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SERIAL"
+if [ ! "$FAHT_CURR_STAGE" ]; then
 
-client_details
+	### Get basic system id for faht folder ###
+
+	sudo lshw -c system>/tmp/fs.txt
+
+	FAHT_COMP_TYPE="$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')"
+	FAHT_COMP_VENDOR="$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')"
+	FAHT_COMP_SN="$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')"
+	FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SN"
+	FAHT_COMP_VERSION="$(cat /tmp/fs.txt|grep version|sed 's/.*version: //')"
+	$DIAG
+	client_details
+
+	init_stagefile
+
+	set_stage init
+	save_vars
+fi
 
 FAHT_FULLNAME="$FAHT_FIRSTNAME $FAHT_LASTNAME"
 
@@ -169,7 +179,7 @@ sysinfo_dump ()
 
 	FAHT_MEM_SIZE="${FAHT_MEM_SIZE} GB"
 
-	FAHT_MEM_TYPE="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep DDR|tail -1|sed -r 's/.*(DDR[1-6].*).*/\1/')"
+	FAHT_MEM_TYPE="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep DDR|head -1|sed -r 's/.*(DDR[1-6]).*/\1/')"
 	###FIXME: Cheating on fixing the whitespace for now...
 	FAHT_MEM_TYPE="$(echo $FAHT_MEM_TYPE)"
 	FAHT_MEM_SPEED="$(cat "$FAHT_WORKINGDIR"/dmidecode-memory.txt|grep "Configured Clock Speed:"|tail -1|sed -r 's/.* ([0-9]*) .*/\1/')"
@@ -222,86 +232,150 @@ sysinfo_dump ()
 	FAHT_LIVE_DEV="$(sudo mount|grep " on / "|sed -n 's/^\/dev\/\(.*\)[0-9] on \/ .*/\1/gp')"
 	j=1
 
-	$DIAG
+	FAHT_INFODUMP=done
 }
 
-source parsing_fns.sh
-sysinfo_dump
+#source parsing_fns.sh
 
-#save_vars
-source disks_fns.sh
-disk_array_setup
-$DIAG
-
-if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ]; then
-
-	echo "Mounting available volumes..."
-	mount_avail_volumes
-	echo
+if [ "$FAHT_INFODUMP" != "done" ]; then
+	sysinfo_dump
+	save_vars
 	$DIAG
-
-	echo "Searching for Windows system volumes..."
-	find_win_part
-	echo
-
-	### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
-	echo "Running SMART Assessments..."
-	smart_test
-	echo
-	#save_vars
-
-	echo "Scanning filesystems..."
-	virus_scan
-	echo
-
-	echo "Benchmarking disks"
-	benchmark_disks
-	echo
-
-	#save_vars
-	echo "Listing disk information..."
-	echo
-
-	list_disks_info
-	echo
+	FAHT_NEXT_STAGE=disks
+	FAHT_DISK_TESTS=incomplete
 fi
 
-: echo "Testing ethernet connection..."
-eth_test
+#save_vars
 
-: echo "Testing Wi-Fi connection..."
-wifi_test
+source disks_fns.sh
 
-: echo "Testing GFX..."
-gfx_test
-echo
+if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ] && [ "$FAHT_DISK_TESTS" == "incomplete" ] ; then
 
-: echo "Testing Audio..."
-audio_test
+	disk_array_setup
+	save_vars
+	FAHT_DISK_ARRAY=complete
+	$DIAG
 
-echo !!! Almost done !!!
-confirm_prompt "Did you notice any power issues during the test?"
+	set_stage mount_volumes
+	FAHT_NEXT_STAGE=smart_test
 
-case $prompt_answer in
-	y|Y) FAHT_POWER_RESULTS=FAILED ;;
-	n|N) FAHT_POWER_RESULTS=PASSED ;;
-esac
+	if [ "$FAHT_NEXT_STAGE" == "smart_test" ]; then
+		### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
+		echo "Running SMART Assessments..."
+		set_stage smart_test
+		smart_test
+		save_vars
+		FAHT_NEXT_STAGE=virus_scan
+	fi
+	echo
 
-save_vars
+	if [ ! $"FAHT_WIN_PART" ]; then
 
-results_check
+		echo "Mounting available volumes..."
+		mount_avail_volumes
+		echo
+		$DIAG
 
-#chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
+		echo "Searching for Windows system volumes..."
+		find_win_part
+		save_vars
+		echo
+	fi
 
-mkdir "${FAHT_WORKINGDIR}"/logfiles
-mv "${FAHT_WORKINGDIR}"/*.txt "${FAHT_WORKINGDIR}"/logfiles/
+	if [ "$FAHT_NEXT_STAGE" == "virus_scan" ]; then
+		set_stage virus_scan
+		echo "Scanning filesystems..."
+		virus_scan
+		save_vars
+		FAHT_NEXT_STAGE=benchmark_disks
+	fi
+	echo
+	
+	if [ "$FAHT_NEXT_STAGE" == "benchmark_disks" ]; then
+		set_stage benchmark_disks
+		echo "Benchmarking disks"
+		benchmark_disks
+		save_vars
+		FAHT_NEXT_STAGE=list_disks_info
+	fi
+	echo
 
-echo -e "All Done!\n"
-echo
-echo Opening faht-report.fodt
-soffice "${FAHT_WORKINGDIR}/faht-report.fodt"
+	#save_vars
+	if [ "$FAHT_NEXT_STAGE" == "list_disks_info" ]; then
+		set_stage list_disks_info
+		echo "Listing disk information..."
+		echo
+		list_disks_info
+		diskarray_to_flatvars
+		FAHT_DISK_TESTS=complete
+		FAHT_NEXT_STAGE=eth_test
+		save_vars
+	fi
+fi
 
-if [[ $TESTONLY != "true" ]]; then
-	rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
-	ssh tt1.local chown -Rfv techtutors:ttdata /home/PublicShare/FAHT-Reports/
+if [ "$FAHT_NEXT_STAGE" == "eth_test" ]; then
+	set_stage eth_test
+	: echo "Testing ethernet connection..."
+	eth_test
+
+	: echo "Testing Wi-Fi connection..."
+	wifi_test
+	FAHT_NEXT_STAGE=gfx_test
+	save_vars
+fi
+
+if [ "$FAHT_NEXT_STAGE" == "gfx_test" ]; then
+	set_stage gfx_test
+	: echo "Testing GFX..."
+	gfx_test
+	FAHT_NEXT_STAGE=audio_test
+	save_vars
+fi
+
+if [ "$FAHT_NEXT_STAGE"  == "audio_test" ]; then
+	set_stage audio_test
+	echo
+	: echo "Testing Audio..."
+	audio_test
+	FAHT_NEXT_STAGE=power_prompt
+	save_vars
+fi
+
+
+if [ "$FAHT_NEXT_STAGE"  == "power_prompt" ]; then
+	set_stage power_prompt
+	echo !!! Almost done !!!
+	confirm_prompt "Did you notice any power issues during the test?"
+
+	case $prompt_answer in
+		y|Y) FAHT_POWER_RESULTS=FAILED ;;
+		n|N) FAHT_POWER_RESULTS=PASSED ;;
+	esac
+	save_vars
+	FAHT_NEXT_STAGE=results
+fi
+
+if [ "$FAHT_NEXT_STAGE" == "results" ]; then
+	set_stage results
+	results_prep
+	results_check
+
+	#chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
+
+	mkdir "${FAHT_WORKINGDIR}"/logfiles
+	mv "${FAHT_WORKINGDIR}"/*.txt "${FAHT_WORKINGDIR}"/logfiles/
+	FAHT_NEXT_STAGE=complete
+	set_stage complete
+	mv "${FAHT_STAGE_FILE}" ${FAHT_WORKINGDIR}/logfiles/
+
+	echo -e "All Done!\n"
+	echo
+	echo Opening faht-report.fodt
+	soffice "${FAHT_WORKINGDIR}/faht-report.fodt"
+
+	if [[ $TESTONLY != "true" ]]; then
+		rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
+		ssh tt1.local chown -Rfv techtutors:ttdata /home/PublicShare/FAHT-Reports/
+	fi
+
 fi

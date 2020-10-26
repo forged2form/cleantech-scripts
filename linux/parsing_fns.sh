@@ -20,13 +20,22 @@ diskarray_to_flatvars () {
 	done
 }
 
+memtest_parsing () {
+	echo Parsing memtest file: $FAHT_MEMTEST_REPORT_FILE
+	iconv -f utf16 -t utf8 -o $FAHT_MEMTEST_REPORT_FILE $FAHT_MEMTEST_REPORT_FILE
+	FAHT_mt_vendor_name=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Manufacturer/{n;p}'|had -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_mt_prod_name=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Product Name/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_mt_version=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Version/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_MEM_TEST_RESULTS=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Result/{n;p}'|head -1|sed -r 's/.*>([A-Z]*)<.*/\1/'`
+}
+
 save_vars ()
 {
-	diskarray_to_flatvars
-
 	( set -o posix; set ) | grep FAHT_ > "$FAHT_WORKINGDIR"/raw_vars.txt
 	cat "$FAHT_WORKINGDIR"/raw_vars.txt|grep -v ARRAY > "$FAHT_WORKINGDIR"/vars_noarray.txt
+}
 
+results_prep () {
 	sed -r 's/(FAHT_.*)=.*/\1/g' "$FAHT_WORKINGDIR"/vars_noarray.txt > "$FAHT_WORKINGDIR"/varsnames.txt
 	sed -r 's/.*=(.*)/\1/g' "$FAHT_WORKINGDIR"/vars_noarray.txt > "$FAHT_WORKINGDIR"/varsvalues.txt
 
