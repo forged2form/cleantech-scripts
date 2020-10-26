@@ -8,7 +8,7 @@
 ### Update... ###
 
 cd /usr/share/cleantech-scripts
-git fetch
+git pull
 rsync -avhP linux/faht-report-template.fodt /usr/share/faht/
 rsync -vP /usr/share/cleantech-scripts/win/ /mnt/usbdata/cleantech-win/
 rsync -vP /usr/share/cleantech-scripts/macos/ /mnt/usbdata/cleantech-macos/
