@@ -33,6 +33,7 @@ source hw_tests.sh
 source softscan_fns.sh
 source sequence_fns.sh
 source parsing_fns.sh
+source reboot_fns.sh
 
 config_file_build
 
@@ -117,6 +118,7 @@ if [ ! "$FAHT_CURR_STAGE" ]; then
 	init_stagefile
 
 	set_stage init
+	FAHT_NEXT_STAGE=sysinfo_dump
 	save_vars
 fi
 
@@ -128,7 +130,6 @@ sysinfo_dump ()
 	echo -e "-----------------------------------"
 	echo -e "Dumping system info. Please wait..."
 	echo -e "-----------------------------------\n"
-	$DIAG
 	echo
 
 	sudo modprobe eeprom
@@ -237,113 +238,69 @@ sysinfo_dump ()
 
 #source parsing_fns.sh
 
-if [ "$FAHT_INFODUMP" != "done" ]; then
-	sysinfo_dump
-	save_vars
-	$DIAG
-	FAHT_NEXT_STAGE=disks
-	FAHT_DISK_TESTS=incomplete
-fi
+#if [ "$FAHT_INFODUMP" != "done" ]; then
+#	sysinfo_dump
+#	save_vars
+#	$DIAG
+#	FAHT_NEXT_STAGE=disks
+#	FAHT_DISK_TESTS=incomplete
+#fi
+if [ -z "${FAHT_DISK_TESTS+x}" ]; then FAHT_DISK_TESTS=incomplete; fi 
+run_stage sysinfo_dump init_memtest
 
 #save_vars
 
+: echo "Rebooting to test memory..."
+run_stage init_memtest finish_memtest
+
+: echo "Finsihign memory test..."
+run_stage finish_memtest disk_array_setup
+
+echo sourcing disk_fns.sh
 source disks_fns.sh
 
-if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ] && [ "$FAHT_DISK_TESTS" == "incomplete" ] ; then
+if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ]; then
 
-	disk_array_setup
+	run_stage disk_array_setup mount_avail_volumes
+
+	echo "Mounting available volumes..."
+	run_stage mount_avail_volumes find_win_part
+
+	echo "Searching for Windows system volumes..."
+	run_stage find_win_part smart_test
 	save_vars
-	FAHT_DISK_ARRAY=complete
-	$DIAG
-
-	set_stage mount_volumes
-	FAHT_NEXT_STAGE=smart_test
-
-	if [ ! $"FAHT_WIN_PART" ]; then
-
-		echo "Mounting available volumes..."
-		mount_avail_volumes
-		echo
-		$DIAG
-
-		echo "Searching for Windows system volumes..."
-		find_win_part
-		save_vars
-		echo
-	fi
-
-	if [ "$FAHT_NEXT_STAGE" == "smart_test" ]; then
-		### NOTE: Must run SMART Assessments first, otherwise write benchmark will be skipped.
-		echo "Running SMART Assessments..."
-		set_stage smart_test
-		smart_test
-		save_vars
-		FAHT_NEXT_STAGE=virus_scan
-	fi
 	echo
 
-	if [ "$FAHT_NEXT_STAGE" == "virus_scan" ]; then
-		set_stage virus_scan
-		echo "Scanning filesystems..."
-		virus_scan
-		save_vars
-		FAHT_NEXT_STAGE=benchmark_disks
-	fi
+	echo "Running SMART Assessments..."
+	run_stage smart_test virus_scan
 	echo
 	
-	if [ "$FAHT_NEXT_STAGE" == "benchmark_disks" ]; then
-		set_stage benchmark_disks
-		echo "Benchmarking disks"
-		benchmark_disks
-		save_vars
-		FAHT_NEXT_STAGE=list_disks_info
-	fi
+	echo "Scanning filesystems..."
+	run_stage virus_scan benchmark_disks
 	echo
 
-	#save_vars
-	if [ "$FAHT_NEXT_STAGE" == "list_disks_info" ]; then
-		set_stage list_disks_info
-		echo "Listing disk information..."
-		echo
-		list_disks_info
-		diskarray_to_flatvars
-		FAHT_DISK_TESTS=complete
-		FAHT_NEXT_STAGE=eth_test
-		save_vars
-	fi
+	echo "Benchmarking disks"	
+	run_stage benchmark_disks list_disks_info
+	echo
+
+	run_stage list_disks_info eth_test
+else
+	: echo "Testing network..."
+	run_stage eth_test wifi_test
 fi
 
-if [ "$FAHT_NEXT_STAGE" == "eth_test" ]; then
-	set_stage eth_test
 	: echo "Testing ethernet connection..."
-	eth_test
+	run_stage eth_test wifi_test
 
 	: echo "Testing Wi-Fi connection..."
-	wifi_test
-	FAHT_NEXT_STAGE=gfx_test
-	save_vars
-fi
+	run_stage wifi_test audio_test
 
-if [ "$FAHT_NEXT_STAGE" == "gfx_test" ]; then
-	set_stage gfx_test
-	: echo "Testing GFX..."
-	gfx_test
-	FAHT_NEXT_STAGE=audio_test
-	save_vars
-fi
-
-if [ "$FAHT_NEXT_STAGE"  == "audio_test" ]; then
-	set_stage audio_test
-	echo
 	: echo "Testing Audio..."
-	audio_test
-	FAHT_NEXT_STAGE=power_prompt
-	save_vars
-fi
+	run_stage audio_test gfx_test
 
+	: echo "Testing GFX..."
+	run_stage gfx_test power_prompt
 
-if [ "$FAHT_NEXT_STAGE"  == "power_prompt" ]; then
-	set_stage power_prompt
 	echo !!! Almost done !!!
 	confirm_prompt "Did you notice any power issues during the test?"
 
@@ -353,25 +310,25 @@ if [ "$FAHT_NEXT_STAGE"  == "power_prompt" ]; then
 	esac
 	save_vars
 	FAHT_NEXT_STAGE=results
-fi
 
 if [ "$FAHT_NEXT_STAGE" == "results" ]; then
+	source parsing_fns.sh
 	set_stage results
 	results_prep
 	results_check
-
-	#chown -Rf $FAHT_CURR_USER:$FAHT_CURR_USER "$FAHT_WORKINGDIR"
-
-	mkdir "${FAHT_WORKINGDIR}"/logfiles
-	mv "${FAHT_WORKINGDIR}"/*.txt "${FAHT_WORKINGDIR}"/logfiles/
-	FAHT_NEXT_STAGE=complete
-	set_stage complete
-	mv "${FAHT_STAGE_FILE}" ${FAHT_WORKINGDIR}/logfiles/
 
 	echo -e "All Done!\n"
 	echo
 	echo Opening faht-report.fodt
 	soffice "${FAHT_WORKINGDIR}/faht-report.fodt"
+
+	mkdir "${FAHT_WORKINGDIR}"/logfiles
+	mv "${FAHT_WORKINGDIR}"/*.txt "${FAHT_WORKINGDIR}"/logfiles/
+	
+	mv "${FAHT_STAGE_FILE}" ${FAHT_WORKINGDIR}/logfiles/
+
+	FAHT_NEXT_STAGE=complete
+	set_stage complete
 
 	if [[ $TESTONLY != "true" ]]; then
 		rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/

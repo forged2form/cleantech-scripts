@@ -7,6 +7,7 @@
 FAHT_CFG_DIR="/home/$(whoami)/.fahtdiag"
 FAHT_CFG_FILE="$FAHT_CFG_DIR/config"
 FAHT_STAGE_FILE="$FAHT_CFG_DIR/current_stage"
+declare -A FAHT_STAGE_ARRAY=()
 
 config_file_build () {
 	if [ ! -d "$FAHT_CFG_DIR" ]; then
@@ -57,3 +58,32 @@ check_stagefile () {
 check_stage () {
 	echo "Do something... Someday..."
 }  
+
+## run_stage STAGE_TO_RUN NEXT_STAGE_TO_RUN
+run_stage () {
+
+	declare -n CURR_STAGE=FAHT_STAGE_ARRAY[$1]
+
+	echo "FAHT_STAGE_ARRAY[$1]"
+	$DIAG
+	
+	if [ "${FAHT_STAGE_ARRAY[$1]}" != "complete" ] && [ "${FAHT_NEXT_STAGE}" == "$1" ]; then
+		echo
+
+		x=$1
+
+		set_stage $1
+		CURR_STAGE=running
+		echo Running "${1}"
+		: echo "Running stage: ${1}"
+		
+		$1
+
+		CURR_STAGE=complete
+		FAHT_NEXT_STAGE=$2
+		#echo "Stage $1: ${FAHT_STAGE_ARRAY[${1}]}"
+		save_vars
+		$DIAG
+	fi
+	
+}

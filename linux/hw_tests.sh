@@ -85,6 +85,39 @@ wifi_test () {
 	echo
 }
 
+init_memtest () {
+	# Hackish way to clear old reports for now...
+
+	#OLD_REPORTS_DIR=$(sudo )
+
+#	if sudo test -d "/boot/efi/EFI/memtest/oldreports"; then
+#		sudo mkdir /boot/efi/EFI/memtest/oldreports
+#	fi
+	sudo bash -c 'mv /boot/efi/EFI/memtest/*.html /boot/efi/EFI/memtest/oldreports'
+
+	$DIAG
+
+	#FAHT_CURR_
+	save_vars
+	
+	reboot_tomemtest
+}
+
+finish_memtest () {
+	echo "-------"
+	echo "Importing Memtest results"
+
+	if [ -d /sys/firmware/efi ]; then
+		export FAHT_MEMTEST_REPORT_FILE="${FAHT_WORKINGDIR}"/memtest.html
+		echo Copying HTML report file to $FAHT_WORKINGDIR
+		export MT_FILE=$(sudo bash -c 'ls /boot/efi/EFI/memtest/*.html')
+		sudo bash -c 'cp ${0} ${1}' "$MT_FILE" "$FAHT_MEMTEST_REPORT_FILE"
+		memtest_parsing
+		sudo rm $MT_FILE
+		echo Importing results
+	fi
+}
+
 audio_test ()
 {
 	### Audio test ###

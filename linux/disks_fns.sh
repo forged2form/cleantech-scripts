@@ -131,6 +131,7 @@ disk_array_setup ()
 			fi
 		done
 	done
+	sav_disk_vars
 	return $FAHT_disknum
 }
 
@@ -161,6 +162,7 @@ smart_drive_find () {
 		echo No drives are SMART capable. Skipping test...
 		echo;
 	fi
+	save_disk_vars
 	$DIAG
 }
 
@@ -328,6 +330,7 @@ smart_test ()
 		fi
 		(( i++ ))
 	done
+	save_disk_vars
 
 			$DIAG
 }
@@ -401,6 +404,7 @@ mount_avail_volumes () {
 	# If volume is writeable set benchamrk for read-write
 
 	done
+	save_disk_vars
 }
 
 find_win_part () {
@@ -477,6 +481,8 @@ find_win_part () {
 		(( i++ ));
 	done
 	echo
+
+	save_disk_vars
 
 }
 
@@ -665,6 +671,7 @@ benchmark_disks () {
 		(( i++ ))
 		echo;
 	done
+	save_disk_vars
 }
 
 list_disks_info () {
@@ -698,4 +705,10 @@ list_disks_info () {
 		echo
 		(( i++ ));
 	done
+
+	diskarray_to_flatvars
+
+	save_vars
+
+	save_disk_vars
 }

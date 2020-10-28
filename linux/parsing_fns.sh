@@ -23,61 +23,93 @@ diskarray_to_flatvars () {
 memtest_parsing () {
 	echo Parsing memtest file: $FAHT_MEMTEST_REPORT_FILE
 	iconv -f utf16 -t utf8 -o $FAHT_MEMTEST_REPORT_FILE $FAHT_MEMTEST_REPORT_FILE
-	FAHT_mt_vendor_name=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Manufacturer/{n;p}'|had -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
-	FAHT_mt_prod_name=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Product Name/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
-	FAHT_mt_version=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Version/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
-	FAHT_MEM_TEST_RESULTS=`cat $MFAHT_MEMTEST_REPORT_FILE|sed -n '/Result/{n;p}'|head -1|sed -r 's/.*>([A-Z]*)<.*/\1/'`
+	FAHT_mt_vendor_name=`cat $FAHT_MEMTEST_REPORT_FILE|sed -n '/Manufacturer/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_mt_prod_name=`cat $FAHT_MEMTEST_REPORT_FILE|sed -n '/Product Name/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_mt_version=`cat $FAHT_MEMTEST_REPORT_FILE|sed -n '/Version/{n;p}'|head -1|sed -r 's/.*>(.*)<\/td>.*/\1/'`
+	FAHT_MEM_TEST_RESULTS=`cat $FAHT_MEMTEST_REPORT_FILE|sed -n '/Result/{n;p}'|head -1|sed -r 's/.*>([A-Z]*)<.*/\1/'`
+	if [ "$FAHT_MEM_TEST_RESULTS" == "PASS" ]; then
+		FAHT_MEM_TEST=Completed
+	else
+		FAHT_MEM_TEST="Error(s)"
+	fi
 }
 
 save_vars ()
 {
 	( set -o posix; set ) | grep FAHT_ > "$FAHT_WORKINGDIR"/raw_vars.txt
-	cat "$FAHT_WORKINGDIR"/raw_vars.txt|grep -v ARRAY > "$FAHT_WORKINGDIR"/vars_noarray.txt
+	cat "$FAHT_WORKINGDIR"/raw_vars.txt|grep -v ARRAY |grep -v DISK > "$FAHT_WORKINGDIR"/vars_noarray.txt
+}
+
+save_disk_vars () {
+	( set -o posix; set ) | grep FAHT_ |grep DISK > "$FAHT_WORKINGDIR"/raw_disk_vars.txt
+	cat "$FAHT_WORKINGDIR"/raw_disk_vars.txt|grep -v ARRAY > "$FAHT_WORKINGDIR"/disk_vars_noarray.txt
 }
 
 results_prep () {
+	cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
+
+	diskarray_to_flatvars
+
 	sed -r 's/(FAHT_.*)=.*/\1/g' "$FAHT_WORKINGDIR"/vars_noarray.txt > "$FAHT_WORKINGDIR"/varsnames.txt
 	sed -r 's/.*=(.*)/\1/g' "$FAHT_WORKINGDIR"/vars_noarray.txt > "$FAHT_WORKINGDIR"/varsvalues.txt
 
+	touch "$FAHT_WORKINGDIR/disksvarsnames.txt"
+	touch "$FAHT_WORKINGDIR/disksvarsvalues.txt"
 
-	i=0
-	varsNames=()
-	varsvalues=()
+	sed -r 's/(FAHT_.*)=.*/\1/g' "$FAHT_WORKINGDIR"/disk_vars_noarray.txt > "$FAHT_WORKINGDIR/diskvarsnames.txt"
+	sed -r 's/.*=(.*)/\1/g' "$FAHT_WORKINGDIR"/disk_vars_noarray.txt > "$FAHT_WORKINGDIR/diskvarsvalues.txt"
 
-	while IFS= read line; do
-		varsNames[$i]=$line
-		: echo ${varsNames[$i]}
-		(( i++ ));
-	done < "$FAHT_WORKINGDIR"/varsnames.txt
+	for filename in diskvars vars; do
+		$DIAG
+		i=0
+		varsNames=()
+		varsvalues=()
 
-	i=0
+		namesfile="$FAHT_WORKINGDIR"/${filename}names.txt
+		valuesfile="$FAHT_WORKINGDIR"/${filename}values.txt
 
-	while IFS= read line; do
-		varsValues[$i]=$line
-		: echo ${varsValues[$i]}
-		(( i++ ));
-	done < "$FAHT_WORKINGDIR"/varsvalues.txt
 
-	i=0
+		while IFS= read line; do
+			varsNames[$i]=$line
+			: echo ${varsNames[$i]}
+			(( i++ ));
+		done < "${namesfile}"
+		$DIAG
 
-	#cp /usr/share/faht/faht-report-template.fodt "$FAHT_WORKINGDIR"/faht-report.fodt
+		i=0
 
-	### Remove single quotes from values...
+		while IFS= read line; do
+			varsValues[$i]=$line
+			: echo ${varsValues[$i]}
+			(( i++ ));
+		done < "${valuesfile}"
+		$DIAG
 
-	index=
+		i=0
 
-	for index in ${!varsValues[@]}; do
-		varsValues[$index]=$(echo ${varsValues[$index]//\'/})
+		
+
+		### Remove single quotes from values...
+
+		index=
+
+		for index in ${!varsValues[@]}; do
+			varsValues[$index]=$(echo ${varsValues[$index]//\'/})
+		done
+
+		j=0
+
+		for x in ${varsNames[@]}; do
+			: echo "Working on $x..."
+			: echo "Var number: $j"
+			sed -i "s|\[\[ ${x} \]\] |${varsValues[$j]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
+			$DIAG
+			(( j++ ));
+		done
 	done
 
-	j=0
 
-	for x in ${varsNames[@]}; do
-		: echo "Working on $x..."
-		: echo "Var number: $j"
-		sed -i "s|\[\[ ${x} \]\] |${varsValues[$j]}|g" "$FAHT_WORKINGDIR"/faht-report.fodt
-		(( j++ ));
-	done
+	$DIAG
 
 	### clean up any unused vars for now...
 
