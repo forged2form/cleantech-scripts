@@ -17,16 +17,16 @@ cd /usr/share/cleantech-scripts/linux
 ### Dump current user to tmp var and re run as root  ###
 whoami>/tmp/fahtdiaguser
 
-FAHT_QUICKMODE=false
-FAHT_DIAGMODE=
-FAHT_SHORTONLY=
-FAHT_QUICKMODE=true
-FAHT_CLAMAV=false
+FAHT_DIAGMODE=OFF
+FAHT_SHORTONLY=OFF
+FAHT_QUICKMODE=OFF
+FAHT_MEMTEST=ON
+FAHT_CLAMAV=ON
 FAHT_WIN_PART=
 FAHT_PUPS=
 FAHT_PUPS_RESULTS=
 FAHT_CLAMSCAN_RESULTS=
-TESTONLY=
+TESTONLY=OFF
 
 source io.sh
 source hw_tests.sh
@@ -40,12 +40,13 @@ config_file_build
 while getopts ":hdsqcto" option; do
 	case $option in
 		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan [-t] testmode [-o] only "TEST"..."; exit ;;
-		d) FAHT_DIAGMODE=true ;;
-		s) FAHT_SHORTONLY=true ;;
-		q) FAHT_QUICKMODE=true ;;
-		c) FAHT_CLAMAV=true ;;
-		t) TESTONLY=true ;;
+		d) FAHT_DIAGMODE=ON ;;
+		s) FAHT_SHORTONLY=ON ;;
+		q) FAHT_QUICKMODE=ON ;;
+		c) FAHT_CLAMAV=ON ;;
+		t) TESTONLY=ON ;;
 		o) ONETEST=$OPTARG ;;
+		m) MEMTEST=OFF
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -92,7 +93,7 @@ FAHT_ASSESSMENT_RESULTS=""
 
 declare -A FAHT_FORM_ARRAY=( [FAHT_FULLNAME]="" [FAHT_PROBLEMS]="" [FAHT_NOTES]="" [FAHT_PHYSICAL_NOTES]="" [FAHT_COMPUTER_TYPE]="" [FAHT_ASSESSMENT_RESULTS]="" [FAHT_NOTES]="" )
 
-if [ "$FAHT_DIAGMODE" == "true" ]; then
+if [ "$FAHT_DIAGMODE" == "ON" ]; then
 	clear
 	set -x
 	echo DIAG MODE ACTIVATED!!!!!!!!
@@ -113,6 +114,9 @@ if [ ! "$FAHT_CURR_STAGE" ]; then
 	FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SN"
 	FAHT_COMP_VERSION="$(cat /tmp/fs.txt|grep version|sed 's/.*version: //')"
 	$DIAG
+
+	init_dialog
+
 	client_details
 
 	init_stagefile
@@ -330,7 +334,7 @@ if [ "$FAHT_NEXT_STAGE" == "results" ]; then
 	FAHT_NEXT_STAGE=complete
 	set_stage complete
 
-	if [[ $TESTONLY != "true" ]]; then
+	if [[ $TESTONLY != "ON" ]]; then
 		rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
 		ssh tt1.local chown -Rfv techtutors:ttdata /home/PublicShare/FAHT-Reports/
 	fi

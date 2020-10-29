@@ -5,9 +5,9 @@
 
 virus_scan () {
 
-	if [ "${FAHT_CLAMAV}" == "true" ] ; then
+	if [ "${FAHT_CLAMAV}" == "ON" ] ; then
 
-		if [ "${FAHT_QUICKMODE}" != "true" ]; then
+		if [ "${FAHT_QUICKMODE}" == "OFF" ]; then
 
 			echo "------------------------------------------------------"
 			echo "Scanning for viruses, malware, and PUPs (QUICKMODE)..."
@@ -37,7 +37,7 @@ virus_scan () {
 			fi
 		fi
 		
-		if [ "${FAHT_QUICKMODE}" == "true" ] ; then
+		if [ "${FAHT_QUICKMODE}" == "ON" ] ; then
 
 			echo "------------------------------------------"
 			echo "Scanning for viruses, malware, and PUPs..."

@@ -9,6 +9,44 @@ pause_input () {
 	echo -e "\n"
 }
 
+init_dialog () {
+	
+	FAHT_OPTONS="$(dialog --checklist --output-fd 1 20 50 40 \
+	"quickmode" "Skip Memtest, LST, and ClamAV" "$FAHT_QUICKMODE" \
+	"memtest" "Memory Test" "$FAHT_MEMTEST" \
+	"shortonly" "Short SMART Test" "$FAHT_SHORTONLY" \
+	"clamav" "Run ClamAV" "$FAHT_CLAMAV" \
+	"diagmode" "Run diagnostics mode" "$FAHT_DAIGMODE" \
+	"testonly" "Do not sync logfiles")"
+
+	for $FAHT_OPTIONS; do
+		if [ "$FAHT_OPTIONS" == "quickmode" ]; then
+			FAHT_QUICKMODE=ON
+		fi
+
+		if [ "$FAHT_OPTIONS" == "memtest" ]; then
+			FAHT_MEMTEST=ON
+		fi
+
+		if [ "$FAHT_OPTIONS" == "shortonly" ]; then
+			FAHT_SHORTONLY=ON
+		fi
+
+		if [ "$FAHT_OPTIONS" == "clamav" ]; then
+			FAHT_CLAMAV=ON
+		fi
+
+		if [ "$FAHT_OPTIONS" == "diagmode" ]; then
+			FAHT_DIAGMODE=ON
+		fi
+
+		if [ "$FAHT_OPTIONS" == "testonly" ]; then
+			FAHT_TESTONLY=ON
+		fi
+	done
+
+}
+
 ### Usage confirm_prompt "Question string" $VARIABLE_TO_PUT_ANSWER_IN
 confirm_prompt ()
 {

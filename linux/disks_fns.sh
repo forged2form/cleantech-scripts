@@ -277,7 +277,7 @@ smart_test ()
 				echo Short SMART test done.
 				echo
 
-				if [ "$FAHT_SHORTONLY" != "true" ] && [ -z "$FAHT_st_failure_test" ]; then
+				if [ "$FAHT_SHORTONLY" != "ON" ] && [ -z "$FAHT_st_failure_test" ]; then
 					echo Beginning SMART long test on $curr_smart_dev
 
 					sudo smartctl -t force -t long /dev/"$curr_smart_dev">"$FAHT_WORKINGDIR"/smartlongtest-"$curr_smart_dev".txt
