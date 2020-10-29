@@ -55,14 +55,14 @@ virus_scan () {
 				sudo clamscan --bell -irl "${FAHT_WORKINGDIR}/clamscan-${curr_dir}.txt" /mnt/faht/${FAHT_WIN_PART}/${curr_dir}/
 				FAHT_CLAMSCAN_RESULTS="$(echo $?)"
 
-				if [ "$FAHT_CLAMSCAN_RESULTS" eq "1" ] ; then
-					FAHT_PUPS="ALERT!!! MALICIOUS SOFTWARE DETECTED!!!i"
+				if [ "$FAHT_CLAMSCAN_RESULTS" eq 1 ] ; then
+					FAHT_PUPS="PUPs DETECTED!!!"
 					echo "$FAHT_PUPS"
 					FAHT_PUPS_RESULTS="FAILED"
 				fi
 				
-				if [ "$FAHT_CLAMSCAN_RESULTS" eq "0" ]  && [ "${FAHT_PUPS_RESULTS}" !="FAILED" ]; then
-					FAHT_PUPS="No malicious software detected."
+				if [ "$FAHT_CLAMSCAN_RESULTS" eq 0 ]  && [ "${FAHT_PUPS_RESULTS}" !="FAILED" ]; then
+					FAHT_PUPS="No PUPs detected."
 					echo "$FAHT_PUPS"
 					FAHT_PUPS_RESULTS="PASSED"
 				fi
