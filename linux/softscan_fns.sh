@@ -68,5 +68,7 @@ virus_scan () {
 			done
 			echo
 		fi
+	else
+		"ClamAV option not set! Skipping..."
 	fi
 }
