@@ -11,13 +11,13 @@ pause_input () {
 
 init_dialog () {
 	
-	FAHT_OPTONS="$(dialog --checklist --output-fd 1 20 50 40 \
+	FAHT_OPTONS="$(dialog --checklist --output-fd 1 "Check the options..." 20 50 40 \
 	"quickmode" "Skip Memtest, LST, and ClamAV" "$FAHT_QUICKMODE" \
 	"memtest" "Memory Test" "$FAHT_MEMTEST" \
 	"shortonly" "Short SMART Test" "$FAHT_SHORTONLY" \
 	"clamav" "Run ClamAV" "$FAHT_CLAMAV" \
 	"diagmode" "Run diagnostics mode" "$FAHT_DAIGMODE" \
-	"testonly" "Do not sync logfiles")"
+	"testonly" "Do not sync logfiles" "$FAHT_TESTONLY")"
 
 	for $FAHT_OPTIONS; do
 		if [ "$FAHT_OPTIONS" == "quickmode" ]; then

@@ -46,7 +46,7 @@ while getopts ":hdsqcto" option; do
 		c) FAHT_CLAMAV=ON ;;
 		t) TESTONLY=ON ;;
 		o) ONETEST=$OPTARG ;;
-		m) MEMTEST=OFF
+		m) MEMTEST=OFF ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -115,8 +115,11 @@ if [ ! "$FAHT_CURR_STAGE" ]; then
 	FAHT_COMP_VERSION="$(cat /tmp/fs.txt|grep version|sed 's/.*version: //')"
 	$DIAG
 
-	init_dialog
+	: echo BEGINING ALL THE THINGS...
+	$DIAG
 
+	init_dialog
+	$DIAG
 	client_details
 
 	init_stagefile
