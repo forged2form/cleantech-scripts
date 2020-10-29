@@ -10,40 +10,51 @@ pause_input () {
 }
 
 init_dialog () {
+	option=
+
+	declare -A FAHT_OPTS_ARRAY=()
 	
-	FAHT_OPTONS="$(dialog --checklist --output-fd 1 "Check the options..." 20 50 40 \
-	"quickmode" "Skip Memtest, LST, and run less thorough ClamAV scan" "$FAHT_QUICKMODE" \
+	FAHT_OPTIONS="$(dialog --checklist --output-fd 1 "Check the options..." 20 50 40 \
+	"quickmode" "Skip Mem, LST, run quick ClamAV" "$FAHT_QUICKMODE" \
 	"memtest" "Memory Test" "$FAHT_MEMTEST" \
 	"shortonly" "Short SMART Test" "$FAHT_SHORTONLY" \
 	"clamav" "Run ClamAV" "$FAHT_CLAMAV" \
-	"diagmode" "Run diagnostics mode" "$FAHT_DAIGMODE" \
+	"diagmode" "Run diagnostics mode" "$FAHT_DIAGMODE" \
 	"testonly" "Do not sync logfiles" "$FAHT_TESTONLY")"
 
-	for $FAHT_OPTIONS; do
-		if [ "$FAHT_OPTIONS" == "quickmode" ]; then
-			FAHT_QUICKMODE=ON
+	for option in $FAHT_OPTIONS; do
+		FAHT_OPTS_ARRAY[FAHT_${option^^}]=ON
+	done
+
+	for x in FAHT_QUICKMODE FAHT_MEMTEST FAHT_SHORTONLY FAHT_CLAMAV FAHT_DIAGMODE FAHT_TESTONLY; do
+		declare -n curr_setting=$x
+		[[ ! "${FAHT_OPTS_ARRAY[$x]+abc}" ]] && FAHT_OPTS_ARRAY[$x]=OFF
+	done
+
+	for x in ${!FAHT_OPTS_ARRAY[@]}; do
+		if [[ ${FAHT_OPTS_ARRAY[$x]} == "ON" ]]; then
+			declare -n CURR_OPT=${x}
+			CURR_OPT=ON
 		fi
 
-		if [ "$FAHT_OPTIONS" == "memtest" ]; then
-			FAHT_MEMTEST=ON
-		fi
-
-		if [ "$FAHT_OPTIONS" == "shortonly" ]; then
-			FAHT_SHORTONLY=ON
-		fi
-
-		if [ "$FAHT_OPTIONS" == "clamav" ]; then
-			FAHT_CLAMAV=ON
-		fi
-
-		if [ "$FAHT_OPTIONS" == "diagmode" ]; then
-			FAHT_DIAGMODE=ON
-		fi
-
-		if [ "$FAHT_OPTIONS" == "testonly" ]; then
-			FAHT_TESTONLY=ON
+		if [[ ${FAHT_OPTS_ARRAY[$x]} == "OFF" ]]; then
+			declare -n CURR_OPT=${x}
+			CURR_OPT=OFF
 		fi
 	done
+
+	$DIAG
+
+	if [[ "$FAHT_DIAGMODE" == "ON" ]]; then
+		echo QUICKMODE=${FAHT_QUICKMODE}
+		echo MEMTEST=${FAHT_MEMTEST}
+		echo SHORTONLY=${FAHT_SHORTONLY}
+		echo CLAMAV=${FAHT_CLAMAV}
+		echo DIAGMODE=${FAHT_DIAGMODE}
+		echo TESTONLY=${FAHT_TESTONLY}
+		$DIAG
+	fi
+
 
 }
 

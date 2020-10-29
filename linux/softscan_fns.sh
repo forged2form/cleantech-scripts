@@ -9,14 +9,15 @@ virus_scan () {
 
 		if [ "${FAHT_QUICKMODE}" == "OFF" ]; then
 
-			echo "------------------------------------------------------"
-			echo "Scanning for viruses, malware, and PUPs (QUICKMODE)..."
-			echo "------------------------------------------------------"
-			echo
 
 			echo Mounting volumes to scan....
 			echo
 			mount_avail_volumes
+
+			echo "------------------------------------------------------"
+			echo "Scanning for viruses, malware, and PUPs (QUICKMODE)..."
+			echo "------------------------------------------------------"
+			echo
 
 			echo
 			echo Beginning scan...
@@ -39,14 +40,14 @@ virus_scan () {
 		
 		if [ "${FAHT_QUICKMODE}" == "ON" ] ; then
 
+			echo Mounting volumes to scan....
+			echo
+			mount_avail_volumes
+
 			echo "------------------------------------------"
 			echo "Scanning for viruses, malware, and PUPs..."
 			echo "------------------------------------------"
 			echo
-
-			echo Mounting volumes to scan....
-			echo
-			mount_avail_volumes
 
 			for curr_dir in Users ; do
 				echo

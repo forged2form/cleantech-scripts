@@ -37,9 +37,9 @@ source reboot_fns.sh
 
 config_file_build
 
-while getopts ":hdsqcto" option; do
+while getopts ":hdsqctomx" option; do
 	case $option in
-		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan [-t] testmode [-o] only "TEST"..."; exit ;;
+		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan [-t] testmode [-x] destroy test files [-o] only "TEST"..."; exit ;;
 		d) FAHT_DIAGMODE=ON ;;
 		s) FAHT_SHORTONLY=ON ;;
 		q) FAHT_QUICKMODE=ON ;;
@@ -47,6 +47,7 @@ while getopts ":hdsqcto" option; do
 		t) TESTONLY=ON ;;
 		o) ONETEST=$OPTARG ;;
 		m) MEMTEST=OFF ;;
+		x) DESTROY=ON ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -54,6 +55,12 @@ done
 shift $(( OPTIND - 1))
 
 echo $FAHT_DIAGMODE
+
+if [[ "${DESTROY}" == "ON" ]]; then
+	rm $FAHT_STAGE_FILE
+	rm -Rfv /mnt/usbdata/faht-tests/*
+	break_program
+fi
 
 clear
 echo -e "---------------------------"
