@@ -223,7 +223,7 @@ echo,
 
 	:passconfirm
 		echo You entered: %password%
-		set passconfirm
+		set passconfirm=
 		set /p passconfirm="Is this correct? (y/n): "
 		if /i %passconfirm%==y goto passcorrect
 		if /i %passconfirm%==n goto passwordneeded
@@ -238,7 +238,7 @@ echo,
 	set tac_step=autoadminlogontest
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
-	set tac_autoadminlogonenabled
+	set tac_autoadminlogonenabled=
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon | find "1"
 	if %ERRORLEVEL% EQU 0 (
 		set tac_autoadminlogonenabled=1
