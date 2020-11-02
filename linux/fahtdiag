@@ -161,7 +161,7 @@ sysinfo_dump ()
 
     ### temp	hardinfo -r -f text>"$FAHT_WORKINGDIR"/hardinfo.txt
 
-	### Grab summary info for summary sheet ###
+	### Grab summary info for summary sheet ###cd /
 
 	FAHT_COMPUTER_DESC="$(cat "$FAHT_WORKINGDIR"/lshw-system.txt|grep product|head -n 1|sed -r 's/.*product: (.*) \(.*/\1/')"
 	FAHT_COMPUTER_DESC="$(echo $FAHT_COMPUTER_DESC)"
@@ -293,17 +293,19 @@ if [ "$FAHT_TOTAL_TEST_DISKS" -ge 1 ]; then
 	run_stage virus_scan benchmark_disks
 	echo
 
-	echo "Benchmarking disks"	
+	echo "Benchmarking disks..."	
 	run_stage benchmark_disks list_disks_info
 	echo
 
-	run_stage list_disks_info eth_test
+	run_stage list_disks_info proc_test
 else
-	: echo "Testing network..."
-	run_stage eth_test wifi_test
+	: echo "Testing processor..."
+	run_stage proc_test eth_test
 fi
+	: echo "Testing processor..."
+	run_stage proc_test eth_test
 
-	: echo "Testing ethernet connection..."
+	: echo "Testing network..."
 	run_stage eth_test wifi_test
 
 	: echo "Testing Wi-Fi connection..."

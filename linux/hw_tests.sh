@@ -4,6 +4,25 @@
 ###
 ### Library for testing functions for various HW other than disks
 
+proc_bench () {
+	### Processor test - Benchmark ###
+	echo
+	echo -------------------------------
+	echo Benchmarking CPU... Please wait
+	echo -------------------------------
+	$DIAG
+	echo
+	7z b
+}
+
+proc_stress () {
+
+}
+
+proc_test () {
+	echo "Sorry, not implemented yet..."
+}
+
 eth_test () {
 	### Network test - Ethernet ###
 	echo
