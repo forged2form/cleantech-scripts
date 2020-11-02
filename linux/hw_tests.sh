@@ -16,7 +16,7 @@ proc_bench () {
 }
 
 proc_stress () {
-
+	echo "Sorry, not implemented yet..."
 }
 
 proc_test () {
