@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="Persona" oor:op="fuse"><value>no</value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="PersonaSettings" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="UseOpenCL" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/VCL"><prop oor:name="UseOpenGL" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Office.Recovery/RecoveryInfo"><prop oor:name="SessionData" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Office.Views/Dialogs"><node oor:name="cui/ui/optionsdialog/OptionsDialog" oor:op="replace"><node oor:name="UserData"></node><prop oor:name="WindowState" oor:op="fuse"><value>131,131,,;;,,,;</value></prop></node></item>
+<item oor:path="/org.openoffice.Setup/L10N"><prop oor:name="ooLocale" oor:op="fuse"><value>en-US</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office/Factories/org.openoffice.Setup:Factory['com.sun.star.frame.StartModule']"><prop oor:name="ooSetupFactoryWindowAttributes" oor:op="fuse"><value>138,161,752,486;4;0,0,0,0;</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="LastCompatibilityCheckID" oor:op="fuse"><value>65905a128db06ba48db947242809d14d3f9a93fe</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="ooSetupInstCompleted" oor:op="fuse"><value>true</value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="c" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="encryptionkey" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="encrypttoself" oor:op="fuse"><value>true</value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="facsimiletelephonenumber" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="givenname" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="homephone" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="initials" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="l" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="mail" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="o" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="position" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="postalcode" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="signingkey" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="sn" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="st" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="street" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="telephonenumber" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.UserProfile/Data"><prop oor:name="title" oor:op="fuse"><value></value></prop></item>
+</oor:items>
