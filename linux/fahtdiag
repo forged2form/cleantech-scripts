@@ -37,7 +37,7 @@ source reboot_fns.sh
 
 config_file_build
 
-while getopts ":hdsqctomx" option; do
+while getopts ":hdsqctomxr" option; do
 	case $option in
 		h) clear ; echo "usage: fahtdiag [-h] help [-d] diagmode [-s] shorttest [-q] quickmode [-c] clamav scan [-t] testmode [-x] destroy test files [-o] only "TEST"..."; exit ;;
 		d) FAHT_DIAGMODE=ON ;;
@@ -48,6 +48,7 @@ while getopts ":hdsqctomx" option; do
 		o) ONETEST=$OPTARG ;;
 		m) MEMTEST=OFF ;;
 		x) DESTROY=ON ;;
+		r) REFRESH=ON ;;
 		?) echo "error: option -$OPTARG is not implemented"; exit;;
 	esac
 done
@@ -59,8 +60,16 @@ echo $FAHT_DIAGMODE
 if [[ "${DESTROY}" == "ON" ]]; then
 	rm $FAHT_STAGE_FILE
 	rm -Rfv /mnt/usbdata/faht-tests/*
+	rm /home/$(whoami)/.fahtdiag/custom_cmd.sh
 	break_program
 fi
+
+if [[ "${REFRESH}" == "ON" ]]; then
+	rm $FAHT_STAGE_FILE
+	rm /home/$(whoami)/.fahtdiag/custom_cmd.sh
+	break_program
+fi
+
 
 clear
 echo -e "---------------------------"
@@ -349,6 +358,10 @@ if [ "$FAHT_NEXT_STAGE" == "results" ]; then
 	if [[ $TESTONLY != "ON" ]]; then
 		rsync -arvuP /mnt/usbdata/faht-tests/* techtutors@192.168.1.51:/home/PublicShare/FAHT-Reports/
 		ssh tt1.local chown -Rfv techtutors:ttdata /home/PublicShare/FAHT-Reports/
+	fi
+
+	if [[ -f "/home/$(whoami)/.fahtdiag/" ]]; then
+		rm /home/$(whoami)/.fahtdiag/custom_cmd.sh
 	fi
 
 fi
