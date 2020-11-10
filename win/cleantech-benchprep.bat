@@ -67,24 +67,29 @@ goto wificonfig
     echo,
 
     echo Connecting to TechTutors Wi-Fi
-    netsh connect name=TechTutors ssid=Techtutors
+    netsh wlan connect name=TechTutors ssid=Techtutors
     echo,
 
 :choco
-    if not exist "%systemdrive\ProgramData\chocolatey\bin\choco.exe" goto chocoinstall
-    choco upgrade all
+    if not exist "%systemdrive%\ProgramData\chocolatey\choco.exe" goto chocoinstall
     goto installapps
 
     :chocoinstall
     echo Installing Chocolatey...
     echo,
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v RunScript /t REG_SZ /d "%CD%\cleantech-benchprep.bat"
 
-    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%profilesfolder%\Public\chocolatey\bin"
+
+    start /WAIT powershell.exe Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     echo,
+
+    echo Done installing chocolatey. Rebooting to continue installation... You will need to run this program again...
+    shutdown /r /t 0
 
     :installapps
     echo,
     echo Installing common utilities and apps...
+    choco upgrade -y all
     choco install -y bonjour googlechrome tightvnc
     echo,
     echo ALL DONE!

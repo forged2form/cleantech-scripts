@@ -116,20 +116,22 @@ if [ "$FAHT_DIAGMODE" == "ON" ]; then
 	DIAG=break_program;
 fi
 
+
+### Get basic system id for faht folder ###
+
+sudo lshw -c system>/tmp/fs.txt
+
+FAHT_COMP_TYPE="$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')"
+FAHT_COMP_VENDOR="$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')"
+FAHT_COMP_SN="$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')"
+FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SN"
+COMP_DESC_CHECK="$FAHT_COMP_DESC"
+FAHT_COMP_VERSION="$(cat /tmp/fs.txt|grep version|sed 's/.*version: //')"
+
 check_stagefile
+$DIAG
 
-if [ ! "$FAHT_CURR_STAGE" ]; then
-
-	### Get basic system id for faht folder ###
-
-	sudo lshw -c system>/tmp/fs.txt
-
-	FAHT_COMP_TYPE="$(cat /tmp/fs.txt|grep description|sed 's/.*description: //'|sed -n 's/ *//gp')"
-	FAHT_COMP_VENDOR="$(cat /tmp/fs.txt|grep vendor|head -1|sed 's/.*vendor: //')"
-	FAHT_COMP_SN="$(cat /tmp/fs.txt|grep serial|sed 's/.*serial: //')"
-	FAHT_COMP_DESC="$FAHT_COMP_VENDOR-$FAHT_COMP_TYPE-$FAHT_COMPUTER_SN"
-	FAHT_COMP_VERSION="$(cat /tmp/fs.txt|grep version|sed 's/.*version: //')"
-	$DIAG
+	if [ ! "$FAHT_CURR_STAGE" ]; then
 
 	: echo BEGINING ALL THE THINGS...
 	$DIAG

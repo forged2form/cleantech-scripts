@@ -50,6 +50,9 @@ set "tac_workingdir=C:\CleanTechTemp"
 echo cd "C:\CleanTechTemp"
 cd "C:\CleanTechTemp"
 
+echo Connecting to Wi-Fi...
+netsh wlan connect name=TechTutors ssid=Techtutors
+
 tac_debugmode=rem nothing to see here
 
 echo Printing Last run variables:

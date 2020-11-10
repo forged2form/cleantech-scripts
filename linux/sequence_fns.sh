@@ -56,6 +56,41 @@ check_stagefile () {
 			source "/home/$(whoami)/.fahtdiag/custom_cmd.sh"
 		fi
 
+		if [[ "$FAHT_COMP_DESC" != "$COMP_DESC_CHECK" ]]; then
+			echo
+			echo "-----------------------------------------------------------------"
+			echo "FAHT seems to be running on different hardware than the last run."
+			echo "Would you like to start over?"
+			echo "-----------------------------------------------------------------"
+			echo
+
+			prompt_answer=
+			confirm_prompt
+				case $prompt_answer in
+					y|Y) START_OVER=YES ;;
+					n|N) START_OVER=NO ;;
+			esac
+		fi
+
+		if [[ "$prompt_answer" == "YES" ]]; then
+			echo "-----------"
+			echo "Cleaning up"
+			echo "------------"
+			mv "$FAHT_STAGE_FILE" "$FAHT_WORKINGDIR"
+			echo Moved "$FAHT_STAGE_FILE" to "$FAHT_WORKINGDIR"
+			
+			if [[ -f "/home/$(whoami)/.fahtdiag/custom_cmd.sh" ]]; then
+				mv /home/$(whoami)/.fahtdiag/custom_cmd.sh "$FAHT_WORKINGDIR"
+			fi
+		else
+			echo "----------------------------------------------"
+			echo "Exiting FAHT. Please try again, or start over."
+			echo "----------------------------------------------"
+			exit
+		fi
+
+		break_program
+
 		$DIAG
 	fi
 }
