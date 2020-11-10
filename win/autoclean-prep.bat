@@ -230,7 +230,7 @@ echo,
 		echo Incorrect input. & goto passconfirm
 
 :nopass
-	set password
+	set password=
 
 :passcorrect
 
