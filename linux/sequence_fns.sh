@@ -51,6 +51,11 @@ check_stagefile () {
 		FAHT_WORKINGDIR="$(grep "Working Directory" "$FAHT_STAGE_FILE"|sed -r 's/.*Working Directory: (.*)/\1/')"
 		source "${FAHT_WORKINGDIR}"/vars_noarray.txt
 		echo Current stage: $FAHT_CURR_STAGE
+
+		if [ -f "/home/$(whoami)/.fahtdiag/custom_cmd.sh" ]; then
+			source "/home/$(whoami)/.fahtdiag/custom_cmd.sh"
+		fi
+
 		$DIAG
 	fi
 }
