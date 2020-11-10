@@ -70,26 +70,26 @@ check_stagefile () {
 					y|Y) START_OVER=YES ;;
 					n|N) START_OVER=NO ;;
 			esac
-		fi
 
-		if [[ "$prompt_answer" == "YES" ]]; then
-			echo "-----------"
-			echo "Cleaning up"
-			echo "------------"
-			mv "$FAHT_STAGE_FILE" "$FAHT_WORKINGDIR"
-			echo Moved "$FAHT_STAGE_FILE" to "$FAHT_WORKINGDIR"
-			
-			if [[ -f "/home/$(whoami)/.fahtdiag/custom_cmd.sh" ]]; then
-				mv /home/$(whoami)/.fahtdiag/custom_cmd.sh "$FAHT_WORKINGDIR"
+			if [[ "$START_OVER" == "YES" ]]; then
+				echo "-----------"
+				echo "Cleaning up"
+				echo "------------"
+				mv "$FAHT_STAGE_FILE" "$FAHT_WORKINGDIR"
+				echo Moved "$FAHT_STAGE_FILE" to "$FAHT_WORKINGDIR"
+				
+				if [[ -f "/home/$(whoami)/.fahtdiag/custom_cmd.sh" ]]; then
+					mv /home/$(whoami)/.fahtdiag/custom_cmd.sh "$FAHT_WORKINGDIR"
+				fi
+			else
+				echo "----------------------------------------------"
+				echo "Exiting FAHT. Please try again, or start over."
+				echo "----------------------------------------------"
+				exit
 			fi
-		else
-			echo "----------------------------------------------"
-			echo "Exiting FAHT. Please try again, or start over."
-			echo "----------------------------------------------"
-			exit
-		fi
 
-		break_program
+			break_program
+		fi
 
 		$DIAG
 	fi
