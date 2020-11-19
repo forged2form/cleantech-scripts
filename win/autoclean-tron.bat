@@ -108,10 +108,10 @@ color 1f
 	set tac_>%tac_workingdir%\CT-Flags.txt
 
 	echo Starting Tron...
-	start /wait %tac_workingdir%\Tron\tron\Tron.bat -a -str -sdc
+	start /wait %tac_workingdir%\Tron\Tron.bat -a -str -sdc
 	echo,
 
-:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\tron\resources\tron_stage.txt" (
+:: THIS IS NOT WORKING AS INTENDED RIGHT NOW -- if NOT exist "%tac_workingdir%\Tron\resources\tron_stage.txt" (
 
 :didtronfinish
 :: create prompt to see if tron finished OR test via trons own error / logs if possible
