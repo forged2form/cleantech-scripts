@@ -53,6 +53,10 @@ while getopts ":hdsqctomxr" option; do
 	esac
 done
 
+## TEMP FIX - Ensure important partitions on FAHT disk are mounted
+sudo mount /boot/efu
+sudo mount /mnt/usbdata
+
 shift $(( OPTIND - 1))
 
 echo $FAHT_DIAGMODE
