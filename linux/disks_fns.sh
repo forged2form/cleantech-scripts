@@ -347,7 +347,9 @@ mount_avail_volumes () {
 		sudo rmdir $i;
 	done
 
-	sudo umount /dev/${CURR_DISK_ARRAY[deviceid]}*
+	if [ "${CURR_DISK_ARRAY[deviceid]}" ]; then
+		sudo umount /dev/${CURR_DISK_ARRAY[deviceid]}*
+	fi
 
 	i=1
 	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do

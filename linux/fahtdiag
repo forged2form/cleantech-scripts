@@ -120,7 +120,6 @@ if [ "$FAHT_DIAGMODE" == "ON" ]; then
 	DIAG=break_program;
 fi
 
-
 ### Get basic system id for faht folder ###
 
 sudo lshw -c system>/tmp/fs.txt
