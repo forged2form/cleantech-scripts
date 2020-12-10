@@ -458,7 +458,14 @@ find_win_part () {
 				echo
 				WIN_VOL=YES
 				echo "Found Windows partition in /dev/${CURR_DISK_ARRAY[part${j}]}"
+				echo "Setting FAHT_SYSDRIVE to /dev/${CURR_DISK_ARRAY[deviceid]}"
+				FAHT_SYSDRIVE="/dev/${CURR_DISK_ARRAY[deviceid]}"
+				FAHT_SYSDRIVE_NAME="${CURR_DISK_ARRAY[name]}"
+				FAHT_SYSDRIVE_SN="${CURR_DISK_ARRAY[serial]}"
+				FAHT_SYSDRIVE_SIZE="${CURR_DISK_ARRAY[totalsize]}"
+				FAHT_SYSDRIVE_SIZERESULTS=""
 				CURR_DISK_ARRAY[windowspart]=${CURR_DISK_ARRAY[part${j}]}
+				CURR_DISK_ARRAY[systemdisk]="YES"
 				FAHT_WIN_PART=${CURR_DISK_ARRAY[part${j}]}
 				echo FAHT_WIN_PART=$FAHT_WIN_PART
 				echo
@@ -521,12 +528,16 @@ benchmark_disks () {
 	echo Benchmarking attached disks...
 	echo ------------------------------
 
+	## LOOK INTO hdparm, flush, drop cacehs to get accurate results...
+
 
 	if [ "${DISK_ARRAY_SETUP}" != "COMPLETE" ]; then
 		disk_array_setup
 	fi
 
 	i=1
+
+	### If the drive is healthy, run the R/W benchmark.
 
 	if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" == "PASSED" ]; then
 
@@ -571,6 +582,12 @@ benchmark_disks () {
 
 				(( i++ ))
 		done
+	fi
+
+	### If the drive is unhealthy, run this READ ONLY Benchmark...
+
+	if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" != "PASSED" ]; then
+
 	fi
 
 }
@@ -763,6 +780,36 @@ benchmark_disks () {
 # 	save_disk_vars
 # }
 
+sysdrive_find () {
+
+	i=1
+
+	while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
+		declare -n CURR_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+		echo Seaching Disk ${i}...
+
+		j=1
+
+		if [[ "${CURR_DISK_ARRAY[systemdrive]}" == "YES" ]]; then
+			FAHT_SYSDRIVE_NAME="${CURR_DISK_ARRAY[name]}"
+			FAHT_SYSDRIVE_SN="${CURR_DISK_ARRAY[serial]}"
+			FAHT_SYSDRIVE_SIZE="${CURR_DISK_ARRAY[totalsize]}"
+			FAHT_SYSDRIVE_SIZE_RESULTS="${CURR_DISK_ARRAY[totalsize_results]}"
+			FAHT_SYSDRIVE_FREESPACE="${CURR_DISK_ARRAY[windowspartfreespace]}"
+			FAHT_SYSDRIVE_FREESPACE_RESULTS="${CURR_DISK_ARRAY[windowspartfreespace_results]}"
+			FAHT_SYSDRIVE_TIMEON="${CURR_DISK_ARRAY[timeon]}"
+			FAHT_SYSDRIVE_TIMEON_RESULTS="${CURR_DISK_ARRAY[timeon_results]}"
+			FAHT_SYSDRIVE_READ="${CURR_DISK_ARRAY[readspeed]}}"
+			FAHT_SYSDRIVE_READ_RESULTS="${CURR_DISK_ARRAY[readspeed_results]}}"
+			FAHT_SYSDRIVE_WRITE="${CURR_DISK_ARRAY[writespeed]}}"
+			FAHT_SYSDRIVE_WRITE_RESULTS="${CURR_DISK_ARRAY[writespeed_results]}}"
+			FAHT_SYSDRIVE_SELFTEST="${CURR_DISK_ARRAY[selftest]}}"
+			FAHT_SYSDRIVE_SELFTEST_RESULTS="${CURR_DISK_ARRAY[selftest_results]}}"
+		fi
+
+	done
+}
+
 list_disks_info () {
 	i=1
 	while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
@@ -772,6 +819,9 @@ list_disks_info () {
 		echo Name: ${CURR_DISK_ARRAY[name]}
 		echo Device ID: ${CURR_DISK_ARRAY[deviceid]}
 		echo Serial \#: ${CURR_DISK_ARRAY[serial]}
+		if [[ "${CURR_DISK_ARRAY[systemdisk]}" == "YES" ]]; then
+			echo System drive: Yes
+		fi
 		if [[ "${CURR_DISK_ARRAY[smartcapable]}" == "YES" ]]; then
 			echo Smart Capable: Yes
 			if [ "${CURR_DISK_ARRAY[selftest_capable]}" ]; then
