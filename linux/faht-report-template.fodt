@@ -780,7 +780,7 @@
       <text:p text:style-name="TNormal"><text:span text:style-name="T4">Computer: </text:span>[[ FAHT_COMPUTER_DESC ]] </text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table3.A1" office:value-type="string">
-      <text:p text:style-name="TNormal-Left"><text:span text:style-name="T1">S/N:</text:span> [[ FAHT_COMPUTER_SN ]] </text:p>
+      <text:p text:style-name="TNormal-Left"><text:span text:style-name="T1">S/N:</text:span> [[ FAHT_COMP_SN ]] </text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
