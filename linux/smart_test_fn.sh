@@ -102,9 +102,15 @@ disk_array_setup ()
 		done
 		(( i++ ));
 	done
+
+	DISK_ARRAY_SETUP=RAN
 }
 
 smart_drive_find () {
+
+	if [ "${DISK_ARRAY_SETUP}" != "RAN" ]; then
+		disk_array_setup
+	fi
 
 	### Testing for SMART-capable drives ###
 	sudo smartctl --scan|sed -r 's/\/dev\/([a-z]d[a-z]).*/\1/g'|grep -v $FAHT_LIVE_DEV
@@ -139,6 +145,10 @@ mount_avail_volumes () {
 	### Ensure test drives are unmounted first and mount dir structure is good
 	echo Attempting to mount volumes....
 	echo -------------------------------
+
+	if [ "${DISK_ARRAY_SETUP}" != "RAN" ]; then
+		disk_array_setup
+	fi
 
 	if [ ! -d /mnt/faht ]; then sudo mkdir /mnt/faht; fi
 	for i in /mnt/faht/*; do
@@ -202,6 +212,12 @@ mount_avail_volumes () {
 }
 
 find_win_part () {
+
+
+	if [ "${DISK_ARRAY_SETUP}" != "RAN" ]; then
+		disk_array_setup
+	fi
+	
 	echo Searching for Windows system volume...
 	echo --------------------------------------
 	i=1
@@ -230,185 +246,186 @@ find_win_part () {
 	echo
 }
 
-benchmark_disks () {
-	echo Benchmarking attached disks...
-	echo ------------------------------
 
-	### Need to add logic to NOT write to the disk if SMART fails.
-	### That means this should be run ONLY AFTER Smart test completes.
+# benchmark_disks () {
+# 	echo Benchmarking attached disks...
+# 	echo ------------------------------
 
-	i=1
-	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
-		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+# 	### Need to add logic to NOT write to the disk if SMART fails.
+# 	### That means this should be run ONLY AFTER Smart test completes.
 
-		### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
-		WRITE_TEST="NO"
+# 	i=1
+# 	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
+# 		declare -n CURR_FAHT_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 
-		if [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "FAILED" ]]; then
-			WRITE_TEST="NO";
-		fi
+# 		### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
+# 		WRITE_TEST="NO"
 
-		TESTDEV_SIZE_IN_BYTES=$(sudo lsblk -dnrbo SIZE /dev/${CURR_FAHT_DISK_ARRAY[deviceid]})
-		echo TESTDEV_SIZE_IN_BYTES = ${TESTDEV_SIZE_IN_BYTES}
+# 		if [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "FAILED" ]]; then
+# 			WRITE_TEST="NO";
+# 		fi
 
-		#1GB Block size (1073741824 bytes)
-		BLOCK_SIZE_IN_BYTES=1073741824
+# 		TESTDEV_SIZE_IN_BYTES=$(sudo lsblk -dnrbo SIZE /dev/${CURR_FAHT_DISK_ARRAY[deviceid]})
+# 		echo TESTDEV_SIZE_IN_BYTES = ${TESTDEV_SIZE_IN_BYTES}
 
-		TOTAL_DATA_SIZE_IN_BLOCKS="$((( "$TESTDEV_SIZE_IN_BYTES" / "$BLOCK_SIZE_IN_BYTES" )))"
-		echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
+# 		#1GB Block size (1073741824 bytes)
+# 		BLOCK_SIZE_IN_BYTES=1073741824
 
-		PASSES=5
+# 		TOTAL_DATA_SIZE_IN_BLOCKS="$((( "$TESTDEV_SIZE_IN_BYTES" / "$BLOCK_SIZE_IN_BYTES" )))"
+# 		echo "TOTAL_DATA_SIZE_IN_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $BLOCK_SIZE_IN_BYTES )))"
 
-		c="$PASSES"
-		# Default BLOCK size = 512
-		# 1 GiB / 512 BLOCK size = 2,097,152
-		BLOCK_COUNT=1
+# 		PASSES=5
 
-		touch "${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
-		touch "${FAHT_WORKINGDIR}"/dd-write-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
+# 		c="$PASSES"
+# 		# Default BLOCK size = 512
+# 		# 1 GiB / 512 BLOCK size = 2,097,152
+# 		BLOCK_COUNT=1
+
+# 		touch "${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
+# 		touch "${FAHT_WORKINGDIR}"/dd-write-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
 		
-		while [[ "$c" -ge "1" ]]; do
-			START_PLACE="$((( $TOTAL_DATA_SIZE_IN_BLOCKS - "$c" )))"
-			echo "sudo dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
-			sudo dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
-			sleep 5
+# 		while [[ "$c" -ge "1" ]]; do
+# 			START_PLACE="$((( $TOTAL_DATA_SIZE_IN_BLOCKS - "$c" )))"
+# 			echo "sudo dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/null bs=${BLOCK_SIZE_IN_BYTES} count=${BLOCK_COUNT} skip=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+# 			sudo dd if=/dev/"${CURR_FAHT_DISK_ARRAY[deviceid]}" of=/dev/null bs="${BLOCK_SIZE_IN_BYTES}" count="${BLOCK_COUNT}" skip="${START_PLACE}" 2>"${FAHT_WORKINGDIR}"/dd-read-"${CURR_FAHT_DISK_ARRAY[deviceid]}".txt
+# 			sleep 5
 			
-			RSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
-			CURR_FAHT_DISK_ARRAY[readbench_"${c}"]=$(printf "%.0f" $(echo "scale=2;1024/$RSPEED"|bc))
-			(( c-- ));
-		done
+# 			RSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-read-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
+# 			CURR_FAHT_DISK_ARRAY[readbench_"${c}"]=$(printf "%.0f" $(echo "scale=2;1024/$RSPEED"|bc))
+# 			(( c-- ));
+# 		done
 
-		c=1
-		READ_TOTAL=0
-		while [[ "$c" -le "$PASSES" ]]; do
-			echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[readbench_$c]}
-			READ_TOTAL="$((( $READ_TOTAL + "${CURR_FAHT_DISK_ARRAY[readbench_"${c}"]}")))"
-			(( c++ ));
-		done
+# 		c=1
+# 		READ_TOTAL=0
+# 		while [[ "$c" -le "$PASSES" ]]; do
+# 			echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[readbench_$c]}
+# 			READ_TOTAL="$((( $READ_TOTAL + "${CURR_FAHT_DISK_ARRAY[readbench_"${c}"]}")))"
+# 			(( c++ ));
+# 		done
 
-		READ_AVERAGE=$((( $READ_TOTAL / "$PASSES" )))
+# 		READ_AVERAGE=$((( $READ_TOTAL / "$PASSES" )))
 
-		echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE
+# 		echo Read average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $READ_AVERAGE
 
-		CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
+# 		CURR_FAHT_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
 
-		CURR_FAHT_DISK_ARRAY[writespeed]="Write test skipped."
+# 		CURR_FAHT_DISK_ARRAY[writespeed]="Write test skipped."
 
-		### Read benchmark
-		#echo Testing read speed of Disk ${i}
-		#echo running command: hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}
-		#hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}>"${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt
-		#CURR_FAHT_DISK_ARRAY[readspeed]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt|grep "disk reads"|sed -r 's/.* \= (.*)/\1/g')"
-		#echo ${CURR_FAHT_DISK_ARRAY[readspeed]}
-		#$DIAG
+# 		### Read benchmark
+# 		#echo Testing read speed of Disk ${i}
+# 		#echo running command: hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}
+# 		#hdparm -t /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}>"${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt
+# 		#CURR_FAHT_DISK_ARRAY[readspeed]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-hdparm.txt|grep "disk reads"|sed -r 's/.* \= (.*)/\1/g')"
+# 		#echo ${CURR_FAHT_DISK_ARRAY[readspeed]}
+# 		#$DIAG
 
-		# |sed -r 's/^.* \= ([0-9].*)/\1/g'
+# 		# |sed -r 's/^.* \= ([0-9].*)/\1/g'
 
-		### Write benchmark
+# 		### Write benchmark
 
-		#echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
-		#bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
+# 		#echo running command: bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
+# 		#bonnie++ -d ${CURR_FAHT_DISK_ARRAY[benchvol]} -r 8096 -u techtutors
 
-		### bench command
+# 		### bench command
 
-		#declare -a CURR_BENCH_ARRAY
-		#b=0
-		#while [[ "$b" -lt "100" ]]; do
-		#	echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#	dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#	CURR_BENCH_ARRAY[${b}]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
-		#	(( b++ ));
-		#done
-		#echo ${CURR_BENCH_ARRAY[@]}
-		#echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		#dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
-		MOUNT_RESULT=""
-		CURR_DEV_UNMOUNTED="UNKNOWN"
+# 		#declare -a CURR_BENCH_ARRAY
+# 		#b=0
+# 		#while [[ "$b" -lt "100" ]]; do
+# 		#	echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
+# 		#	dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
+# 		#	CURR_BENCH_ARRAY[${b}]="$(cat "${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt|grep bytes|sed -r 's/.* s\, ([0-9]+)/\1/g')"
+# 		#	(( b++ ));
+# 		#done
+# 		#echo ${CURR_BENCH_ARRAY[@]}
+# 		#echo running command: dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
+# 		#dd if=/dev/zero of=${CURR_FAHT_DISK_ARRAY[benchvol]}/testfile bs=100M count=1 oflag=direct 2>"${FAHT_WORKINGDIR}"/logdir-disk${i}-dd-write.txt
+# 		MOUNT_RESULT=""
+# 		CURR_DEV_UNMOUNTED="UNKNOWN"
 
-		sudo umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}*
+# 		sudo umount /dev/${CURR_FAHT_DISK_ARRAY[deviceid]}*
 
-		MOUNT_RESULT="$(sudo mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
+# 		MOUNT_RESULT="$(sudo mount | grep "${CURR_FAHT_DISK_ARRAY[deviceid]}")"
 
-		if [[ "$MOUNT_RESULT" != "" ]]; then
-			CURR_DEV_UNMOUNTED="NO"
-			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} NOT unmounted!!!!
-			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
-			echo MOUNT_RESULT="${MOUNT_RESULT}"
-			echo
-		fi
+# 		if [[ "$MOUNT_RESULT" != "" ]]; then
+# 			CURR_DEV_UNMOUNTED="NO"
+# 			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} NOT unmounted!!!!
+# 			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
+# 			echo MOUNT_RESULT="${MOUNT_RESULT}"
+# 			echo
+# 		fi
 
-		if [[ "$MOUNT_RESULT" == "" ]]; then
-			CURR_DEV_UNMOUNTED="YES"
-			echo
-			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} sucessfully unmounted!
-			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
-			echo MOUNT_RESULT="${MOUNT_RESULT}"
-			echo
-		fi
+# 		if [[ "$MOUNT_RESULT" == "" ]]; then
+# 			CURR_DEV_UNMOUNTED="YES"
+# 			echo
+# 			echo Disk ${i}: ${CURR_FAHT_DISK_ARRAY[devicedid]} sucessfully unmounted!
+# 			echo CURR_DEV_UNMOUNTED=${CURR_DEV_UNMOUNTED}
+# 			echo MOUNT_RESULT="${MOUNT_RESULT}"
+# 			echo
+# 		fi
 
-		if [[ "$CURR_DEV_UNMOUNTED" == "NO" ]]; then
-			echo Could not unmount Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviced]}... Write test aborted.
-			echo
-		fi
+# 		if [[ "$CURR_DEV_UNMOUNTED" == "NO" ]]; then
+# 			echo Could not unmount Disk ${i}: ${CURR_FAHT_DISK_ARRAY[deviced]}... Write test aborted.
+# 			echo
+# 		fi
 
-		CURR_FAHT_DISK_ARRAY[smart_results]=PASSED
+# 		CURR_FAHT_DISK_ARRAY[smart_results]=PASSED
 
-		if [[ "${CURR_DEV_UNMOUNTED}" == "YES" ]] && [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "PASSED" ]]; then
-			echo Testing write speed of Disk ${i}
-			echo
+# 		if [[ "${CURR_DEV_UNMOUNTED}" == "YES" ]] && [[ "${CURR_FAHT_DISK_ARRAY[smart_results]}" == "PASSED" ]]; then
+# 			echo Testing write speed of Disk ${i}
+# 			echo
 			
-			### 1048576 = 1MiB in Bytes
-			### WRITE_BLOCK_SIZE=1048576
+# 			### 1048576 = 1MiB in Bytes
+# 			### WRITE_BLOCK_SIZE=1048576
 
-			WRITE_BLOCK_SIZE=1048576
-			WRITE_TOTAL_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $WRITE_BLOCK_SIZE )))
+# 			WRITE_BLOCK_SIZE=1048576
+# 			WRITE_TOTAL_BLOCKS=$((( $TESTDEV_SIZE_IN_BYTES / $WRITE_BLOCK_SIZE )))
 
-			#### The "SUBDIV" is to get the number of blocks needed to fill 1 GiB (1 GiB / BLOCK size in Bytes)
-			#### WRITE_BLOCK_SUBDIV=10
-			#### 1GiB in Bytes = 1073741824
+# 			#### The "SUBDIV" is to get the number of blocks needed to fill 1 GiB (1 GiB / BLOCK size in Bytes)
+# 			#### WRITE_BLOCK_SUBDIV=10
+# 			#### 1GiB in Bytes = 1073741824
 
-			TOTAL_BENCH_DATA_SIZE=1073741824
+# 			TOTAL_BENCH_DATA_SIZE=1073741824
 
-			WRITE_BLOCK_SUBDIV=$((( $TOTAL_BENCH_DATA_SIZE / $WRITE_BLOCK_SIZE )))
-			WRITE_BLOCK_COUNT=$WRITE_BLOCK_SUBDIV
+# 			WRITE_BLOCK_SUBDIV=$((( $TOTAL_BENCH_DATA_SIZE / $WRITE_BLOCK_SIZE )))
+# 			WRITE_BLOCK_COUNT=$WRITE_BLOCK_SUBDIV
 
-			echo WRITE_TOTAL_BLOCKS=${WRITE_TOTAL_BLOCKS}
-			echo WRITE_BLOCK_SIZE=${WRITE_BLOCK_SIZE}
+# 			echo WRITE_TOTAL_BLOCKS=${WRITE_TOTAL_BLOCKS}
+# 			echo WRITE_BLOCK_SIZE=${WRITE_BLOCK_SIZE}
 
-			c=$PASSES
-			while [[ "$c" -ge "1" ]]; do
-				WRITE_COUNT=$((( "$c" * "$WRITE_BLOCK_SUBDIV" )))
-				START_PLACE=$((( $WRITE_TOTAL_BLOCKS - "$WRITE_COUNT" )))
-				echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
-				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
-				sleep 5
+# 			c=$PASSES
+# 			while [[ "$c" -ge "1" ]]; do
+# 				WRITE_COUNT=$((( "$c" * "$WRITE_BLOCK_SUBDIV" )))
+# 				START_PLACE=$((( $WRITE_TOTAL_BLOCKS - "$WRITE_COUNT" )))
+# 				echo "command to run: dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt"
+# 				dd if=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} of=/dev/${CURR_FAHT_DISK_ARRAY[deviceid]} ibs=${WRITE_BLOCK_SIZE} obs=${WRITE_BLOCK_SIZE} count=${WRITE_BLOCK_COUNT} skip=${START_PLACE} seek=${START_PLACE} 2>"${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt
+# 				sleep 5
 
-				WSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
-				CURR_FAHT_DISK_ARRAY[writebench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$WSPEED"|bc))
-				(( c-- ));
-			done
+# 				WSPEED="$(cat "${FAHT_WORKINGDIR}"/dd-write-${CURR_FAHT_DISK_ARRAY[deviceid]}.txt|grep bytes|sed -r 's/.* copied\, ([0-9]+\.[0-9]+) s.*/\1/g')"
+# 				CURR_FAHT_DISK_ARRAY[writebench_$c]=$(printf "%.0f" $(echo "scale=2;1024/$WSPEED"|bc))
+# 				(( c-- ));
+# 			done
 
-			c=1
-			WRITE_TOTAL=0
-			while [[ "$c" -le "$PASSES" ]]; do
-				echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[writebench_$c]}
-				WRITE_TOTAL=$((( $WRITE_TOTAL + ${CURR_FAHT_DISK_ARRAY[writebench_$c]})))
-				(( c++ ));
-			done
+# 			c=1
+# 			WRITE_TOTAL=0
+# 			while [[ "$c" -le "$PASSES" ]]; do
+# 				echo Pass number $c: ${CURR_FAHT_DISK_ARRAY[writebench_$c]}
+# 				WRITE_TOTAL=$((( $WRITE_TOTAL + ${CURR_FAHT_DISK_ARRAY[writebench_$c]})))
+# 				(( c++ ));
+# 			done
 
-			WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
+# 			WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
 
-			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE
+# 			echo Write average for ${CURR_FAHT_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE
 
-			CURR_FAHT_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
-		else
-			echo "Skipping write test..."
-		fi
+# 			CURR_FAHT_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
+# 		else
+# 			echo "Skipping write test..."
+# 		fi
 
-		(( i++ ))
-		echo;
-	done
-}
+# 		(( i++ ))
+# 		echo;
+# 	done
+# }
 
 echo testing... 
 echo ----------

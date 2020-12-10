@@ -15,7 +15,7 @@ init_dialog () {
 	declare -A FAHT_OPTS_ARRAY=()
 	
 	FAHT_OPTIONS="$(dialog --checklist --output-fd 1 "Check the options..." 20 50 40 \
-	"quickmode" "Skip Mem, LST, run quick ClamAV" "$FAHT_QUICKMODE" \
+	"quickmode" "Skip Memtest, LST, and ClamAV" "$FAHT_QUICKMODE" \
 	"memtest" "Memory Test" "$FAHT_MEMTEST" \
 	"shortonly" "Short SMART Test" "$FAHT_SHORTONLY" \
 	"clamav" "Run ClamAV" "$FAHT_CLAMAV" \
