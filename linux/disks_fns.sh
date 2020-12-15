@@ -539,30 +539,46 @@ benchmark_disks () {
 
 	### If the drive is healthy, run the R/W benchmark.
 
-	if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" == "PASSED" ]; then
+	while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
 
-			while [[ "$i" -le "${FAHT_TOTAL_TEST_DISKS}" ]]; do
+		echo Benchmarking Disk ${i}...
+		echo
 
-				echo Benchmarking Disk ${i}...
-				echo
+		declare -n CURR_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
 
-				declare -n CURR_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
+	#	### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
+	#	WRITE_TEST="NO"
+#
+#		if [[ "${CURR_DISK_ARRAY[selftest_results]}" == "FAILED" ]]; then
+#			WRITE_TEST="NO";
+#		else if [[ "${CURR_DISK_ARRAY[selftest_results]}" == "PASSED" ]]; then
+#			WRITE_TEST="YES";
+#		fi
 
-				### Default to skip write test in case of bug or other unforseen circumstance. (Bash is funny... OK!?)
-				WRITE_TEST="NO"
+		if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" == "PASSED" ]; then
 
-				if [[ "${CURR_DISK_ARRAY[selftest_results]}" == "FAILED" ]]; then
-					WRITE_TEST="NO";
-				else if [[ "${CURR_DISK_ARRAY[selftest_results]}" == "PASSED" ]]; then
-					WRITE_TEST="YES";
-				fi
+			test_iterations=5
 
 
-				WRITE_AVERAGE=$((( $WRITE_TOTAL / "$PASSES" )))
+			### Ensure disk is unmounted
+			sudo umount /dev/${CURR_DISK_ARRAY[deviceid]}* 2>/dev/null
+
+			### Mount to known dir
+			sudo mount /dev/${CURR_DISK_ARRAY[windowspart]} /mnt/${CURR_DISK_ARRAY[windowspart]}
+
+			mkdir /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
+
+			if [[ -d /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark ]]; then
+
+				cd /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
+
+				sudo sysbench fileio prepare
+
+				## Figure out how to convert between sysbench MiB/s and MB/s
 
 				if [[ "$WRITE_AVERAGE" -le "50" ]]; then
-					CURR_DISK_ARRAY[writespeed_results]="FAILED"
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
+				CURR_DISK_ARRAY[writespeed_results]="FAILED"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
 				fi
 				if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
 					CURR_DISK_ARRAY[writespeed_results]="PASSED"
@@ -576,19 +592,48 @@ benchmark_disks () {
 				echo Write average for ${CURR_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE MB/s
 
 				CURR_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
-				else
-					echo "Skipping write test..."
-				fi
 
-				(( i++ ))
-		done
-	fi
+			else
+				echo "Skipping write test..."
+			fi
+		fi
 
-	### If the drive is unhealthy, run this READ ONLY Benchmark...
+		### If the drive is unhealthy, run this READ ONLY Benchmark...
 
-	if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" != "PASSED" ]; then
+		if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" != "PASSED" ]; then
 
-	fi
+			readtest_iterations=5
+
+			echo "Benchmarking Disk ${i} in READ ONLY mode..."
+			for (( i = 0; i < $readtest_iterations; i++ )); do
+				echo "Run: $i";
+				sudo hdparm -F /dev/sda;
+				sudo sync;
+				readtest[$i]="$(sudo hdparm -Tt /dev/sda|grep 'buffered'|sed -r 's/.* = ([0-9]+)\.([0-9]+).*/\1\2/g')";
+			done
+
+			total_read=0;
+
+			for (( i=0; i<$readtest_iterations; i++ )); do
+				(( total_read=$total_read+${readtest[$i]} ));
+			done
+
+			avg_read=0
+			avg_read="(( $total_read / $readtest_iterations ))"
+			avg_read_formatted="$(echo (( $avg_read / $readtest_iterations ))|sed 's/..$/.&/')"
+
+			CURR_DISK_ARRAY[readspeedraw]=$avg_read
+			CURR_DISK_ARRAY[readspeed]="$avg_read_formatted"
+
+			[[ "$avg_read" -ge 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
+			[[ "$avg_read" -le 5000 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
+			[[ "$avg_read" -ge 5000 && "avg_read" -le 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
+
+			fi
+
+		(( i++ ))
+	done
+
 
 }
 
