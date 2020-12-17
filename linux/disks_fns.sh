@@ -559,39 +559,37 @@ benchmark_disks () {
 
 			test_iterations=5
 
-
 			### Ensure disk is unmounted
 			sudo umount /dev/${CURR_DISK_ARRAY[deviceid]}* 2>/dev/null
 
-			### Mount to known dir
+			### Benchmarking
 			sudo mount /dev/${CURR_DISK_ARRAY[windowspart]} /mnt/${CURR_DISK_ARRAY[windowspart]}
-
 			mkdir /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
 
 			if [[ -d /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark ]]; then
 
 				cd /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
 
-				sudo sysbench fileio prepare
+				fio --name=rw --ioengine=posixaio --rw=rw --bs=1m --size=10m --numjobs=100 --iodepth=1 --runtime=60 --time_based --end_fsync=1 --output=diskbench-rw.txt --eta=never
+				fio --name=rw --ioengine=posixaio --rw=rw --bs=1m --size=10m --numjobs=100 --iodepth=1 --runtime=60 --time_based --end_fsync=1 --output=diskbench-rw.txt --eta=never
 
-				## Figure out how to convert between sysbench MiB/s and MB/s
-
-				if [[ "$WRITE_AVERAGE" -le "50" ]]; then
-				CURR_DISK_ARRAY[writespeed_results]="FAILED"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
-				fi
-				if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
-					CURR_DISK_ARRAY[writespeed_results]="PASSED"
-				fi
-				if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
-					CURR_DISK_ARRAY[writespeed_results]="WARNING"
-					FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
-				fi
+				READ_AVERAGE="$(cat diskbench-rw.txt |grep READ:|sed -r 's/.* \(([0-9]+)\..*\).*/\1/g')"
+				WRITE_AVERAGE+"$(cat diskbench-rw.txt |grep WRITE:|sed -r 's/.* \(([0-9]+)\..*\).*/\1/g')"
 
 				echo
+				echo Read average for ${CURR_DISK_ARRAY[deviceid]}: $READ_AVERAGE MB/s
 				echo Write average for ${CURR_DISK_ARRAY[deviceid]}: $WRITE_AVERAGE MB/s
 
+				CURR_DISK_ARRAY[readspeed]="$READ_AVERAGE MB/s"
 				CURR_DISK_ARRAY[writespeed]="$WRITE_AVERAGE MB/s"
+
+				[[ "$READ_AVERAGE" -ge 90 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
+				[[ "$READ_AVERAGE" -lt 75 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
+				[[ "$READ_AVERAGE" -ge 75 && "avg_read" -le 75 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
+
+				[[ "$WRITE_AVERAGE" -ge 65 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
+				[[ "$WRITE_AVERAGE" -lt 50 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
+				[[ "$WRITE_AVERAGE" -ge 50 && "avg_read" -le 65 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
 
 			else
 				echo "Skipping write test..."
@@ -629,6 +627,30 @@ benchmark_disks () {
 			[[ "$avg_read" -le 5000 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
 			[[ "$avg_read" -ge 5000 && "avg_read" -le 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
 
+			fi
+
+			if [[ "$READ_AVERAGE" -le "75" ]]; then
+				CURR_DISK_ARRAY[readspeed_results]="FAILED"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
+			fi
+			if [[ "$READ_AVERAGE" -ge "90" ]]; then
+				CURR_DISK_ARRAY[readspeed_results]="PASSED"
+			fi
+			if [ "$READ_AVERAGE" -gt "75" ] && [ "$READ_AVERAGE" -lt "90" ]; then
+				CURR_DISK_ARRAY[readspeed_results]="WARNING"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
+			fi
+
+			if [[ "$WRITE_AVERAGE" -le "50" ]]; then
+				CURR_DISK_ARRAY[writespeed_results]="FAILED"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
+			fi
+			if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
+				CURR_DISK_ARRAY[writespeed_results]="PASSED"
+			fi
+			if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
+				CURR_DISK_ARRAY[writespeed_results]="WARNING"
+				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
 			fi
 
 		(( i++ ))
