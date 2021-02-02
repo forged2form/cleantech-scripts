@@ -50,6 +50,9 @@ check_stagefile () {
 		echo Continuing test
 		FAHT_WORKINGDIR="$(grep "Working Directory" "$FAHT_STAGE_FILE"|sed -r 's/.*Working Directory: (.*)/\1/')"
 		source "${FAHT_WORKINGDIR}"/vars_noarray.txt
+		#cat $FAHT_STAGE_FILE|head -n1>/tmp/faht_stage_override
+		#source /tmp/faht_stage_override
+		#rm /tmp/faht_stage_override
 		echo Current stage: $FAHT_CURR_STAGE
 
 		if [ -f "/home/$(whoami)/.fahtdiag/custom_cmd.sh" ]; then

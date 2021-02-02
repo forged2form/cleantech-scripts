@@ -3,22 +3,26 @@
 ### init vars so they are global and retain values when used in functions...
 FAHT_TOTAL_TEST_DISKS=0
 ### Put disks in array minus current OS disk
-declare -A FAHT_TEST_DISKS_ARRAY
+FAHT_TEST_DISKS_ARRAY=()
 i=1
 n=0
 j=
 
 ### Ignore optical drive - Presuming only one at this point...
+FAHT_LIVE_DEV=sdc
 
 for j in $(sudo lsblk -drno NAME|grep -v "$FAHT_LIVE_DEV"|grep -v sr0); do
 	DISKNO=Disk${i}
-	FAHT_TOTAL_TEST_DISKS=$i
-	FAHT_TEST_DISKS_ARRAY[$i]=$j	
-	truenumber=$((i++));
+	FAHT_TEST_DISKS_ARRAY+=(${j})
+	truenumber=$i;
+	((i++))
 done
+echo ${FAHT_TEST_DISKS_ARRAY[@]}
+
+FAHT_TOTAL_TEST_DISKS=$truenumber
 
 if [[ "$FAHT_DIAGMODE" ]]; then
-	echo ""Found $FAHT_TOTAL_TEST_DISKS" disk(s): "$FAHT_TEST_DISKS_ARRAY[*]""
+	echo ""Found $FAHT_TOTAL_TEST_DISKS" disk(s): "${FAHT_TEST_DISKS_ARRAY[*]}""
 fi
 
 i=1
@@ -39,12 +43,12 @@ disk_array_setup ()
 		return 1;
 	fi
 
-	###TEMP echo Number of Disks to test: $FAHT_TOTAL_TEST_DISKS
-	i=1
-	for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
-	###TEMP 	echo Disk ${i}: ${j}
-		(( i++ ));
-	done
+	# ###TEMP echo Number of Disks to test: $FAHT_TOTAL_TEST_DISKS
+	# i=1
+	# for j in ${FAHT_TEST_DISKS_ARRAY[@]}; do
+	# ###TEMP 	echo Disk ${i}: ${j}
+	# 	(( i++ ));
+	# done
 
 	# Set up individual disk arrays with partitions...
 	i=1
@@ -131,7 +135,7 @@ disk_array_setup ()
 			fi
 		done
 	done
-	sav_disk_vars
+	save_disk_vars
 
 	DISK_ARRAY_SETUP="COMPLETE"
 
@@ -443,7 +447,7 @@ find_win_part () {
 	i=1
 	while [[ "$i" -le "$FAHT_TOTAL_TEST_DISKS" ]]; do
 		declare -n CURR_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
-		echo Seaching Disk ${i}...
+		echo Searching Disk ${i}...
 
 		j=1
 
@@ -463,7 +467,7 @@ find_win_part () {
 				FAHT_SYSDRIVE_NAME="${CURR_DISK_ARRAY[name]}"
 				FAHT_SYSDRIVE_SN="${CURR_DISK_ARRAY[serial]}"
 				FAHT_SYSDRIVE_SIZE="${CURR_DISK_ARRAY[totalsize]}"
-				FAHT_SYSDRIVE_SIZERESULTS=""
+				FAHT_SYSDRIVE_SIZE_RESULTS=""
 				CURR_DISK_ARRAY[windowspart]=${CURR_DISK_ARRAY[part${j}]}
 				CURR_DISK_ARRAY[systemdisk]="YES"
 				FAHT_WIN_PART=${CURR_DISK_ARRAY[part${j}]}
@@ -519,6 +523,8 @@ find_win_part () {
 	done
 	echo
 
+	save_vars
+
 	save_disk_vars
 
 }
@@ -555,7 +561,7 @@ benchmark_disks () {
 #			WRITE_TEST="YES";
 #		fi
 
-		if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" == "PASSED" ]; then
+		if [ "${CURR_DISK_ARRAY[selftest_results]}" == "PASSED" ] && [ "${CURR_DISK_ARRAY[systemdisk]}" == "YES" ]; then
 
 			test_iterations=5
 
@@ -563,18 +569,18 @@ benchmark_disks () {
 			sudo umount /dev/${CURR_DISK_ARRAY[deviceid]}* 2>/dev/null
 
 			### Benchmarking
-			sudo mount /dev/${CURR_DISK_ARRAY[windowspart]} /mnt/${CURR_DISK_ARRAY[windowspart]}
-			mkdir /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
+			sudo mount /dev/${CURR_DISK_ARRAY[windowspart]} /mnt/faht/${CURR_DISK_ARRAY[windowspart]}
+			[[ -d /mnt/faht/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark ]] || mkdir /mnt/faht/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
 
-			if [[ -d /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark ]]; then
+			if [[ -d /mnt/faht/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark ]]; then
 
-				cd /mnt/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
+				cd /mnt/faht/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
 
 				fio --name=rw --ioengine=posixaio --rw=rw --bs=1m --size=10m --numjobs=100 --iodepth=1 --runtime=60 --time_based --end_fsync=1 --output=diskbench-rw.txt --eta=never
 				fio --name=rw --ioengine=posixaio --rw=rw --bs=1m --size=10m --numjobs=100 --iodepth=1 --runtime=60 --time_based --end_fsync=1 --output=diskbench-rw.txt --eta=never
 
 				READ_AVERAGE="$(cat diskbench-rw.txt |grep READ:|sed -r 's/.* \(([0-9]+)\..*\).*/\1/g')"
-				WRITE_AVERAGE+"$(cat diskbench-rw.txt |grep WRITE:|sed -r 's/.* \(([0-9]+)\..*\).*/\1/g')"
+				WRITE_AVERAGE="$(cat diskbench-rw.txt |grep WRITE:|sed -r 's/.* \(([0-9]+)\..*\).*/\1/g')"
 
 				echo
 				echo Read average for ${CURR_DISK_ARRAY[deviceid]}: $READ_AVERAGE MB/s
@@ -585,11 +591,14 @@ benchmark_disks () {
 
 				[[ "$READ_AVERAGE" -ge 90 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
 				[[ "$READ_AVERAGE" -lt 75 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
-				[[ "$READ_AVERAGE" -ge 75 && "avg_read" -le 75 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
+				[[ "$READ_AVERAGE" -ge 75 && "$READ_AVERAGE" -lt 90 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
 
-				[[ "$WRITE_AVERAGE" -ge 65 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
-				[[ "$WRITE_AVERAGE" -lt 50 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
-				[[ "$WRITE_AVERAGE" -ge 50 && "avg_read" -le 65 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
+				[[ "$WRITE_AVERAGE" -ge 65 ]] && CURR_DISK_ARRAY[writespeed_results]=PASSED
+				[[ "$WRITE_AVERAGE" -lt 50 ]] && CURR_DISK_ARRAY[writespeed_results]=FAILED
+				[[ "$WRITE_AVERAGE" -ge 50 && "$WRITE_AVERAGE" -lt 65 ]] && CURR_DISK_ARRAY[writespeed_results]=WARNING
+
+				echo Cleaning up...
+				rm -Rfv /mnt/faht/${CURR_DISK_ARRAY[windowspart]}/disk_benchmark
 
 			else
 				echo "Skipping write test..."
@@ -598,60 +607,71 @@ benchmark_disks () {
 
 		### If the drive is unhealthy, run this READ ONLY Benchmark...
 
-		if [ "${CURR_FAHT_DISK_ARRAY}[smart_results]" != "PASSED" ]; then
+		if [ "${CURR_DISK_ARRAY[selftest_results]}" != "PASSED" ] && [ "${CURR_DISK_ARRAY[systemdisk]}" == "YES" ]; then
 
 			readtest_iterations=5
 
 			echo "Benchmarking Disk ${i} in READ ONLY mode..."
-			for (( i = 0; i < $readtest_iterations; i++ )); do
-				echo "Run: $i";
-				sudo hdparm -F /dev/sda;
+			for (( j = 0; j < $readtest_iterations; j++ )); do
+				echo "Run: $j";
+				sudo hdparm -F /dev/${CURR_DISK_ARRAY[deviceid]};
 				sudo sync;
-				readtest[$i]="$(sudo hdparm -Tt /dev/sda|grep 'buffered'|sed -r 's/.* = ([0-9]+)\.([0-9]+).*/\1\2/g')";
+				readtest[$j]="$(sudo hdparm -Tt /dev/${CURR_DISK_ARRAY[deviceid]}|grep 'buffered'|sed -r 's/.* = ([0-9]+)\.([0-9]+).*/\1\2/g')";
 			done
 
 			total_read=0;
 
-			for (( i=0; i<$readtest_iterations; i++ )); do
-				(( total_read=$total_read+${readtest[$i]} ));
+			for (( j=0; j<$readtest_iterations; j++ )); do
+				(( total_read=$total_read+${readtest[$j]} ));
 			done
 
 			avg_read=0
-			avg_read="(( $total_read / $readtest_iterations ))"
-			avg_read_formatted="$(echo (( $avg_read / $readtest_iterations ))|sed 's/..$/.&/')"
+			avg_read=$(( $total_read / $readtest_iterations ))
+			avg_read_formatted="$(echo $avg_read|sed 's/..$/.&/')"
 
 			CURR_DISK_ARRAY[readspeedraw]=$avg_read
 			CURR_DISK_ARRAY[readspeed]="$avg_read_formatted"
+			if [[ ${CURR_DISK_ARRAY[readspeed]} ]]; then
+				CURR_DISK_ARRAY[readspeed]="${CURR_DISK_ARRAY[readspeed]} MB/s"
+			fi
 
 			[[ "$avg_read" -ge 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=PASSED
 			[[ "$avg_read" -le 5000 ]] && CURR_DISK_ARRAY[readspeed_results]=FAILED
-			[[ "$avg_read" -ge 5000 && "avg_read" -le 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
+			[[ "$avg_read" -ge 5000 && "$avg_read" -le 6500 ]] && CURR_DISK_ARRAY[readspeed_results]=WARNING
 
 			fi
 
-			if [[ "$READ_AVERAGE" -le "75" ]]; then
-				CURR_DISK_ARRAY[readspeed_results]="FAILED"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
-			fi
-			if [[ "$READ_AVERAGE" -ge "90" ]]; then
-				CURR_DISK_ARRAY[readspeed_results]="PASSED"
-			fi
-			if [ "$READ_AVERAGE" -gt "75" ] && [ "$READ_AVERAGE" -lt "90" ]; then
-				CURR_DISK_ARRAY[readspeed_results]="WARNING"
+			if [[ CURR_DISK_ARRAY[readspeed_results]="FAILED" ]]; then	
 				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
 			fi
 
-			if [[ "$WRITE_AVERAGE" -le "50" ]]; then
-				CURR_DISK_ARRAY[writespeed_results]="FAILED"
+			if [[ CURR_DISK_ARRAY[writespeed_results]="FAILED" ]]; then
 				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
 			fi
-			if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
-				CURR_DISK_ARRAY[writespeed_results]="PASSED"
-			fi
-			if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
-				CURR_DISK_ARRAY[writespeed_results]="WARNING"
-				FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
-			fi
+
+			# if [[ "$READ_AVERAGE" -le "75" ]]; then
+			# 	CURR_DISK_ARRAY[readspeed_results]="FAILED"
+			# 	FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
+			# fi
+			# if [[ "$READ_AVERAGE" -ge "90" ]]; then
+			# 	CURR_DISK_ARRAY[readspeed_results]="PASSED"
+			# fi
+			# if [ "$READ_AVERAGE" -gt "75" ] && [ "$READ_AVERAGE" -lt "90" ]; then
+			# 	CURR_DISK_ARRAY[readspeed_results]="WARNING"
+			# 	FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Read speed is low."
+			# fi
+
+			# if [[ "$WRITE_AVERAGE" -le "50" ]]; then
+			# 	CURR_DISK_ARRAY[writespeed_results]="FAILED"
+			# 	FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
+			# fi
+			# if [[ "$WRITE_AVERAGE" -ge "65" ]]; then
+			# 	CURR_DISK_ARRAY[writespeed_results]="PASSED"
+			# fi
+			# if [ "$WRITE_AVERAGE" -gt "50" ] && [ "$WRITE_AVERAGE" -lt "65" ]; then
+			# 	CURR_DISK_ARRAY[writespeed_results]="WARNING"
+			# 	FAHT_ASSESSMENT_RESULTS="$FAHT_ASSESSMENT_RESULTS Disk ${i} Write speed is low."
+			# fi
 
 		(( i++ ))
 	done
@@ -847,17 +867,17 @@ benchmark_disks () {
 # 	save_disk_vars
 # }
 
-sysdrive_find () {
+sysdrive_results () {
 
 	i=1
 
 	while [[ "$i" -le $FAHT_TOTAL_TEST_DISKS ]]; do
 		declare -n CURR_DISK_ARRAY=FAHT_TEST_DISK_${i}_ARRAY
-		echo Seaching Disk ${i}...
+		echo Searching Disk ${i} for system files...
 
 		j=1
 
-		if [[ "${CURR_DISK_ARRAY[systemdrive]}" == "YES" ]]; then
+		if [[ "${CURR_DISK_ARRAY[systemdisk]}" == "YES" ]]; then
 			FAHT_SYSDRIVE_NAME="${CURR_DISK_ARRAY[name]}"
 			FAHT_SYSDRIVE_SN="${CURR_DISK_ARRAY[serial]}"
 			FAHT_SYSDRIVE_SIZE="${CURR_DISK_ARRAY[totalsize]}"
@@ -866,15 +886,21 @@ sysdrive_find () {
 			FAHT_SYSDRIVE_FREESPACE_RESULTS="${CURR_DISK_ARRAY[windowspartfreespace_results]}"
 			FAHT_SYSDRIVE_TIMEON="${CURR_DISK_ARRAY[timeon]}"
 			FAHT_SYSDRIVE_TIMEON_RESULTS="${CURR_DISK_ARRAY[timeon_results]}"
-			FAHT_SYSDRIVE_READ="${CURR_DISK_ARRAY[readspeed]}}"
-			FAHT_SYSDRIVE_READ_RESULTS="${CURR_DISK_ARRAY[readspeed_results]}}"
-			FAHT_SYSDRIVE_WRITE="${CURR_DISK_ARRAY[writespeed]}}"
-			FAHT_SYSDRIVE_WRITE_RESULTS="${CURR_DISK_ARRAY[writespeed_results]}}"
-			FAHT_SYSDRIVE_SELFTEST="${CURR_DISK_ARRAY[selftest]}}"
-			FAHT_SYSDRIVE_SELFTEST_RESULTS="${CURR_DISK_ARRAY[selftest_results]}}"
+			FAHT_SYSDRIVE_READ="${CURR_DISK_ARRAY[readspeed]}"
+			FAHT_SYSDRIVE_READ_RESULTS="${CURR_DISK_ARRAY[readspeed_results]}"
+			FAHT_SYSDRIVE_WRITE="${CURR_DISK_ARRAY[writespeed]}"
+			FAHT_SYSDRIVE_WRITE_RESULTS="${CURR_DISK_ARRAY[writespeed_results]}"
+			FAHT_SYSDRIVE_SELFTEST="${CURR_DISK_ARRAY[selftest]}"
+			FAHT_SYSDRIVE_SELFTEST_RESULTS="${CURR_DISK_ARRAY[selftest_results]}"
+			echo System files found on device labelled $FAHT_SYSDRIVE_NAME
 		fi
 
+		(( i++ ))
+
 	done
+
+	save_vars
+	
 }
 
 list_disks_info () {
@@ -914,7 +940,5 @@ list_disks_info () {
 
 	diskarray_to_flatvars
 
-	save_vars
-
-	save_disk_vars
+	sysdrive_results
 }

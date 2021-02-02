@@ -26,10 +26,17 @@ init_dialog () {
 		FAHT_OPTS_ARRAY[FAHT_${option^^}]=ON
 	done
 
+	if [[ ${FAHT_OPTS_ARRAY[FAHT_QUICKMODE]} == "ON" ]]; then
+		FAHT_OPTS_ARRAY[FAHT_SHORTONLY]=ON
+		FAHT_OPTS_ARRAY[FAHT_MEMTEST]=OFF
+		FAHT_OPTS_ARRAY[FAHT_CLAMAV]=OFF
+	fi
+
 	for x in FAHT_QUICKMODE FAHT_MEMTEST FAHT_SHORTONLY FAHT_CLAMAV FAHT_DIAGMODE FAHT_TESTONLY; do
 		declare -n curr_setting=$x
 		[[ ! "${FAHT_OPTS_ARRAY[$x]+abc}" ]] && FAHT_OPTS_ARRAY[$x]=OFF
 	done
+			
 
 	for x in ${!FAHT_OPTS_ARRAY[@]}; do
 		if [[ ${FAHT_OPTS_ARRAY[$x]} == "ON" ]]; then
@@ -41,6 +48,9 @@ init_dialog () {
 			declare -n CURR_OPT=${x}
 			CURR_OPT=OFF
 		fi
+
+
+
 	done
 
 	$DIAG

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:officeooo="http://openoffice.org/2009/office" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ooo="http://openoffice.org/2004/office" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">
- <office:meta><meta:creation-date>2019-04-30T14:48:17.027979202</meta:creation-date><meta:generator>LibreOffice/6.4.6.2$Linux_X86_64 LibreOffice_project/40$Build-2</meta:generator><dc:date>2020-10-14T16:08:52.939780721</dc:date><meta:editing-duration>PT3H51M10S</meta:editing-duration><meta:editing-cycles>102</meta:editing-cycles><meta:print-date>2019-04-30T16:31:18.497846512</meta:print-date> }}<meta:document-statistic meta:table-count="8" meta:image-count="0" meta:object-count="0" meta:page-count="2" meta:paragraph-count="106" meta:word-count="274" meta:character-count="2330" meta:non-whitespace-character-count="2096"/></office:meta>
+ <office:meta><meta:creation-date>2019-04-30T14:48:17.027979202</meta:creation-date><meta:generator>LibreOffice/6.4.6.2$Linux_X86_64 LibreOffice_project/40$Build-2</meta:generator><dc:date>2021-01-28T18:04:07.619370399</dc:date><meta:editing-duration>PT3H51M41S</meta:editing-duration><meta:editing-cycles>103</meta:editing-cycles><meta:print-date>2019-04-30T16:31:18.497846512</meta:print-date> }}<meta:document-statistic meta:table-count="8" meta:image-count="0" meta:object-count="0" meta:page-count="2" meta:paragraph-count="106" meta:word-count="273" meta:character-count="2210" meta:non-whitespace-character-count="1977"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
-   <config:config-item config:name="ViewAreaTop" config:type="long">233</config:config-item>
+   <config:config-item config:name="ViewAreaTop" config:type="long">5292</config:config-item>
    <config:config-item config:name="ViewAreaLeft" config:type="long">0</config:config-item>
-   <config:config-item config:name="ViewAreaWidth" config:type="long">45180</config:config-item>
-   <config:config-item config:name="ViewAreaHeight" config:type="long">26725</config:config-item>
+   <config:config-item config:name="ViewAreaWidth" config:type="long">50835</config:config-item>
+   <config:config-item config:name="ViewAreaHeight" config:type="long">21765</config:config-item>
    <config:config-item config:name="ShowRedlineChanges" config:type="boolean">true</config:config-item>
    <config:config-item config:name="InBrowseMode" config:type="boolean">false</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-     <config:config-item config:name="ViewLeft" config:type="long">15961</config:config-item>
-     <config:config-item config:name="ViewTop" config:type="long">4307</config:config-item>
+     <config:config-item config:name="ViewLeft" config:type="long">17291</config:config-item>
+     <config:config-item config:name="ViewTop" config:type="long">12589</config:config-item>
      <config:config-item config:name="VisibleLeft" config:type="long">0</config:config-item>
-     <config:config-item config:name="VisibleTop" config:type="long">233</config:config-item>
-     <config:config-item config:name="VisibleRight" config:type="long">45178</config:config-item>
-     <config:config-item config:name="VisibleBottom" config:type="long">26956</config:config-item>
+     <config:config-item config:name="VisibleTop" config:type="long">5292</config:config-item>
+     <config:config-item config:name="VisibleRight" config:type="long">50834</config:config-item>
+     <config:config-item config:name="VisibleBottom" config:type="long">27055</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ViewLayoutColumns" config:type="short">1</config:config-item>
      <config:config-item config:name="ViewLayoutBookMode" config:type="boolean">false</config:config-item>
@@ -78,15 +78,15 @@
    <config:config-item config:name="UseFormerTextWrapping" config:type="boolean">false</config:config-item>
    <config:config-item config:name="AddExternalLeading" config:type="boolean">true</config:config-item>
    <config:config-item config:name="AddParaTableSpacing" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="PrinterSetup" config:type="base64Binary">qgH+/0Nhbm9uX01GNDcwMF9TZXJpZXNfdHRfbWFjbWluaQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpDYW5vbl9NRjQ3MDBfU2VyaWVzX3R0X21hYwAWAAMAxwAAAAAAAAAIAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9Q2Fub25fTUY0NzAwX1Nlcmllc190dF9tYWNtaW5pCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCmNvbGxhdGU9ZmFsc2UKbWFyZ2luZGFqdXN0bWVudD0wLDAsMCwwCmNvbG9yZGVwdGg9MjQKcHNsZXZlbD0wCnBkZmRldmljZT0xCmNvbG9yZGV2aWNlPTAKUFBEQ29udGV4RGF0YQpQYWdlU2l6ZTpMZXR0ZXIAABIAQ09NUEFUX0RVUExFWF9NT0RFEwBEdXBsZXhNb2RlOjpVbmtub3du</config:config-item>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary">lwH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAuAAAAAAAAAAIAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCmNvbGxhdGU9ZmFsc2UKbWFyZ2luZGFqdXN0bWVudD0wLDAsMCwwCmNvbG9yZGVwdGg9MjQKcHNsZXZlbD0wCnBkZmRldmljZT0xCmNvbG9yZGV2aWNlPTAKUFBEQ29udGV4RGF0YQpQYWdlU2l6ZTpMZXR0ZXIAABIAQ09NUEFUX0RVUExFWF9NT0RFDwBEdXBsZXhNb2RlOjpPZmY=</config:config-item>
    <config:config-item config:name="AddParaTableSpacingAtStart" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="Rsid" config:type="int">1987906</config:config-item>
+   <config:config-item config:name="Rsid" config:type="int">2064294</config:config-item>
    <config:config-item config:name="EmbeddedDatabaseName" config:type="string"/>
    <config:config-item config:name="FieldAutoUpdate" config:type="boolean">true</config:config-item>
    <config:config-item config:name="OutlineLevelYieldsNumbering" config:type="boolean">false</config:config-item>
    <config:config-item config:name="AlignTabStopPosition" config:type="boolean">true</config:config-item>
    <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
-   <config:config-item config:name="PrinterName" config:type="string">Canon_MF4700_Series_tt_macmini</config:config-item>
+   <config:config-item config:name="PrinterName" config:type="string">Generic Printer</config:config-item>
    <config:config-item config:name="SaveGlobalDocumentLinks" config:type="boolean">false</config:config-item>
    <config:config-item config:name="PrinterPaperFromSetup" config:type="boolean">false</config:config-item>
    <config:config-item config:name="UseFormerLineSpacing" config:type="boolean">false</config:config-item>
@@ -144,7 +144,7 @@
  <office:styles>
   <style:default-style style:family="graphic">
    <style:graphic-properties svg:stroke-color="#3465a4" draw:fill-color="#729fcf" fo:wrap-option="no-wrap" draw:shadow-offset-x="0.3cm" draw:shadow-offset-y="0.3cm" draw:start-line-spacing-horizontal="0.283cm" draw:start-line-spacing-vertical="0.283cm" draw:end-line-spacing-horizontal="0.283cm" draw:end-line-spacing-vertical="0.283cm" style:flow-with-text="false"/>
-   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="false">
+   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:line-break="strict" style:font-independent-line-spacing="false">
     <style:tab-stops/>
    </style:paragraph-properties>
    <style:text-properties style:use-window-font-color="true" style:font-name="Liberation Serif" fo:font-size="12pt" fo:language="en" fo:country="CA" style:letter-kerning="true" style:font-name-asian="Noto Serif CJK SC" style:font-size-asian="10.5pt" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="Lohit Devanagari" style:font-size-complex="12pt" style:language-complex="hi" style:country-complex="IN"/>
@@ -346,10 +346,10 @@
    <style:table-properties style:width="8.562cm" fo:margin-left="-0.016cm" table:align="left"/>
   </style:style>
   <style:style style:name="Table1.A" style:family="table-column">
-   <style:table-column-properties style:column-width="3.014cm"/>
+   <style:table-column-properties style:column-width="2.415cm"/>
   </style:style>
   <style:style style:name="Table1.B" style:family="table-column">
-   <style:table-column-properties style:column-width="3.916cm"/>
+   <style:table-column-properties style:column-width="4.516cm"/>
   </style:style>
   <style:style style:name="Table1.C" style:family="table-column">
    <style:table-column-properties style:column-width="1.632cm"/>
@@ -651,9 +651,6 @@
   <style:style style:name="P61" style:family="paragraph" style:parent-style-name="Normal">
    <style:text-properties officeooo:paragraph-rsid="001dcd98"/>
   </style:style>
-  <style:style style:name="P62" style:family="paragraph" style:parent-style-name="RESULTSSTYLE">
-   <style:text-properties officeooo:paragraph-rsid="001c2154"/>
-  </style:style>
   <style:style style:name="T1" style:family="text">
    <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
   </style:style>
@@ -716,6 +713,9 @@
   </style:style>
   <style:style style:name="T21" style:family="text">
    <style:text-properties officeooo:rsid="001e5542"/>
+  </style:style>
+  <style:style style:name="T22" style:family="text">
+   <style:text-properties officeooo:rsid="001f7fa6"/>
   </style:style>
   <style:style style:name="Sect1" style:family="section">
    <style:section-properties fo:background-color="transparent" text:dont-balance-text-columns="false" style:editable="false">
@@ -858,7 +858,7 @@
      <table:table-column table:style-name="Table1.C"/>
      <table:table-row>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal">Serial Number</text:p>
+       <text:p text:style-name="TNormal">S/<text:span text:style-name="T22">N</text:span></text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
        <text:p text:style-name="TNormal-Underline">[[ FAHT_SYSDRIVE_SN ]] </text:p>
@@ -905,10 +905,10 @@
        <text:p text:style-name="TNormal">Read Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal-Underline">[[  FAHT_SYSDRIVE_READ ]] </text:p>
+       <text:p text:style-name="TNormal-Underline">[[ FAHT_SYSDRIVE_READ ]] </text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE">[[  FAHT_SYSDRIVE_READ_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[ FAHT_SYSDRIVE_READ_RESULTS ]] </text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -916,10 +916,10 @@
        <text:p text:style-name="TNormal">Write Speed</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="TNormal-Underline">[[  FAHT_SYSDRIVE_WRITE ]] </text:p>
+       <text:p text:style-name="TNormal-Underline">[[ FAHT_SYSDRIVE_WRITE ]] </text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table1.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE">[[  FAHT_SYSDRIVE_WRITE_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[ FAHT_SYSDRIVE_WRITE_RESULTS ]] </text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>
@@ -974,7 +974,7 @@
       </table:table-cell>
      </table:table-row>
     </table:table>
-    <text:p text:style-name="P12"><text:soft-page-break/></text:p>
+    <text:p text:style-name="P12"/>
     <text:p text:style-name="THeader">Processor: <text:span text:style-name="T11">[[ FAHT_PROC_MODEL ]] </text:span></text:p>
     <table:table table:name="Table5" table:style-name="Table5">
      <table:table-column table:style-name="Table5.A"/>
@@ -988,7 +988,7 @@
        <text:p text:style-name="TNormal-Underline">[[ FAHT_PROC_SPEED ]] GHz</text:p>
       </table:table-cell>
       <table:table-cell table:style-name="Table5.A1" office:value-type="string">
-       <text:p text:style-name="RESULTSSTYLE">[[ FAHT_PROC_SPEED_RESULTS ]] </text:p>
+       <text:p text:style-name="RESULTSSTYLE">[[ FAHT_PROC_SPEED<text:soft-page-break/>_RESULTS ]] </text:p>
       </table:table-cell>
      </table:table-row>
      <table:table-row>

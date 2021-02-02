@@ -281,7 +281,7 @@ run_stage sysinfo_dump init_memtest
 : echo "Rebooting to test memory..."
 run_stage init_memtest finish_memtest
 
-: echo "Finsihing memory test..."
+: echo "Finishing memory test..."
 run_stage finish_memtest disk_array_setup
 
 echo sourcing disk_fns.sh
